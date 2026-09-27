@@ -72,7 +72,6 @@
     .btn-mic { background: linear-gradient(135deg, #ff3366, #ff7700); color: #fff; }
     .btn-sm { padding: 6px 12px; font-size: 0.78rem; }
 
-    /* 3) Scrollbar for lists exceeding 20 entries & Search inputs */
     .table-responsive {
       width: 100%;
       max-height: 520px;
@@ -87,7 +86,6 @@
     }
     .list-search-bar {
       margin-bottom: 12px;
-      position: relative;
     }
     .list-search-bar input {
       width: 100%;
@@ -171,7 +169,6 @@
     }
     .slot-track-tag i { cursor: pointer; color: #ff5252; }
 
-    /* Live Mic Box */
     .mic-box {
       display: flex;
       align-items: center;
@@ -221,7 +218,7 @@
 
   <div id="adminDashboard" style="display:none;">
     
-    <!-- 6) LIVE MIC BROADCAST PUSH PANEL -->
+    <!-- LIVE MIC BROADCAST PUSH PANEL -->
     <div class="panel">
       <h2><i class="fa-solid fa-microphone-lines" style="color:var(--accent);"></i> Live Mic Instant Push</h2>
       <p style="font-size:0.8rem; color:var(--sub); margin-bottom:14px;">
@@ -404,7 +401,7 @@
 
 <script>
   // ================= CONFIGURATION =================
-  const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxoaQEoE0UT26qNC33xgfmERaNxsrqPxjU_QTgCAgAAjwoJplVrrUyTLhKZOC6EmcOk/exec";
+  const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxIM9fWOdU4skEnXuxVe6DR6FS7z-a3AdEepC4o6AS5WQiLV_lWp0EmBXCg0rSv-Mj5Cg/exec";
 
   let adminPasscode = "";
   let tracks = [];
@@ -412,7 +409,6 @@
   let hourlySchedules = {};
   let cachedListeners = [];
 
-  // Live Mic Recording State
   let mediaRecorder = null;
   let micAudioChunks = [];
   let micBase64Data = null;
@@ -421,15 +417,25 @@
     const t = document.getElementById('toast');
     t.innerText = msg;
     t.style.display = 'block';
-    setTimeout(() => { t.style.display = 'none'; }, 3000);
+    setTimeout(() => { t.style.display = 'none'; }, 3200);
+  }
+
+  function escapeHtml(str) {
+    return String(str || "").replace(/[&<>'"]/g, 
+      tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+    );
   }
 
   async function verifyAdmin() {
-    const pass = document.getElementById('adminPasscode').value.trim();
+    const passInput = document.getElementById('adminPasscode');
+    const pass = passInput ? passInput.value.trim() : "";
     if (!pass) return showToast("Enter passcode");
 
+    showToast("Connecting to station...");
     try {
       const res = await fetch(`${BACKEND_URL}?action=getAdminData&key=${encodeURIComponent(pass)}`);
+      if (!res.ok) throw new Error("HTTP error " + res.status);
+      
       const data = await res.json();
       if (data.success) {
         adminPasscode = pass;
@@ -441,22 +447,29 @@
         document.getElementById('authGate').style.display = 'none';
         document.getElementById('adminDashboard').style.display = 'block';
         if (data.settings && data.settings.station_name) {
-          document.getElementById('cfgStationName').value = data.settings.station_name;
+          const cfg = document.getElementById('cfgStationName');
+          if (cfg) cfg.value = data.settings.station_name;
         }
 
-        renderAudioApprovals();
-        renderChronologicalTracks();
-        renderUsers();
-        renderLiveListeners(cachedListeners);
-        renderHourlySlotsUI();
-        filterSlotTrackSelector();
+        // Render sections safely in isolated blocks
+        try { renderAudioApprovals(); } catch (e) { console.error("renderAudioApprovals error:", e); }
+        try { renderChronologicalTracks(); } catch (e) { console.error("renderChronologicalTracks error:", e); }
+        try { renderUsers(); } catch (e) { console.error("renderUsers error:", e); }
+        try { renderLiveListeners(cachedListeners); } catch (e) { console.error("renderLiveListeners error:", e); }
+        try { renderHourlySlotsUI(); } catch (e) { console.error("renderHourlySlotsUI error:", e); }
+        try { filterSlotTrackSelector(); } catch (e) { console.error("filterSlotTrackSelector error:", e); }
 
-        setInterval(refreshAdminData, 15000);
+        showToast("Connected to Synchro Radio Admin!");
+        if (!window.refreshIntervalSet) {
+          setInterval(refreshAdminData, 15000);
+          window.refreshIntervalSet = true;
+        }
       } else {
         showToast(data.message || "Invalid Passcode");
       }
     } catch(e) {
-      showToast("Could not connect to Google Apps Script");
+      console.error("verifyAdmin error:", e);
+      showToast("Could not connect to Google Apps Script. Verify Script URL & Deployment.");
     }
   }
 
@@ -467,15 +480,16 @@
       const data = await res.json();
       if (data.success) {
         tracks = data.tracks || [];
+        users = data.users || [];
         cachedListeners = data.activeListeners || [];
-        renderAudioApprovals();
-        renderChronologicalTracks();
-        renderLiveListeners(cachedListeners);
+        try { renderAudioApprovals(); } catch(e) {}
+        try { renderChronologicalTracks(); } catch(e) {}
+        try { renderUsers(); } catch(e) {}
+        try { renderLiveListeners(cachedListeners); } catch(e) {}
       }
     } catch(e) {}
   }
 
-  // 6) Live Mic Recording & Push Actions
   async function toggleMicRecording() {
     const btn = document.getElementById('recordMicBtn');
     const status = document.getElementById('micRecordingStatus');
@@ -536,14 +550,15 @@
     }
   }
 
-  // 3) Filtered Audio Approvals
   function renderAudioApprovals() {
-    const q = (document.getElementById('searchApprovalsInput').value || "").toLowerCase().trim();
+    const searchInput = document.getElementById('searchApprovalsInput');
+    const q = (searchInput ? searchInput.value : "").toLowerCase().trim();
     const tbody = document.getElementById('audioApprovalsTableBody');
+    if (!tbody) return;
 
-    const filtered = tracks.filter(t => {
-      const title = (t.title || "").toLowerCase();
-      const contrib = (t.contributor || "").toLowerCase();
+    const filtered = (tracks || []).filter(t => {
+      const title = String(t.title || "").toLowerCase();
+      const contrib = String(t.contributor || "").toLowerCase();
       return title.includes(q) || contrib.includes(q);
     });
 
@@ -556,15 +571,15 @@
       const isApproved = (t.approvalStatus === "approved");
       return `
         <tr>
-          <td><strong>${t.title}</strong></td>
-          <td>${t.contributor || 'Community'}</td>
+          <td><strong>${escapeHtml(t.title)}</strong></td>
+          <td>${escapeHtml(t.contributor || 'Community')}</td>
           <td>
-            <select class="cat-select" onchange="changeTrackCategory('${t.fileId}', this.value)">
+            <select class="cat-select" onchange="changeTrackCategory('${escapeHtml(t.fileId)}', this.value)">
               <option value="Slot plays" ${t.category === 'Slot plays' ? 'selected' : ''}>Slot plays</option>
               <option value="Random plays" ${t.category !== 'Slot plays' ? 'selected' : ''}>Random plays</option>
             </select>
           </td>
-          <td><span class="badge-tag ${isApproved ? 'badge-approved' : 'badge-pending'}">${t.approvalStatus || 'pending'}</span></td>
+          <td><span class="badge-tag ${isApproved ? 'badge-approved' : 'badge-pending'}">${escapeHtml(t.approvalStatus || 'pending')}</span></td>
           <td>
             <span style="font-size:0.75rem; color:${t.playedInSlot ? 'var(--green)' : 'var(--sub)'};">
               ${t.playedInSlot ? '<i class="fa-solid fa-check"></i> Debut Complete' : '<i class="fa-solid fa-hourglass-start"></i> Waiting Debut'}
@@ -572,8 +587,8 @@
           </td>
           <td>
             ${isApproved
-              ? `<button class="btn btn-danger btn-sm" onclick="setAudioApproval('${t.fileId}', 'pending')">Revoke</button>`
-              : `<button class="btn btn-green btn-sm" onclick="setAudioApproval('${t.fileId}', 'approved')"><i class="fa-solid fa-check"></i> Approve</button>`
+              ? `<button class="btn btn-danger btn-sm" onclick="setAudioApproval('${escapeHtml(t.fileId)}', 'pending')">Revoke</button>`
+              : `<button class="btn btn-green btn-sm" onclick="setAudioApproval('${escapeHtml(t.fileId)}', 'approved')"><i class="fa-solid fa-check"></i> Approve</button>`
             }
           </td>
         </tr>
@@ -602,14 +617,15 @@
     }
   }
 
-  // 3) Filtered Live Listeners
   function renderLiveListeners(listeners) {
-    const q = (document.getElementById('searchListenersInput').value || "").toLowerCase().trim();
+    const searchInput = document.getElementById('searchListenersInput');
+    const q = (searchInput ? searchInput.value : "").toLowerCase().trim();
     const tbody = document.getElementById('liveListenersTableBody');
+    if (!tbody) return;
 
     const filtered = (listeners || []).filter(l => {
-      const id = (l.listenerId || "").toLowerCase();
-      const user = (l.username || "").toLowerCase();
+      const id = String(l.listenerId || "").toLowerCase();
+      const user = String(l.username || "").toLowerCase();
       return id.includes(q) || user.includes(q);
     });
 
@@ -619,22 +635,24 @@
     }
     tbody.innerHTML = filtered.map(l => `
       <tr>
-        <td><code>${l.listenerId}</code></td>
-        <td><strong>${l.username}</strong></td>
-        <td><span style="color: ${l.status === 'Listening Live' ? 'var(--green)' : 'var(--sub)'}; font-weight:600;"><i class="fa-solid fa-circle" style="font-size:0.5rem; vertical-align:middle; margin-right:4px;"></i>${l.status}</span></td>
-        <td style="color:var(--sub); font-size:0.8rem;">${l.lastSeen}</td>
+        <td><code>${escapeHtml(l.listenerId)}</code></td>
+        <td><strong>${escapeHtml(l.username)}</strong></td>
+        <td><span style="color: ${l.status === 'Listening Live' ? 'var(--green)' : 'var(--sub)'}; font-weight:600;"><i class="fa-solid fa-circle" style="font-size:0.5rem; vertical-align:middle; margin-right:4px;"></i>${escapeHtml(l.status)}</span></td>
+        <td style="color:var(--sub); font-size:0.8rem;">${escapeHtml(l.lastSeen)}</td>
       </tr>
     `).join('');
   }
 
   function filterSlotTrackSelector() {
-    const query = (document.getElementById('slotTrackSearch').value || "").toLowerCase().trim();
+    const searchInput = document.getElementById('slotTrackSearch');
+    const query = (searchInput ? searchInput.value : "").toLowerCase().trim();
     const sel = document.getElementById('slotTrackSelector');
+    if (!sel) return;
     
-    const filtered = tracks.filter(t => {
+    const filtered = (tracks || []).filter(t => {
       const approved = (t.approvalStatus === "approved");
-      const title = (t.title || "").toLowerCase();
-      const contrib = (t.contributor || "").toLowerCase();
+      const title = String(t.title || "").toLowerCase();
+      const contrib = String(t.contributor || "").toLowerCase();
       return approved && (title.includes(query) || contrib.includes(query));
     });
 
@@ -645,21 +663,22 @@
 
     sel.innerHTML = filtered.map(t => {
       const debutBadge = t.playedInSlot ? "" : "[First Debut]";
-      return `<option value="${t.fileId}">${debutBadge} ${t.title} (${t.contributor || 'Community'})</option>`;
+      return `<option value="${escapeHtml(t.fileId)}">${debutBadge} ${escapeHtml(t.title)} (${escapeHtml(t.contributor || 'Community')})</option>`;
     }).join('');
   }
 
-  // 3) Filtered Hourly Slots
   function renderHourlySlotsUI() {
-    const q = (document.getElementById('searchHourlySlotsInput').value || "").toLowerCase().trim();
+    const searchInput = document.getElementById('searchHourlySlotsInput');
+    const q = (searchInput ? searchInput.value : "").toLowerCase().trim();
     const container = document.getElementById('hourlySlotsDisplay');
+    if (!container) return;
     let html = '';
 
     for (let h = 5; h <= 23; h++) {
-      const slot = hourlySchedules[String(h)] || { name: "", trackIds: [] };
+      const slot = (hourlySchedules && hourlySchedules[String(h)]) ? hourlySchedules[String(h)] : { name: "", trackIds: [] };
       const formattedHour = (h % 12 || 12) + (h >= 12 ? ':00 PM' : ':00 AM') + ' – ' + ((h + 1) % 12 || 12) + ((h + 1) >= 12 && (h + 1) < 24 ? ':00 PM' : ':00 AM');
       const list = slot.trackIds || [];
-      const slotName = slot.name || '';
+      const slotName = String(slot.name || '');
 
       if (q && !formattedHour.toLowerCase().includes(q) && !slotName.toLowerCase().includes(q)) {
         continue;
@@ -672,7 +691,7 @@
               <strong style="color:var(--cyan); font-size:0.9rem;"><i class="fa-regular fa-clock" style="margin-right:6px;"></i>${formattedHour}</strong>
             </div>
             <div>
-              <input type="text" class="slot-name-input" placeholder="Slot Name (e.g. Folk Hour)" value="${slotName}" onchange="updateSlotName(${h}, this.value)">
+              <input type="text" class="slot-name-input" placeholder="Slot Name (e.g. Folk Hour)" value="${escapeHtml(slotName)}" onchange="updateSlotName(${h}, this.value)">
             </div>
           </div>
           <div>
@@ -682,7 +701,7 @@
               const title = trk ? trk.title : 'Track (' + fileId + ')';
               return `
                 <span class="slot-track-tag">
-                  <strong>#${idx + 1}</strong> ${title}
+                  <strong>#${idx + 1}</strong>${escapeHtml(title)}
                   <i class="fa-solid fa-circle-xmark" onclick="removeTrackFromSlot(${h},${idx})"></i>
                 </span>
               `;
@@ -731,14 +750,15 @@
     }
   }
 
-  // 3) Filtered Library Tracks
   function renderChronologicalTracks() {
-    const q = (document.getElementById('searchLibraryInput').value || "").toLowerCase().trim();
+    const searchInput = document.getElementById('searchLibraryInput');
+    const q = (searchInput ? searchInput.value : "").toLowerCase().trim();
     const box = document.getElementById('chronologicalList');
+    if (!box) return;
 
-    const filtered = tracks.filter(t => {
-      const title = (t.title || "").toLowerCase();
-      const contrib = (t.contributor || "").toLowerCase();
+    const filtered = (tracks || []).filter(t => {
+      const title = String(t.title || "").toLowerCase();
+      const contrib = String(t.contributor || "").toLowerCase();
       return title.includes(q) || contrib.includes(q);
     });
 
@@ -753,25 +773,25 @@
           <div style="display:flex; align-items:center; gap:12px;" class="track-meta">
             <strong style="width:24px; color:var(--accent);">${idx + 1}</strong>
             <div>
-              <div style="font-weight:600; font-size:0.95rem;">${t.title}</div>
+              <div style="font-weight:600; font-size:0.95rem;">${escapeHtml(t.title)}</div>
               <div style="font-size:0.75rem; color:var(--sub);">
-                by ${t.contributor || 'Community'} • ${t.createdAt ? new Date(t.createdAt).toLocaleDateString() : 'Original'}
-                • <span class="badge-tag ${isApproved ? 'badge-approved' : 'badge-pending'}" style="font-size:0.65rem;">${t.approvalStatus || 'pending'}</span>
+                by ${escapeHtml(t.contributor || 'Community')} • ${t.createdAt ? new Date(t.createdAt).toLocaleDateString() : 'Original'}
+                • <span class="badge-tag ${isApproved ? 'badge-approved' : 'badge-pending'}" style="font-size:0.65rem;">${escapeHtml(t.approvalStatus || 'pending')}</span>
               </div>
             </div>
           </div>
 
           <div class="track-actions">
-            <select class="cat-select" onchange="changeTrackCategory('${t.fileId}', this.value)">
+            <select class="cat-select" onchange="changeTrackCategory('${escapeHtml(t.fileId)}', this.value)">
               <option value="Slot plays" ${t.category === 'Slot plays' ? 'selected' : ''}>Slot plays</option>
               <option value="Random plays" ${t.category !== 'Slot plays' ? 'selected' : ''}>Random plays</option>
             </select>
 
-            <button class="btn btn-push btn-sm" ${!isApproved ? 'disabled style="opacity:0.4; cursor:not-allowed;"' : ''} onclick="pushTrackToLive('${t.fileId}', '${t.title.replace(/'/g, "\\'")}')">
+            <button class="btn btn-push btn-sm" ${!isApproved ? 'disabled style="opacity:0.4; cursor:not-allowed;"' : ''} onclick="pushTrackToLive('${escapeHtml(t.fileId)}', '${escapeHtml(t.title)}')">
               <i class="fa-solid fa-bolt"></i> Push Now
             </button>
 
-            <button class="btn btn-danger btn-sm" onclick="deleteTrack('${t.fileId}')"><i class="fa-solid fa-trash"></i></button>
+            <button class="btn btn-danger btn-sm" onclick="deleteTrack('${escapeHtml(t.fileId)}')"><i class="fa-solid fa-trash"></i></button>
           </div>
         </div>
       `;
@@ -833,14 +853,16 @@
     }
   }
 
-  // 3) Filtered Users
+  // 1 & 2) Bulletproof String Handling for Contributor Users
   function renderUsers() {
-    const q = (document.getElementById('searchUsersInput').value || "").toLowerCase().trim();
+    const searchInput = document.getElementById('searchUsersInput');
+    const q = (searchInput ? searchInput.value : "").toLowerCase().trim();
     const tbody = document.getElementById('userTableBody');
+    if (!tbody) return;
 
-    const filtered = users.filter(u => {
-      const user = (u.username || "").toLowerCase();
-      const mob = (u.mobile || "").toLowerCase();
+    const filtered = (users || []).filter(u => {
+      const user = String(u.username || "").toLowerCase();
+      const mob = String(u.mobile || "").toLowerCase(); // Safe string conversion prevents number crashes
       return user.includes(q) || mob.includes(q);
     });
 
@@ -848,23 +870,28 @@
       tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--sub);">No matching users found.</td></tr>`;
       return;
     }
-    tbody.innerHTML = filtered.map(u => `
-      <tr>
-        <td><strong>${u.username}</strong></td>
-        <td>${u.mobile}</td>
-        <td>
-          <span style="color:${u.status === 'approved' ? 'var(--green)' : '#ffc107'}; font-weight:600; text-transform:uppercase; font-size:0.75rem;">
-            ${u.status}
-          </span>
-        </td>
-        <td>
-          ${u.status === 'approved' 
-            ? `<button class="btn btn-danger btn-sm" onclick="setUserStatus('${u.mobile}', 'pending')">Revoke</button>`
-            : `<button class="btn btn-green btn-sm" onclick="setUserStatus('${u.mobile}', 'approved')">Approve</button>`
-          }
-        </td>
-      </tr>
-    `).join('');
+
+    tbody.innerHTML = filtered.map(u => {
+      const mobStr = String(u.mobile || "");
+      const isApproved = (u.status === "approved");
+      return `
+        <tr>
+          <td><strong>${escapeHtml(u.username)}</strong></td>
+          <td>${escapeHtml(mobStr)}</td>
+          <td>
+            <span style="color:${isApproved ? 'var(--green)' : '#ffc107'}; font-weight:600; text-transform:uppercase; font-size:0.75rem;">
+              ${escapeHtml(u.status)}
+            </span>
+          </td>
+          <td>
+            ${isApproved 
+              ? `<button class="btn btn-danger btn-sm" onclick="setUserStatus('${escapeHtml(mobStr)}', 'pending')">Revoke</button>`
+              : `<button class="btn btn-green btn-sm" onclick="setUserStatus('${escapeHtml(mobStr)}', 'approved')">Approve</button>`
+            }
+          </td>
+        </tr>
+      `;
+    }).join('');
   }
 
   async function setUserStatus(mobile, status) {
