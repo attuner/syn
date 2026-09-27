@@ -132,7 +132,6 @@
       margin-bottom: 10px;
     }
 
-    /* Push Point Timeline Item */
     .push-point-timeline {
       display: flex;
       flex-direction: column;
@@ -429,7 +428,6 @@
     sel.innerHTML = filtered.map(t => `<option value="${escapeHtml(t.fileId)}">${escapeHtml(t.title)} (${formatTimeHMS(t.durationSec)})</option>`).join('');
   }
 
-  // 1 & 2) Render Dynamic Hourly Push Points Timetable
   function renderHourlySlotsUI() {
     const q = (document.getElementById('searchHourlySlotsInput').value || "").toLowerCase().trim();
     const container = document.getElementById('hourlySlotsDisplay');
@@ -452,7 +450,6 @@
         const title = trk ? trk.title : `Track (${fileId})`;
         const dur = trk ? trk.durationSec : 0;
 
-        // Push point start time inside the hour
         const pushTimeStr = `${(h % 12 || 12)}:${formatTimeHMS(cumulativeSec)} ${h >= 12 ? 'PM' : 'AM'}`;
         cumulativeSec += dur;
 
@@ -504,7 +501,6 @@
     }
   }
 
-  // 2) Modal to Replace Track by Clicking
   function openReplaceModal(h, idx) {
     replaceTarget = { hour: h, index: idx };
     const currentTrackId = hourlySchedules[String(h)].trackIds[idx];

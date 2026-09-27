@@ -259,7 +259,7 @@ function handleUpdateTrackDuration(data) {
   return { success: false, message: "Track not found" };
 }
 
-// ----------------- DIVISION AUTO-FILL ACCORDING TO RUNTIMES -----------------
+// ----------------- DIVISION AUTO-FILL -----------------
 
 function handleAutoFillDivision(data) {
   data = data || {};
@@ -286,7 +286,7 @@ function handleAutoFillDivision(data) {
     const fileId = String(trackRows[i][4] || "").trim();
     const cat = String(trackRows[i][7] || "Admin Selections").trim();
     const app = String(trackRows[i][8] || "pending").trim();
-    const dur = Number(trackRows[i][9]) || 300;
+    const dur = Number(trackRows[i][9]) || 180;
 
     if (fileId && app === "approved") {
       const item = { fileId, durationSec: dur };
