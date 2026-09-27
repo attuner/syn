@@ -1,6 +1,6 @@
 /**
  * Synchro Radio Backend - Google Apps Script
- * Robust, zero-error execution for all functions (direct or webhook)
+ * 4 Day Divisions + 40m/20m Auto-Fill + Live Synced Broadcast Engine
  */
 
 const FOLDER_NAME = "Community Radio";
@@ -12,7 +12,7 @@ function doGet(e) {
     const parameter = e.parameter || {};
     const action = parameter.action || "getStationData";
 
-    // DIRECT AUDIO STREAMER (Bypasses Google Drive 403 & CORS)
+    // Audio stream proxy
     if (action === "streamAudio") {
       const fileId = parameter.fileId;
       if (!fileId) {
@@ -83,9 +83,9 @@ function doPost(e) {
     else if (action === "adminSaveSettings") response = handleSaveSettings(contents);
     else if (action === "heartbeat") response = handleHeartbeat(contents);
     else if (action === "saveHourlySchedule") response = handleSaveHourlySchedule(contents);
+    else if (action === "autoFillDivision") response = handleAutoFillDivision(contents);
     else if (action === "adminPushTrack") response = handlePushTrack(contents);
     else if (action === "adminPushLiveMic") response = handlePushLiveMic(contents);
-    else if (action === "markTrackPlayedInSlot") response = handleMarkTrackPlayedInSlot(contents);
 
     return ContentService.createTextOutput(JSON.stringify(response))
       .setMimeType(ContentService.MimeType.JSON);
@@ -95,7 +95,7 @@ function doPost(e) {
   }
 }
 
-// ----------------- SHEET & DRIVE INITIALIZERS -----------------
+// ----------------- SHEET & DRIVE HELPERS -----------------
 
 function getOrCreateFolder() {
   const folders = DriveApp.getFoldersByName(FOLDER_NAME);
@@ -107,10 +107,8 @@ function getOrCreateFolder() {
 
 function getSheets() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  if (!ss) {
-    throw new Error("No active spreadsheet found. Open Extensions > Apps Script inside your Google Sheet.");
-  }
-  
+  if (!ss) throw new Error("No active spreadsheet bound to Apps Script.");
+
   let usersSheet = ss.getSheetByName("Users");
   if (!usersSheet) {
     usersSheet = ss.insertSheet("Users");
@@ -118,12 +116,11 @@ function getSheets() {
   }
 
   let tracksSheet = ss.getSheetByName("Tracks");
-  const trackHeaders = ["Seq", "Title", "Description", "Contributor", "FileId", "StreamUrl", "CreatedAt", "Category", "ApprovalStatus", "PlayedInSlot"];
+  const trackHeaders = ["Seq", "Title", "Description", "Contributor", "FileId", "StreamUrl", "CreatedAt", "Category", "ApprovalStatus", "DurationSec"];
   if (!tracksSheet) {
     tracksSheet = ss.insertSheet("Tracks");
     tracksSheet.appendRow(trackHeaders);
   } else {
-    // Auto-migrate older sheets that have fewer header columns
     const lastCol = tracksSheet.getLastColumn();
     if (lastCol < trackHeaders.length) {
       tracksSheet.getRange(1, 1, 1, trackHeaders.length).setValues([trackHeaders]);
@@ -153,16 +150,10 @@ function getSheets() {
     hourlySheet.appendRow(["Hour", "SlotName", "TrackIdsJson"]);
   }
 
-  let randomSeqSheet = ss.getSheetByName("HourlyRandomSequence");
-  if (!randomSeqSheet) {
-    randomSeqSheet = ss.insertSheet("HourlyRandomSequence");
-    randomSeqSheet.appendRow(["HourDateKey", "TrackIdsJson"]);
-  }
-
-  return { usersSheet, tracksSheet, settingsSheet, listenersSheet, hourlySheet, randomSeqSheet };
+  return { usersSheet, tracksSheet, settingsSheet, listenersSheet, hourlySheet };
 }
 
-// ----------------- USER AUTHENTICATION -----------------
+// ----------------- USER AUTH & UPLOAD -----------------
 
 function handleRegister(data) {
   data = data || {};
@@ -170,9 +161,7 @@ function handleRegister(data) {
   const mobile = String(data.mobile || "").trim();
   const password = String(data.password || "").trim();
 
-  if (!username || !mobile || !password) {
-    return { success: false, message: "All fields are required" };
-  }
+  if (!username || !mobile || !password) return { success: false, message: "All fields are required" };
 
   const { usersSheet } = getSheets();
   const rows = usersSheet.getDataRange().getValues();
@@ -184,11 +173,7 @@ function handleRegister(data) {
   }
 
   usersSheet.appendRow([username, mobile, password, "pending", new Date().toISOString()]);
-  return {
-    success: true,
-    message: "Registration successful. Contributor approval is pending.",
-    user: { username, mobile, status: "pending" }
-  };
+  return { success: true, message: "Registration successful. Contributor approval is pending.", user: { username, mobile, status: "pending" } };
 }
 
 function handleLogin(data) {
@@ -196,27 +181,16 @@ function handleLogin(data) {
   const mobile = String(data.mobile || "").trim();
   const password = String(data.password || "").trim();
 
-  if (!mobile || !password) return { success: false, message: "Mobile and password required" };
-
   const { usersSheet } = getSheets();
   const rows = usersSheet.getDataRange().getValues();
 
   for (let i = 1; i < rows.length; i++) {
     if (String(rows[i][1]).trim() === mobile && String(rows[i][2]).trim() === password) {
-      return {
-        success: true,
-        user: {
-          username: String(rows[i][0] || "User"),
-          mobile: String(rows[i][1] || ""),
-          status: String(rows[i][3] || "pending")
-        }
-      };
+      return { success: true, user: { username: String(rows[i][0] || "User"), mobile: String(rows[i][1] || ""), status: String(rows[i][3] || "pending") } };
     }
   }
   return { success: false, message: "Invalid mobile number or password" };
 }
-
-// ----------------- AUDIO UPLOAD -----------------
 
 function handleAudioUpload(data) {
   data = data || {};
@@ -228,10 +202,9 @@ function handleAudioUpload(data) {
   const fileName = data.fileName || `${title}.mp3`;
   const mimeType = data.mimeType || "audio/mpeg";
 
-  if (!base64File) return { success: false, message: "Missing audio payload" };
+  if (!base64File) return { success: false, message: "Missing audio data" };
 
   const { usersSheet, tracksSheet } = getSheets();
-
   const userRows = usersSheet.getDataRange().getValues();
   let isApproved = false;
   for (let i = 1; i < userRows.length; i++) {
@@ -241,9 +214,7 @@ function handleAudioUpload(data) {
     }
   }
 
-  if (!isApproved) {
-    return { success: false, message: "User is not approved by Admin to upload audio." };
-  }
+  if (!isApproved) return { success: false, message: "User is not approved by Admin to upload audio." };
 
   const folder = getOrCreateFolder();
   const decodedData = Utilities.base64Decode(base64File);
@@ -254,24 +225,154 @@ function handleAudioUpload(data) {
   const fileId = file.getId();
   const streamUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
   const createdAt = new Date().toISOString();
-  
-  const trackCat = "Slot plays";
+
+  // All user uploads are saved as "Admin Selections" by default, pending admin review
+  const trackCat = "Admin Selections";
   const approvalStatus = "pending";
-  const playedInSlot = "false";
+  const durationSec = 300; // 5 min nominal duration
 
   const trackRows = tracksSheet.getDataRange().getValues();
   const nextSeq = trackRows.length;
 
-  tracksSheet.appendRow([nextSeq, title, description, username, fileId, streamUrl, createdAt, trackCat, approvalStatus, playedInSlot]);
+  tracksSheet.appendRow([nextSeq, title, description, username, fileId, streamUrl, createdAt, trackCat, approvalStatus, durationSec]);
 
   return {
     success: true,
-    message: "Audio uploaded as Slot play! Pending administrator approval.",
-    track: { seq: nextSeq, title, description, fileId, streamUrl, createdAt, category: trackCat, approvalStatus, playedInSlot: false }
+    message: "Audio uploaded to Admin Selections! Pending approval.",
+    track: { seq: nextSeq, title, description, fileId, streamUrl, createdAt, category: trackCat, approvalStatus, durationSec }
   };
 }
 
-// ----------------- HEARTBEAT & LISTENERS -----------------
+// ----------------- DIVISION AUTO-FILL (40m Admin / 20m Random) -----------------
+
+function handleAutoFillDivision(data) {
+  data = data || {};
+  if (data.adminKey !== ADMIN_SECRET_KEY) return { success: false, message: "Unauthorized" };
+
+  const divId = Number(data.divisionId); // 1, 2, 3, or 4
+  const hoursMap = {
+    1: [5, 6, 7, 8, 9, 10],      // 5 AM to 11 AM
+    2: [11, 12, 13, 14, 15, 16], // 11 AM to 5 PM
+    3: [17, 18, 19, 20, 21, 22], // 5 PM to 11 PM
+    4: [23, 0, 1, 2, 3, 4]       // 11 PM to 5 AM
+  };
+
+  const targetHours = hoursMap[divId];
+  if (!targetHours) return { success: false, message: "Invalid division ID (1-4)" };
+
+  const { tracksSheet, hourlySheet, settingsSheet } = getSheets();
+  const trackRows = tracksSheet.getDataRange().getValues();
+
+  const adminSelections = [];
+  const randomPlays = [];
+
+  for (let i = 1; i < trackRows.length; i++) {
+    const fileId = String(trackRows[i][4] || "").trim();
+    const cat = String(trackRows[i][7] || "Admin Selections").trim();
+    const app = String(trackRows[i][8] || "pending").trim();
+
+    if (fileId && app === "approved") {
+      if (cat === "Random Plays") randomPlays.push(fileId);
+      else adminSelections.push(fileId);
+    }
+  }
+
+  if (adminSelections.length === 0 && randomPlays.length === 0) {
+    return { success: false, message: "No approved tracks available in the station library." };
+  }
+
+  // Retrieve existing schedules
+  const existingSchedules = getHourlySchedules();
+
+  targetHours.forEach(h => {
+    // 40 minutes (approx. 8 tracks of ~5 mins) from Admin Selections
+    // 20 minutes (approx. 4 tracks of ~5 mins) from Random Plays
+    const shuffledAdmin = shuffleArray([...(adminSelections.length > 0 ? adminSelections : randomPlays)]);
+    const shuffledRandom = shuffleArray([...(randomPlays.length > 0 ? randomPlays : adminSelections)]);
+
+    const first40m = shuffledAdmin.slice(0, 8);
+    const last20m = shuffledRandom.slice(0, 4);
+    const hourTracks = first40m.concat(last20m);
+
+    const divNames = {
+      1: "Morning Division Block",
+      2: "Afternoon Division Block",
+      3: "Evening Division Block",
+      4: "Night Division Block"
+    };
+
+    existingSchedules[String(h)] = {
+      name: `${divNames[divId]} (${h % 12 || 12} ${h >= 12 ? 'PM' : 'AM'})`,
+      trackIds: hourTracks
+    };
+  });
+
+  // Write back to HourlySchedule sheet
+  hourlySheet.clearContents();
+  hourlySheet.appendRow(["Hour", "SlotName", "TrackIdsJson"]);
+
+  for (let hr = 0; hr <= 23; hr++) {
+    const slot = existingSchedules[String(hr)] || { name: "", trackIds: [] };
+    hourlySheet.appendRow([hr, slot.name || "", JSON.stringify(slot.trackIds || [])]);
+  }
+
+  const newVersion = String(Date.now());
+  setSettingValue(settingsSheet, "seq_version", newVersion);
+
+  return { success: true, message: `Division ${divId} filled (40m Admin / 20m Random) across hours ${targetHours.join(', ')}!`, version: newVersion };
+}
+
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+  }
+  return arr;
+}
+
+// ----------------- HOURLY SCHEDULE & ADMIN HANDLERS -----------------
+
+function handleSaveHourlySchedule(data) {
+  data = data || {};
+  if (data.adminKey !== ADMIN_SECRET_KEY) return { success: false, message: "Unauthorized" };
+  const { hourlySheet, settingsSheet } = getSheets();
+  const schedules = data.schedules || {};
+
+  hourlySheet.clearContents();
+  hourlySheet.appendRow(["Hour", "SlotName", "TrackIdsJson"]);
+
+  for (let h = 0; h <= 23; h++) {
+    const slot = schedules[String(h)] || { name: "", trackIds: [] };
+    hourlySheet.appendRow([h, slot.name || "", JSON.stringify(slot.trackIds || [])]);
+  }
+
+  const newVersion = String(Date.now());
+  setSettingValue(settingsSheet, "seq_version", newVersion);
+
+  return { success: true, message: "Hourly schedule saved successfully!", version: newVersion };
+}
+
+function getHourlySchedules() {
+  const { hourlySheet } = getSheets();
+  const rows = hourlySheet.getDataRange().getValues();
+  const schedules = {};
+
+  for (let i = 1; i < rows.length; i++) {
+    if (rows[i][0] !== "") {
+      try {
+        schedules[String(rows[i][0])] = {
+          name: String(rows[i][1] || ""),
+          trackIds: JSON.parse(rows[i][2] || "[]")
+        };
+      } catch(e) {
+        schedules[String(rows[i][0])] = { name: String(rows[i][1] || ""), trackIds: [] };
+      }
+    }
+  }
+  return schedules;
+}
 
 function handleHeartbeat(data) {
   data = data || {};
@@ -330,88 +431,6 @@ function getActiveListenersList() {
   return activeListeners;
 }
 
-// ----------------- HOURLY SCHEDULE & RANDOM ROTATION -----------------
-
-function getOrGenerateHourlyRandomSequence(tracksSheet, randomSeqSheet) {
-  tracksSheet = tracksSheet || getSheets().tracksSheet;
-  randomSeqSheet = randomSeqSheet || getSheets().randomSeqSheet;
-
-  const now = new Date();
-  const key = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}_H${now.getHours()}`;
-
-  const rows = randomSeqSheet.getDataRange().getValues();
-  for (let i = 1; i < rows.length; i++) {
-    if (String(rows[i][0]) === key) {
-      try {
-        return JSON.parse(rows[i][1]);
-      } catch(e) {}
-    }
-  }
-
-  const trackRows = tracksSheet.getDataRange().getValues();
-  const eligible = [];
-  for (let i = 1; i < trackRows.length; i++) {
-    const fileId = String(trackRows[i][4] || "");
-    const cat = String(trackRows[i][7] || "");
-    const app = String(trackRows[i][8] || "");
-    const played = String(trackRows[i][9]);
-
-    if (fileId && app === "approved" && played === "true" && cat === "Random plays") {
-      eligible.push(fileId);
-    }
-  }
-
-  for (let i = eligible.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const temp = eligible[i];
-    eligible[i] = eligible[j];
-    eligible[j] = temp;
-  }
-
-  randomSeqSheet.appendRow([key, JSON.stringify(eligible)]);
-  return eligible;
-}
-
-function handleSaveHourlySchedule(data) {
-  data = data || {};
-  if (data.adminKey !== ADMIN_SECRET_KEY) return { success: false, message: "Unauthorized" };
-  const { hourlySheet, settingsSheet } = getSheets();
-  const schedules = data.schedules || {};
-
-  hourlySheet.clearContents();
-  hourlySheet.appendRow(["Hour", "SlotName", "TrackIdsJson"]);
-
-  for (let h = 5; h <= 23; h++) {
-    const slot = schedules[String(h)] || { name: "", trackIds: [] };
-    hourlySheet.appendRow([h, slot.name || "", JSON.stringify(slot.trackIds || [])]);
-  }
-
-  const newVersion = String(Date.now());
-  setSettingValue(settingsSheet, "seq_version", newVersion);
-
-  return { success: true, message: "Hourly schedule and slot names saved successfully!", version: newVersion };
-}
-
-function getHourlySchedules() {
-  const { hourlySheet } = getSheets();
-  const rows = hourlySheet.getDataRange().getValues();
-  const schedules = {};
-
-  for (let i = 1; i < rows.length; i++) {
-    if (rows[i][0] !== "") {
-      try {
-        schedules[String(rows[i][0])] = {
-          name: String(rows[i][1] || ""),
-          trackIds: JSON.parse(rows[i][2] || "[]")
-        };
-      } catch(e) {
-        schedules[String(rows[i][0])] = { name: String(rows[i][1] || ""), trackIds: [] };
-      }
-    }
-  }
-  return schedules;
-}
-
 function handlePushLiveMic(data) {
   data = data || {};
   if (data.adminKey !== ADMIN_SECRET_KEY) return { success: false, message: "Unauthorized" };
@@ -429,7 +448,7 @@ function handlePushLiveMic(data) {
   const streamUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
   const nextSeq = tracksSheet.getDataRange().getValues().length;
 
-  tracksSheet.appendRow([nextSeq, "🔴 Live Admin Broadcast", "Urgent Live Announcement", "Admin", fileId, streamUrl, new Date().toISOString(), "Slot plays", "approved", "true"]);
+  tracksSheet.appendRow([nextSeq, "🔴 Live Admin Broadcast", "Urgent Announcement", "Admin", fileId, streamUrl, new Date().toISOString(), "Admin Selections", "approved", 120]);
 
   const pushVer = String(Date.now());
   setSettingValue(settingsSheet, "pushed_track", fileId);
@@ -462,21 +481,6 @@ function handleUpdateAudioApproval(data) {
     if (String(rows[i][4]).trim() === targetId) {
       tracksSheet.getRange(i + 1, 9).setValue(data.status);
       return { success: true, message: `Audio approval updated to ${data.status}` };
-    }
-  }
-  return { success: false, message: "Track not found" };
-}
-
-function handleMarkTrackPlayedInSlot(data) {
-  data = data || {};
-  const { tracksSheet } = getSheets();
-  const rows = tracksSheet.getDataRange().getValues();
-  const targetId = String(data.fileId || "").trim();
-
-  for (let i = 1; i < rows.length; i++) {
-    if (String(rows[i][4]).trim() === targetId) {
-      tracksSheet.getRange(i + 1, 10).setValue("true");
-      return { success: true, message: "Audio marked as debuted in slot" };
     }
   }
   return { success: false, message: "Track not found" };
@@ -532,10 +536,10 @@ function handleSaveSettings(data) {
   return { success: true, message: "Settings saved" };
 }
 
-// ----------------- BROADCAST DATA (Chronological) -----------------
+// ----------------- BROADCAST DATA (Sync Clock Timeline) -----------------
 
 function getStationData() {
-  const { tracksSheet, settingsSheet, hourlySheet, randomSeqSheet } = getSheets();
+  const { tracksSheet, settingsSheet, hourlySheet } = getSheets();
   const trackRows = tracksSheet.getDataRange().getValues();
   const tracks = [];
 
@@ -549,9 +553,9 @@ function getStationData() {
         fileId: String(trackRows[i][4]),
         streamUrl: String(trackRows[i][5]),
         createdAt: String(trackRows[i][6] || ""),
-        category: String(trackRows[i][7] || "Slot plays"),
+        category: String(trackRows[i][7] || "Admin Selections"),
         approvalStatus: String(trackRows[i][8] || "pending"),
-        playedInSlot: String(trackRows[i][9]) === "true"
+        durationSec: Number(trackRows[i][9]) || 300
       });
     }
   }
@@ -567,12 +571,18 @@ function getStationData() {
   const hourly = getHourlySchedules();
   const activeListeners = getActiveListenersList();
   const liveCount = activeListeners.filter(l => l.status === "Listening Live").length;
-  const hourlyRandomSequence = getOrGenerateHourlyRandomSequence(tracksSheet, randomSeqSheet);
 
-  return { success: true, tracks, settings, hourly, hourlyRandomSequence, liveListenersCount: liveCount };
+  return {
+    success: true,
+    serverTime: Date.now(),
+    tracks,
+    settings,
+    hourly,
+    liveListenersCount: liveCount
+  };
 }
 
-// ----------------- ADMIN HANDLERS -----------------
+// ----------------- ADMIN PORTAL DATA -----------------
 
 function handleAdminLogin(data) {
   data = data || {};
@@ -590,7 +600,7 @@ function getAdminData() {
     if (userRows[i][0] || userRows[i][1]) {
       users.push({
         username: String(userRows[i][0] || "User"),
-        mobile: String(userRows[i][1] || ""), // Always converted to String
+        mobile: String(userRows[i][1] || ""),
         status: String(userRows[i][3] || "pending"),
         registeredAt: String(userRows[i][4] || "")
       });
@@ -601,6 +611,7 @@ function getAdminData() {
 
   return {
     success: true,
+    serverTime: Date.now(),
     users: users,
     tracks: station.tracks || [],
     settings: station.settings || {},
@@ -636,24 +647,11 @@ function setSettingValue(sheet, key, value) {
   sheet.appendRow([key, value]);
 }
 
-// ----------------- TEST UTILITY -----------------
-// Run this directly from the Apps Script editor to ensure ZERO errors
 function testAllFunctions() {
   Logger.log("Testing initialization...");
   const sheets = getSheets();
   Logger.log("Sheets loaded: " + Object.keys(sheets).join(", "));
-  
   const station = getStationData();
-  Logger.log("Station tracks count: " + station.tracks.length);
-  
-  const admin = getAdminData();
-  Logger.log("Users count: " + admin.users.length);
-
-  const getTest = doGet();
-  Logger.log("doGet() executed successfully.");
-
-  const postTest = doPost();
-  Logger.log("doPost() handled null payload safely.");
-
-  Logger.log("All functions run with ZERO errors!");
+  Logger.log("Station tracks: " + station.tracks.length);
+  Logger.log("Zero errors!");
 }

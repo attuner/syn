@@ -67,10 +67,31 @@
     }
     .btn-primary { background: var(--accent); color: #fff; }
     .btn-green { background: var(--green); color: #000; }
+    .btn-cyan { background: var(--cyan); color: #000; }
     .btn-danger { background: #e63946; color: #fff; }
     .btn-push { background: linear-gradient(135deg, #00d2ff, #0077ff); color: #fff; }
     .btn-mic { background: linear-gradient(135deg, #ff3366, #ff7700); color: #fff; }
     .btn-sm { padding: 6px 12px; font-size: 0.78rem; }
+
+    /* Division Auto-Fill Grid */
+    .division-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .division-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .division-title { font-size: 0.88rem; font-weight: 700; color: #fff; }
+    .division-desc { font-size: 0.76rem; color: var(--sub); line-height: 1.3; }
 
     .table-responsive {
       width: 100%;
@@ -84,9 +105,7 @@
       overflow-y: auto;
       padding-right: 4px;
     }
-    .list-search-bar {
-      margin-bottom: 12px;
-    }
+    .list-search-bar { margin-bottom: 12px; }
     .list-search-bar input {
       width: 100%;
       padding: 8px 14px;
@@ -206,7 +225,6 @@
     </a>
   </div>
 
-  <!-- Passcode Gate -->
   <div id="authGate" class="panel" style="max-width: 420px; margin: 40px auto; text-align: center;">
     <h2>Admin Authentication</h2>
     <div class="form-group" style="text-align:left; margin-top:16px;">
@@ -218,6 +236,48 @@
 
   <div id="adminDashboard" style="display:none;">
     
+    <!-- 1) 4 DAY DIVISIONS AUTO-FILL (40m Admin / 20m Random) -->
+    <div class="panel">
+      <h2><i class="fa-solid fa-wand-magic-sparkles" style="color:var(--cyan);"></i> 4 Day Divisions Auto-Scheduler (40m Admin / 20m Random)</h2>
+      <p style="font-size:0.8rem; color:var(--sub); margin-bottom:14px;">
+        Automatically fill each hour of any division: <strong>40 minutes</strong> from approved <em>Admin Selections</em> and <strong>20 minutes</strong> from <em>Random Plays</em>.
+      </p>
+
+      <div class="division-grid">
+        <div class="division-card">
+          <div>
+            <div class="division-title"><i class="fa-regular fa-sun" style="color:#ffc107; margin-right:6px;"></i>Division 1: Morning</div>
+            <div class="division-desc">05:00 AM – 11:00 AM (Hours 5 to 10)</div>
+          </div>
+          <button class="btn btn-cyan btn-sm" onclick="autoFillDivision(1)"><i class="fa-solid fa-bolt"></i> Auto-Fill Division 1</button>
+        </div>
+
+        <div class="division-card">
+          <div>
+            <div class="division-title"><i class="fa-solid fa-cloud-sun" style="color:#00d2ff; margin-right:6px;"></i>Division 2: Afternoon</div>
+            <div class="division-desc">11:00 AM – 05:00 PM (Hours 11 to 16)</div>
+          </div>
+          <button class="btn btn-cyan btn-sm" onclick="autoFillDivision(2)"><i class="fa-solid fa-bolt"></i> Auto-Fill Division 2</button>
+        </div>
+
+        <div class="division-card">
+          <div>
+            <div class="division-title"><i class="fa-solid fa-moon" style="color:#ff7700; margin-right:6px;"></i>Division 3: Evening</div>
+            <div class="division-desc">05:00 PM – 11:00 PM (Hours 17 to 22)</div>
+          </div>
+          <button class="btn btn-cyan btn-sm" onclick="autoFillDivision(3)"><i class="fa-solid fa-bolt"></i> Auto-Fill Division 3</button>
+        </div>
+
+        <div class="division-card">
+          <div>
+            <div class="division-title"><i class="fa-solid fa-star-and-crescent" style="color:#a78bfa; margin-right:6px;"></i>Division 4: Night</div>
+            <div class="division-desc">11:00 PM – 05:00 AM (Hours 23, 0 to 4)</div>
+          </div>
+          <button class="btn btn-cyan btn-sm" onclick="autoFillDivision(4)"><i class="fa-solid fa-bolt"></i> Auto-Fill Division 4</button>
+        </div>
+      </div>
+    </div>
+
     <!-- LIVE MIC BROADCAST PUSH PANEL -->
     <div class="panel">
       <h2><i class="fa-solid fa-microphone-lines" style="color:var(--accent);"></i> Live Mic Instant Push</h2>
@@ -235,11 +295,49 @@
       </div>
     </div>
 
-    <!-- AUDIO APPROVALS MANAGEMENT PANEL -->
+    <!-- 2) MANUAL HOURLY SLOTS SCHEDULER (Both Categories) -->
     <div class="panel">
-      <h2><i class="fa-solid fa-file-circle-check" style="color:var(--cyan);"></i> Audio Upload Approvals</h2>
+      <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; margin-bottom:14px;">
+        <h2><i class="fa-solid fa-clock" style="color:var(--cyan);"></i> Manual Hourly Slots Scheduler (All 24 Hours)</h2>
+        <button class="btn btn-primary btn-sm" onclick="saveHourlySlots()"><i class="fa-solid fa-floppy-disk"></i> Save Schedule</button>
+      </div>
+      <p style="font-size:0.8rem; color:var(--sub); margin-bottom:14px;">
+        Manually assign tracks from both <strong>Admin Selections</strong> and <strong>Random Plays</strong>. At the end of each scheduled slot, the next track immediately auto-pushes across all connected listeners in sync.
+      </p>
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-bottom: 16px;">
+        <div class="form-group">
+          <label>Select Hour Slot (0-23)</label>
+          <select id="slotHourSelector"></select>
+        </div>
+
+        <div class="form-group">
+          <label><i class="fa-solid fa-magnifying-glass"></i> Search Audio</label>
+          <input type="text" id="slotTrackSearch" placeholder="Filter by title, contributor, category..." oninput="filterSlotTrackSelector()">
+        </div>
+
+        <div class="form-group">
+          <label>Approved Audio Track</label>
+          <select id="slotTrackSelector"></select>
+        </div>
+
+        <div style="display:flex; align-items:flex-end; margin-bottom:12px;">
+          <button class="btn btn-green btn-sm" style="width:100%; height:40px;" onclick="addTrackToSelectedSlot()"><i class="fa-solid fa-plus"></i> Add to Slot</button>
+        </div>
+      </div>
+
+      <div class="list-search-bar">
+        <input type="text" id="searchHourlySlotsInput" placeholder="🔍 Search hourly slots by slot name or hour..." oninput="renderHourlySlotsUI()">
+      </div>
+
+      <div id="hourlySlotsDisplay" class="scroll-container"></div>
+    </div>
+
+    <!-- AUDIO APPROVALS & CATEGORY MANAGER -->
+    <div class="panel">
+      <h2><i class="fa-solid fa-file-circle-check" style="color:var(--cyan);"></i> Audio Upload Approvals & Categories</h2>
       <p style="font-size:0.8rem; color:var(--sub); margin-bottom:12px;">
-        New audios automatically upload as <strong>Slot plays</strong> with pending status. Approve or move them to <strong>Random plays</strong> below.
+        Manage audio categories between <strong>Admin Selections</strong> and <strong>Random Plays</strong>.
       </p>
 
       <div class="list-search-bar">
@@ -254,12 +352,11 @@
               <th>Contributor</th>
               <th>Category</th>
               <th>Status</th>
-              <th>Hourly Debut</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody id="audioApprovalsTableBody">
-            <tr><td colspan="6" style="text-align:center; color:var(--sub);">Loading audio requests...</td></tr>
+            <tr><td colspan="5" style="text-align:center; color:var(--sub);">Loading audio requests...</td></tr>
           </tbody>
         </table>
       </div>
@@ -291,61 +388,6 @@
           </tbody>
         </table>
       </div>
-    </div>
-
-    <!-- NAMED HOURLY SLOTS SCHEDULER -->
-    <div class="panel">
-      <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; margin-bottom:14px;">
-        <h2><i class="fa-solid fa-clock" style="color:var(--cyan);"></i> Named Hourly Slots (5 AM – 11 PM)</h2>
-        <button class="btn btn-primary btn-sm" onclick="saveHourlySlots()"><i class="fa-solid fa-floppy-disk"></i> Save Schedule & Names</button>
-      </div>
-
-      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-bottom: 16px;">
-        <div class="form-group">
-          <label>Select Hourly Slot</label>
-          <select id="slotHourSelector">
-            <option value="5">05:00 AM - 06:00 AM</option>
-            <option value="6">06:00 AM - 07:00 AM</option>
-            <option value="7">07:00 AM - 08:00 AM</option>
-            <option value="8">08:00 AM - 09:00 AM</option>
-            <option value="9">09:00 AM - 10:00 AM</option>
-            <option value="10">10:00 AM - 11:00 AM</option>
-            <option value="11">11:00 AM - 12:00 PM</option>
-            <option value="12">12:00 PM - 01:00 PM</option>
-            <option value="13">01:00 PM - 02:00 PM</option>
-            <option value="14">02:00 PM - 03:00 PM</option>
-            <option value="15">03:00 PM - 04:00 PM</option>
-            <option value="16">04:00 PM - 05:00 PM</option>
-            <option value="17">05:00 PM - 06:00 PM</option>
-            <option value="18">06:00 PM - 07:00 PM</option>
-            <option value="19">07:00 PM - 08:00 PM</option>
-            <option value="20">08:00 PM - 09:00 PM</option>
-            <option value="21">09:00 PM - 10:00 PM</option>
-            <option value="22">10:00 PM - 11:00 PM</option>
-            <option value="23">11:00 PM - 12:00 AM</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label><i class="fa-solid fa-magnifying-glass"></i> Search & Find Audio</label>
-          <input type="text" id="slotTrackSearch" placeholder="Type title or contributor..." oninput="filterSlotTrackSelector()">
-        </div>
-
-        <div class="form-group">
-          <label>Approved Audio Track</label>
-          <select id="slotTrackSelector"></select>
-        </div>
-
-        <div style="display:flex; align-items:flex-end; margin-bottom:12px;">
-          <button class="btn btn-green btn-sm" style="width:100%; height:40px;" onclick="addTrackToSelectedSlot()"><i class="fa-solid fa-plus"></i> Add to Slot</button>
-        </div>
-      </div>
-
-      <div class="list-search-bar">
-        <input type="text" id="searchHourlySlotsInput" placeholder="🔍 Search hourly slots by slot name or hour..." oninput="renderHourlySlotsUI()">
-      </div>
-
-      <div id="hourlySlotsDisplay" class="scroll-container"></div>
     </div>
 
     <!-- AUDIO LIBRARY & INSTANT PUSH -->
@@ -389,8 +431,8 @@
           <input type="text" id="cfgStationName" value="Synchro Radio">
         </div>
         <div class="form-group">
-          <label>Broadcast Engine Mode</label>
-          <input type="text" value="Synchronized Hourly Random & Named Slots" disabled>
+          <label>Broadcast Mode</label>
+          <input type="text" value="Synchronized 4 Day Divisions + Live Push" disabled>
         </div>
       </div>
       <button class="btn btn-primary btn-sm" onclick="saveSettings()">Save Settings</button>
@@ -426,12 +468,21 @@
     );
   }
 
+  function initHourDropdown() {
+    const sel = document.getElementById('slotHourSelector');
+    if (!sel) return;
+    sel.innerHTML = Array.from({ length: 24 }, (_, h) => {
+      const formatted = (h % 12 || 12) + ':00 ' + (h >= 12 ? 'PM' : 'AM') + ' - ' + ((h + 1) % 12 || 12) + ':00 ' + ((h + 1) >= 12 && (h + 1) < 24 ? 'PM' : 'AM');
+      return `<option value="${h}">Hour ${h} (${formatted})</option>`;
+    }).join('');
+  }
+
   async function verifyAdmin() {
     const passInput = document.getElementById('adminPasscode');
     const pass = passInput ? passInput.value.trim() : "";
     if (!pass) return showToast("Enter passcode");
 
-    showToast("Connecting to station...");
+    showToast("Connecting to Synchro Radio...");
     try {
       const res = await fetch(`${BACKEND_URL}?action=getAdminData&key=${encodeURIComponent(pass)}`);
       if (!res.ok) throw new Error("HTTP error " + res.status);
@@ -451,13 +502,13 @@
           if (cfg) cfg.value = data.settings.station_name;
         }
 
-        // Render sections safely in isolated blocks
-        try { renderAudioApprovals(); } catch (e) { console.error("renderAudioApprovals error:", e); }
-        try { renderChronologicalTracks(); } catch (e) { console.error("renderChronologicalTracks error:", e); }
-        try { renderUsers(); } catch (e) { console.error("renderUsers error:", e); }
-        try { renderLiveListeners(cachedListeners); } catch (e) { console.error("renderLiveListeners error:", e); }
-        try { renderHourlySlotsUI(); } catch (e) { console.error("renderHourlySlotsUI error:", e); }
-        try { filterSlotTrackSelector(); } catch (e) { console.error("filterSlotTrackSelector error:", e); }
+        initHourDropdown();
+        try { renderAudioApprovals(); } catch (e) { console.error(e); }
+        try { renderChronologicalTracks(); } catch (e) { console.error(e); }
+        try { renderUsers(); } catch (e) { console.error(e); }
+        try { renderLiveListeners(cachedListeners); } catch (e) { console.error(e); }
+        try { renderHourlySlotsUI(); } catch (e) { console.error(e); }
+        try { filterSlotTrackSelector(); } catch (e) { console.error(e); }
 
         showToast("Connected to Synchro Radio Admin!");
         if (!window.refreshIntervalSet) {
@@ -469,7 +520,7 @@
       }
     } catch(e) {
       console.error("verifyAdmin error:", e);
-      showToast("Could not connect to Google Apps Script. Verify Script URL & Deployment.");
+      showToast("Could not connect to Google Apps Script.");
     }
   }
 
@@ -488,6 +539,33 @@
         try { renderLiveListeners(cachedListeners); } catch(e) {}
       }
     } catch(e) {}
+  }
+
+  // 1) Auto-Fill Division Handler
+  async function autoFillDivision(divisionId) {
+    if (!confirm(`Auto-fill Division ${divisionId} with 40 mins Admin Selections + 20 mins Random Plays?`)) return;
+    showToast(`Generating Division ${divisionId} schedule...`);
+    try {
+      const res = await fetch(BACKEND_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "autoFillDivision", adminKey: adminPasscode, divisionId })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(data.message);
+        // Refresh admin data to reload slots
+        const resAdmin = await fetch(`${BACKEND_URL}?action=getAdminData&key=${encodeURIComponent(adminPasscode)}`);
+        const dataAdmin = await resAdmin.json();
+        if (dataAdmin.success) {
+          hourlySchedules = dataAdmin.hourly || {};
+          renderHourlySlotsUI();
+        }
+      } else {
+        showToast(data.message || "Auto-fill failed");
+      }
+    } catch(e) {
+      showToast("Error generating division schedule");
+    }
   }
 
   async function toggleMicRecording() {
@@ -563,7 +641,7 @@
     });
 
     if (filtered.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--sub);">No matching audio requests.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--sub);">No matching audio requests.</td></tr>`;
       return;
     }
 
@@ -575,16 +653,11 @@
           <td>${escapeHtml(t.contributor || 'Community')}</td>
           <td>
             <select class="cat-select" onchange="changeTrackCategory('${escapeHtml(t.fileId)}', this.value)">
-              <option value="Slot plays" ${t.category === 'Slot plays' ? 'selected' : ''}>Slot plays</option>
-              <option value="Random plays" ${t.category !== 'Slot plays' ? 'selected' : ''}>Random plays</option>
+              <option value="Admin Selections" ${t.category !== 'Random Plays' ? 'selected' : ''}>Admin Selections</option>
+              <option value="Random Plays" ${t.category === 'Random Plays' ? 'selected' : ''}>Random Plays</option>
             </select>
           </td>
           <td><span class="badge-tag ${isApproved ? 'badge-approved' : 'badge-pending'}">${escapeHtml(t.approvalStatus || 'pending')}</span></td>
-          <td>
-            <span style="font-size:0.75rem; color:${t.playedInSlot ? 'var(--green)' : 'var(--sub)'};">
-              ${t.playedInSlot ? '<i class="fa-solid fa-check"></i> Debut Complete' : '<i class="fa-solid fa-hourglass-start"></i> Waiting Debut'}
-            </span>
-          </td>
           <td>
             ${isApproved
               ? `<button class="btn btn-danger btn-sm" onclick="setAudioApproval('${escapeHtml(t.fileId)}', 'pending')">Revoke</button>`
@@ -643,6 +716,7 @@
     `).join('');
   }
 
+  // 2) Manual slot picker allows both categories
   function filterSlotTrackSelector() {
     const searchInput = document.getElementById('slotTrackSearch');
     const query = (searchInput ? searchInput.value : "").toLowerCase().trim();
@@ -653,7 +727,8 @@
       const approved = (t.approvalStatus === "approved");
       const title = String(t.title || "").toLowerCase();
       const contrib = String(t.contributor || "").toLowerCase();
-      return approved && (title.includes(query) || contrib.includes(query));
+      const cat = String(t.category || "").toLowerCase();
+      return approved && (title.includes(query) || contrib.includes(query) || cat.includes(query));
     });
 
     if (filtered.length === 0) {
@@ -662,8 +737,8 @@
     }
 
     sel.innerHTML = filtered.map(t => {
-      const debutBadge = t.playedInSlot ? "" : "[First Debut]";
-      return `<option value="${escapeHtml(t.fileId)}">${debutBadge} ${escapeHtml(t.title)} (${escapeHtml(t.contributor || 'Community')})</option>`;
+      const catBadge = t.category === "Random Plays" ? "[Random]" : "[Admin Sel]";
+      return `<option value="${escapeHtml(t.fileId)}">${catBadge} ${escapeHtml(t.title)} (${escapeHtml(t.contributor || 'Community')})</option>`;
     }).join('');
   }
 
@@ -674,9 +749,9 @@
     if (!container) return;
     let html = '';
 
-    for (let h = 5; h <= 23; h++) {
+    for (let h = 0; h <= 23; h++) {
       const slot = (hourlySchedules && hourlySchedules[String(h)]) ? hourlySchedules[String(h)] : { name: "", trackIds: [] };
-      const formattedHour = (h % 12 || 12) + (h >= 12 ? ':00 PM' : ':00 AM') + ' – ' + ((h + 1) % 12 || 12) + ((h + 1) >= 12 && (h + 1) < 24 ? ':00 PM' : ':00 AM');
+      const formattedHour = (h % 12 || 12) + ':00 ' + (h >= 12 ? 'PM' : 'AM') + ' – ' + ((h + 1) % 12 || 12) + ':00 ' + ((h + 1) >= 12 && (h + 1) < 24 ? 'PM' : 'AM');
       const list = slot.trackIds || [];
       const slotName = String(slot.name || '');
 
@@ -688,20 +763,21 @@
         <div class="slot-item">
           <div class="slot-header">
             <div>
-              <strong style="color:var(--cyan); font-size:0.9rem;"><i class="fa-regular fa-clock" style="margin-right:6px;"></i>${formattedHour}</strong>
+              <strong style="color:var(--cyan); font-size:0.9rem;"><i class="fa-regular fa-clock" style="margin-right:6px;"></i>Hour ${h} (${formattedHour})</strong>
             </div>
             <div>
               <input type="text" class="slot-name-input" placeholder="Slot Name (e.g. Folk Hour)" value="${escapeHtml(slotName)}" onchange="updateSlotName(${h}, this.value)">
             </div>
           </div>
           <div>
-            ${list.length === 0 ? '<span style="font-size:0.75rem; color:var(--sub);">Empty slot: plays synchronized random sequence.</span>' : ''}
+            ${list.length === 0 ? '<span style="font-size:0.75rem; color:var(--sub);">Empty slot: unassigned. Use auto-fill or add tracks manually above.</span>' : ''}
             ${list.map((fileId, idx) => {
               const trk = tracks.find(t => t.fileId === fileId);
               const title = trk ? trk.title : 'Track (' + fileId + ')';
+              const cat = trk ? (trk.category === "Random Plays" ? "Random" : "Admin Sel") : "";
               return `
                 <span class="slot-track-tag">
-                  <strong>#${idx + 1}</strong>${escapeHtml(title)}
+                  <strong>#${idx + 1}</strong> [${cat}] ${escapeHtml(title)}
                   <i class="fa-solid fa-circle-xmark" onclick="removeTrackFromSlot(${h},${idx})"></i>
                 </span>
               `;
@@ -726,7 +802,7 @@
     if (!hourlySchedules[hour]) hourlySchedules[hour] = { name: "", trackIds: [] };
     hourlySchedules[hour].trackIds.push(fileId);
     renderHourlySlotsUI();
-    showToast(`Added track to ${hour}:00 slot.`);
+    showToast(`Added track to hour ${hour} slot.`);
   }
 
   function removeTrackFromSlot(hour, index) {
@@ -783,8 +859,8 @@
 
           <div class="track-actions">
             <select class="cat-select" onchange="changeTrackCategory('${escapeHtml(t.fileId)}', this.value)">
-              <option value="Slot plays" ${t.category === 'Slot plays' ? 'selected' : ''}>Slot plays</option>
-              <option value="Random plays" ${t.category !== 'Slot plays' ? 'selected' : ''}>Random plays</option>
+              <option value="Admin Selections" ${t.category !== 'Random Plays' ? 'selected' : ''}>Admin Selections</option>
+              <option value="Random Plays" ${t.category === 'Random Plays' ? 'selected' : ''}>Random Plays</option>
             </select>
 
             <button class="btn btn-push btn-sm" ${!isApproved ? 'disabled style="opacity:0.4; cursor:not-allowed;"' : ''} onclick="pushTrackToLive('${escapeHtml(t.fileId)}', '${escapeHtml(t.title)}')">
@@ -810,6 +886,7 @@
         const trk = tracks.find(t => t.fileId === fileId);
         if (trk) trk.category = newCategory;
         filterSlotTrackSelector();
+        renderAudioApprovals();
         showToast(data.message);
       }
     } catch(err) {
@@ -833,7 +910,7 @@
   }
 
   async function deleteTrack(fileId) {
-    if (!confirm("Are you sure you want to delete this track from Community Radio?")) return;
+    if (!confirm("Are you sure you want to delete this track from Synchro Radio?")) return;
     showToast("Deleting...");
     try {
       const res = await fetch(BACKEND_URL, {
@@ -853,7 +930,6 @@
     }
   }
 
-  // 1 & 2) Bulletproof String Handling for Contributor Users
   function renderUsers() {
     const searchInput = document.getElementById('searchUsersInput');
     const q = (searchInput ? searchInput.value : "").toLowerCase().trim();
@@ -862,7 +938,7 @@
 
     const filtered = (users || []).filter(u => {
       const user = String(u.username || "").toLowerCase();
-      const mob = String(u.mobile || "").toLowerCase(); // Safe string conversion prevents number crashes
+      const mob = String(u.mobile || "").toLowerCase();
       return user.includes(q) || mob.includes(q);
     });
 

@@ -41,7 +41,6 @@
       flex-direction: column;
     }
 
-    /* 4) Non-overflowing responsive header */
     header {
       width: 100%;
       height: var(--header-h);
@@ -123,7 +122,6 @@
     }
     .btn-header:hover { background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.2); }
 
-    /* Portrait & Landscape Modes */
     main {
       flex: 1;
       width: 100%;
@@ -417,7 +415,6 @@
     <div class="logo-group">
       <div class="logo">
         <i class="fa-solid fa-tower-broadcast"></i>
-        <!-- 5) Renamed Station Display -->
         <span id="stationNameDisplay">Synchro Radio</span>
       </div>
       <div class="badge badge-live">
@@ -453,15 +450,15 @@
         </div>
 
         <div class="track-info-pane">
-          <div class="track-title" id="trackTitleDisplay">Radio Ready</div>
-          <div class="track-contributor" id="trackContributorDisplay">Click to Start Playing</div>
-          <div class="slot-indicator" id="currentSlotDisplay">Loading Tracks...</div>
-          <div class="track-desc" id="trackDescDisplay">Live radio streaming.</div>
+          <div class="track-title" id="trackTitleDisplay">Connecting Live...</div>
+          <div class="track-contributor" id="trackContributorDisplay">Live Audio Synchronization</div>
+          <div class="slot-indicator" id="currentSlotDisplay">Synchronizing Stream...</div>
+          <div class="track-desc" id="trackDescDisplay">Live radio streaming in exact sync with all listeners.</div>
 
           <div class="switch-container">
             <div id="stationLoadingPill" class="station-loading-pill">
               <i class="fa-solid fa-spinner fa-spin"></i>
-              <span>Connecting to Synchro Radio...</span>
+              <span>Synchronizing Live Audio...</span>
             </div>
 
             <button id="radioPowerBtn" class="main-switch-btn" onclick="toggleRadio()">
@@ -474,14 +471,16 @@
   </main>
 </div>
 
-<!-- Modal 1: Named Radio Schedule Board -->
+<!-- Modal 1: 4 Day Divisions Schedule Board -->
 <div id="scheduleModal" class="modal-overlay" onclick="closeScheduleModal(event)">
   <div class="modal-card" onclick="event.stopPropagation()">
     <div class="modal-header">
-      <h3><i class="fa-solid fa-calendar-days" style="color:var(--cyan); margin-right:8px;"></i>Daily Radio Schedule</h3>
+      <h3><i class="fa-solid fa-calendar-days" style="color:var(--cyan); margin-right:8px;"></i>Daily Synchro Schedule</h3>
       <button class="modal-close" onclick="closeScheduleModal()"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <p style="font-size:0.8rem; color:var(--subtext); margin-bottom:14px;">Broadcast schedule from 05:00 AM to 11:00 PM. Empty slots play songs in a shared synchronized sequence.</p>
+    <p style="font-size:0.8rem; color:var(--subtext); margin-bottom:14px;">
+      4 Daily Divisions: 5-11 AM, 11 AM-5 PM, 5-11 PM, 11 PM-5 AM. Each hour plays 40m Admin Selections + 20m Random Plays in sync for all listeners.
+    </p>
     <div id="scheduleTimelineList">Loading schedule...</div>
   </div>
 </div>
@@ -539,7 +538,7 @@
       <div id="uploadGateBox">
         <div id="uploadAllowedSection" style="display:none; margin-bottom: 20px;">
           <h4 style="margin-bottom:8px;"><i class="fa-solid fa-cloud-arrow-up" style="color:var(--cyan); margin-right:6px;"></i>Upload Audio Track</h4>
-          <p style="font-size:0.78rem; color:var(--subtext); margin-bottom:14px;">Audios upload directly for hourly slot debut consideration upon admin approval.</p>
+          <p style="font-size:0.78rem; color:var(--subtext); margin-bottom:14px;">Audios upload to Admin Selections for review and scheduling.</p>
 
           <div class="form-group">
             <label>Audio Title</label>
@@ -549,8 +548,7 @@
             <label>Audio Description</label>
             <textarea id="audioDesc" rows="2" placeholder="Brief info about this audio..."></textarea>
           </div>
-
-          <!-- 2) Category selector removed: Automatically uploaded as Slot plays -->
+          
           <div class="form-group">
             <label>Audio File (.mp3, .m4a, .wav, .aac)</label>
             <input type="file" id="audioFileInput" accept=".mp3,audio/mpeg,audio/mp3,audio/*,.m4a,.wav,.aac,.ogg,*" style="display:none;" onchange="handleFileSelected(this)">
@@ -600,7 +598,6 @@
 
   let allTracks = [];
   let hourlySchedules = {};
-  let sharedHourlyRandomSeq = [];
   let activePlaylist = [];
   let currentIndex = 0;
   let isPlaying = false;
@@ -609,10 +606,8 @@
   let currentSeqVersion = null;
   let lastPushVersion = null;
   let currentActiveHour = -1;
-  let isPlayingScheduledSlot = false;
-  let scheduledSlotFinished = false;
-  let scheduledSlotHourOrigin = -1;
   let currentlyPlayingTrack = null;
+  let serverTimeOffset = 0;
 
   const audioCache = {};
   let activePlayer = new Audio();
@@ -631,7 +626,8 @@
 
     sendHeartbeat();
     setInterval(sendHeartbeat, 20000);
-    setInterval(checkHourlyTransitionAndVersion, 8000);
+    // Periodically re-sync timeline and slot boundaries
+    setInterval(checkLiveSynchronization, 6000);
   });
 
   function showToast(msg) {
@@ -658,21 +654,28 @@
     }
   }
 
+  function getDivisionName(hour) {
+    if (hour >= 5 && hour < 11) return "Division 1: Morning (05:00 AM - 11:00 AM)";
+    if (hour >= 11 && hour < 17) return "Division 2: Afternoon (11:00 AM - 05:00 PM)";
+    if (hour >= 17 && hour < 23) return "Division 3: Evening (05:00 PM - 11:00 PM)";
+    return "Division 4: Night (11:00 PM - 05:00 AM)";
+  }
+
   function renderScheduleTimeline() {
     const box = document.getElementById('scheduleTimelineList');
-    const nowHour = new Date().getHours();
+    const nowHour = new Date(Date.now() + serverTimeOffset).getHours();
     let html = '';
 
-    for (let h = 5; h <= 23; h++) {
+    for (let h = 0; h <= 23; h++) {
       const slot = hourlySchedules[String(h)];
-      const name = (slot && slot.name && slot.name.trim() !== '') ? slot.name : 'Synchronized Random Playlist';
-      const formattedTime = (h % 12 || 12) + (h >= 12 ? ':00 PM' : ':00 AM') + ' – ' + ((h + 1) % 12 || 12) + ((h + 1) >= 12 && (h + 1) < 24 ? ':00 PM' : ':00 AM');
+      const name = (slot && slot.name && slot.name.trim() !== '') ? slot.name : 'Synchronized Hourly Block';
+      const formattedTime = (h % 12 || 12) + ':00 ' + (h >= 12 ? 'PM' : 'AM') + ' – ' + ((h + 1) % 12 || 12) + ':00 ' + ((h + 1) >= 12 && (h + 1) < 24 ? 'PM' : 'AM');
       const isCurrent = (h === nowHour);
 
       html += `
         <div class="sched-card ${isCurrent ? 'active-now' : ''}">
           <div>
-            <div class="sched-time">${formattedTime} ${isCurrent ? '• <span style="color:var(--green);">LIVE NOW</span>' : ''}</div>
+            <div class="sched-time">${formattedTime} • <span style="color:var(--cyan);">${getDivisionName(h)}</span> ${isCurrent ? '• <span style="color:var(--green);">LIVE NOW</span>' : ''}</div>
             <div class="sched-title">${name}</div>
           </div>
           <i class="fa-solid fa-radio" style="color:${isCurrent ? 'var(--accent)' : 'var(--subtext)'}; font-size:1.1rem;"></i>
@@ -701,41 +704,47 @@
     } catch(err) {}
   }
 
-  function isHourSlotDefined(h) {
-    const slot = hourlySchedules[String(h)];
-    if (h >= 5 && h <= 23 && slot && slot.trackIds && slot.trackIds.length > 0) {
-      return slot.trackIds.some(id => {
-        const t = allTracks.find(item => item.fileId === id);
-        return t && t.approvalStatus === "approved";
-      });
-    }
-    return false;
-  }
+  // 3) Synchronized Live Timeline Engine
+  // Computes exact track and current playback seek point based on shared clock time
+  function getSynchronizedCurrentTrackIndex(playlist) {
+    if (!playlist || playlist.length === 0) return { index: 0, seekSec: 0 };
 
-  // 1) Returns the shared synchronized sequence for all listeners
-  function getSharedSynchronizedRandomSequence() {
-    if (sharedHourlyRandomSeq && sharedHourlyRandomSeq.length > 0) {
-      const list = [];
-      sharedHourlyRandomSeq.forEach(id => {
-        const t = allTracks.find(item => item.fileId === id && item.approvalStatus === "approved" && item.playedInSlot === true && item.category === "Random plays");
-        if (t) list.push(t);
-      });
-      if (list.length > 0) return list;
+    const now = new Date(Date.now() + serverTimeOffset);
+    // Number of elapsed seconds inside current hour
+    const elapsedSecInHour = (now.getMinutes() * 60) + now.getSeconds();
+
+    let cumulativeSec = 0;
+    for (let i = 0; i < playlist.length; i++) {
+      const duration = playlist[i].durationSec || 300;
+      if (elapsedSecInHour >= cumulativeSec && elapsedSecInHour < (cumulativeSec + duration)) {
+        return { index: i, seekSec: elapsedSecInHour - cumulativeSec };
+      }
+      cumulativeSec += duration;
     }
 
-    // Fallback: all eligible random tracks
-    return allTracks.filter(t => t.approvalStatus === "approved" && t.playedInSlot === true && t.category === "Random plays");
+    // If tracks don't fill full 3600 seconds, wrap around in sequence
+    const loopSec = elapsedSecInHour % (cumulativeSec || 1);
+    let wrapCumulative = 0;
+    for (let i = 0; i < playlist.length; i++) {
+      const duration = playlist[i].durationSec || 300;
+      if (loopSec >= wrapCumulative && loopSec < (wrapCumulative + duration)) {
+        return { index: i, seekSec: loopSec - wrapCumulative };
+      }
+      wrapCumulative += duration;
+    }
+
+    return { index: 0, seekSec: 0 };
   }
 
-  function resolveCurrentPlaylist() {
-    const now = new Date();
+  function resolveCurrentHourPlaylist() {
+    const now = new Date(Date.now() + serverTimeOffset);
     const hour = now.getHours();
     currentActiveHour = hour;
 
     const slotBadge = document.getElementById('currentSlotDisplay');
     const slot = hourlySchedules[String(hour)];
 
-    if (isHourSlotDefined(hour)) {
+    if (slot && slot.trackIds && slot.trackIds.length > 0) {
       const scheduled = [];
       slot.trackIds.forEach(id => {
         const found = allTracks.find(t => t.fileId === id && t.approvalStatus === "approved");
@@ -743,21 +752,16 @@
       });
 
       if (scheduled.length > 0) {
-        isPlayingScheduledSlot = true;
-        scheduledSlotFinished = false;
-        scheduledSlotHourOrigin = hour;
         const slotName = slot.name && slot.name.trim() !== '' ? slot.name : `${hour % 12 || 12} ${hour >= 12 ? 'PM' : 'AM'} Slot`;
-        slotBadge.innerText = `Scheduled Slot: ${slotName}`;
+        slotBadge.innerText = `${getDivisionName(hour)} • ${slotName}`;
         return scheduled;
       }
     }
 
-    isPlayingScheduledSlot = false;
-    scheduledSlotFinished = true;
-    scheduledSlotHourOrigin = -1;
-    slotBadge.innerText = `Synchronized Rotation`;
-
-    return getSharedSynchronizedRandomSequence();
+    // Default fallback if no tracks in slot
+    const approved = allTracks.filter(t => t.approvalStatus === "approved");
+    slotBadge.innerText = `${getDivisionName(hour)} • Synchronized Block`;
+    return approved.length > 0 ? approved : allTracks;
   }
 
   async function fetchStationData() {
@@ -765,9 +769,11 @@
       const res = await fetch(`${BACKEND_URL}?action=getStationData`);
       const data = await res.json();
       if (data.success) {
+        if (data.serverTime) {
+          serverTimeOffset = data.serverTime - Date.now();
+        }
         allTracks = data.tracks || [];
         hourlySchedules = data.hourly || {};
-        sharedHourlyRandomSeq = data.hourlyRandomSequence || [];
 
         if (data.settings) {
           if (data.settings.station_name) {
@@ -781,14 +787,16 @@
           document.getElementById('liveListenerCountDisplay').innerText = `${count}`;
         }
 
-        activePlaylist = resolveCurrentPlaylist();
+        activePlaylist = resolveCurrentHourPlaylist();
 
         if (activePlaylist.length > 0) {
           document.getElementById('stationLoadingPill').style.display = 'none';
           document.getElementById('radioPowerBtn').style.display = 'block';
 
-          currentIndex = 0;
-          playCurrentTrackImmediate();
+          // Sync exact track and offset for instant play
+          const syncState = getSynchronizedCurrentTrackIndex(activePlaylist);
+          currentIndex = syncState.index;
+          playCurrentTrackImmediate(syncState.seekSec);
         } else {
           document.getElementById('stationLoadingPill').innerHTML = `<span>No approved tracks ready to broadcast</span>`;
         }
@@ -800,61 +808,60 @@
     }
   }
 
-  async function checkHourlyTransitionAndVersion() {
-    const now = new Date();
+  // 3) Synchronizes with boundary pushes, hourly division changes, and admin priorities
+  async function checkLiveSynchronization() {
+    const now = new Date(Date.now() + serverTimeOffset);
     const currentHour = now.getHours();
 
+    // Hour change transition
     if (currentActiveHour !== -1 && currentHour !== currentActiveHour) {
-      const nextHourIsDefined = isHourSlotDefined(currentHour);
-
-      if (isPlayingScheduledSlot && !scheduledSlotFinished && !nextHourIsDefined) {
-        currentActiveHour = currentHour;
-        document.getElementById('currentSlotDisplay').innerText += " (Continuing Slot)";
-      } else {
-        currentActiveHour = currentHour;
-        activePlaylist = resolveCurrentPlaylist();
-        currentIndex = 0;
-        showToast(`Starting ${currentHour % 12 || 12} ${currentHour >= 12 ? 'PM' : 'AM'} hourly schedule!`);
-        if (isPlaying && activePlaylist.length > 0) {
-          playCurrentTrackImmediate();
-        }
-        return;
+      currentActiveHour = currentHour;
+      activePlaylist = resolveCurrentHourPlaylist();
+      const syncState = getSynchronizedCurrentTrackIndex(activePlaylist);
+      currentIndex = syncState.index;
+      showToast(`Tuning into ${getDivisionName(currentHour)}`);
+      if (isPlaying && activePlaylist.length > 0) {
+        playCurrentTrackImmediate(syncState.seekSec);
       }
+      return;
     }
 
     try {
       const res = await fetch(`${BACKEND_URL}?action=getStationData`);
       const data = await res.json();
       if (data.success && data.settings) {
-        sharedHourlyRandomSeq = data.hourlyRandomSequence || sharedHourlyRandomSeq;
+        if (data.serverTime) serverTimeOffset = data.serverTime - Date.now();
 
         if (typeof data.liveListenersCount === 'number') {
           const count = isPlaying ? Math.max(1, data.liveListenersCount) : data.liveListenersCount;
           document.getElementById('liveListenerCountDisplay').innerText = `${count}`;
         }
 
+        // Live Admin Priority Push
         if (data.settings.push_version && data.settings.push_version !== lastPushVersion) {
           lastPushVersion = data.settings.push_version;
           const pushedFileId = data.settings.pushed_track;
           const target = allTracks.find(t => t.fileId === pushedFileId);
           if (target) {
             showToast("Priority Broadcast: " + target.title);
-            activePlaylist = [target, ...resolveCurrentPlaylist()];
+            activePlaylist = [target, ...resolveCurrentHourPlaylist()];
             currentIndex = 0;
-            playCurrentTrackImmediate();
+            playCurrentTrackImmediate(0);
             return;
           }
         }
 
+        // Schedule Updates
         if (currentSeqVersion && data.settings.seq_version !== currentSeqVersion) {
           currentSeqVersion = data.settings.seq_version;
           allTracks = data.tracks || [];
           hourlySchedules = data.hourly || {};
-          activePlaylist = resolveCurrentPlaylist();
-          showToast("Admin updated radio schedule.");
-          currentIndex = 0;
+          activePlaylist = resolveCurrentHourPlaylist();
+          showToast("Schedule updated. Re-syncing audio...");
+          const syncState = getSynchronizedCurrentTrackIndex(activePlaylist);
+          currentIndex = syncState.index;
           if (isPlaying && activePlaylist.length > 0) {
-            playCurrentTrackImmediate();
+            playCurrentTrackImmediate(syncState.seekSec);
           }
         }
       }
@@ -878,17 +885,6 @@
     return track.streamUrl;
   }
 
-  async function markAudioDebuted(fileId) {
-    try {
-      await fetch(BACKEND_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: "markTrackPlayedInSlot", fileId })
-      });
-      const t = allTracks.find(item => item.fileId === fileId);
-      if (t) t.playedInSlot = true;
-    } catch(e) {}
-  }
-
   // ================= ZERO-GAP DUAL BUFFER ENGINE =================
   function setupPlayerEvents(player) {
     player.addEventListener('timeupdate', () => {
@@ -907,24 +903,7 @@
 
   async function prepareStandbyTrack() {
     if (activePlaylist.length === 0) return;
-    let nextIdx = (currentIndex + 1);
-
-    if (isPlayingScheduledSlot && nextIdx >= activePlaylist.length) {
-      scheduledSlotFinished = true;
-      const nowHour = new Date().getHours();
-
-      if (nowHour !== scheduledSlotHourOrigin && isHourSlotDefined(nowHour)) {
-        activePlaylist = resolveCurrentPlaylist();
-        nextIdx = 0;
-      } else {
-        const syncRandom = getSharedSynchronizedRandomSequence();
-        activePlaylist = activePlaylist.concat(syncRandom);
-        document.getElementById('currentSlotDisplay').innerText = `Slot Extended: Synchronized Rotation`;
-      }
-    }
-
-    if (activePlaylist.length === 0) return;
-    nextIdx = nextIdx % activePlaylist.length;
+    const nextIdx = (currentIndex + 1) % activePlaylist.length;
     const nextTrack = activePlaylist[nextIdx];
     const src = await resolveTrackAudio(nextTrack);
     if (src) {
@@ -935,25 +914,10 @@
     }
   }
 
+  // 2) Ending time of scheduled track triggers the push time for next audio
   async function advanceTrackInstantly() {
-    let nextIdx = currentIndex + 1;
-
-    if (isPlayingScheduledSlot && nextIdx >= activePlaylist.length) {
-      scheduledSlotFinished = true;
-      const nowHour = new Date().getHours();
-
-      if (nowHour !== scheduledSlotHourOrigin && isHourSlotDefined(nowHour)) {
-        activePlaylist = resolveCurrentPlaylist();
-        nextIdx = 0;
-      } else {
-        const syncRandom = getSharedSynchronizedRandomSequence();
-        activePlaylist = activePlaylist.concat(syncRandom);
-        document.getElementById('currentSlotDisplay').innerText = `Slot Extended: Synchronized Rotation`;
-      }
-    }
-
     if (activePlaylist.length === 0) return;
-    currentIndex = nextIdx % activePlaylist.length;
+    currentIndex = (currentIndex + 1) % activePlaylist.length;
 
     const temp = activePlayer;
     activePlayer = standbyPlayer;
@@ -961,10 +925,6 @@
     isStandbyReady = false;
 
     currentlyPlayingTrack = activePlayer._trackRef || activePlaylist[currentIndex];
-
-    if (isPlayingScheduledSlot && currentlyPlayingTrack && !currentlyPlayingTrack.playedInSlot) {
-      markAudioDebuted(currentlyPlayingTrack.fileId);
-    }
 
     if (!activePlayer.src || activePlayer.src === "" || activePlayer.src.includes("data:audio/wav;base64")) {
       const src = await resolveTrackAudio(currentlyPlayingTrack);
@@ -977,7 +937,8 @@
     updateTunerUI(currentlyPlayingTrack);
   }
 
-  async function playCurrentTrackImmediate() {
+  // 3) Synchronous seek-and-play for live parity across users
+  async function playCurrentTrackImmediate(seekSec = 0) {
     if (!activePlaylist || activePlaylist.length === 0) return;
     const track = activePlaylist[currentIndex];
     const audioSource = await resolveTrackAudio(track);
@@ -987,16 +948,15 @@
     currentlyPlayingTrack = track;
     updateTunerUI(currentlyPlayingTrack);
 
-    if (isPlayingScheduledSlot && track && !track.playedInSlot) {
-      markAudioDebuted(track.fileId);
-    }
-
     const playPromise = activePlayer.play();
     isPlaying = true;
     sendHeartbeat();
 
     if (playPromise !== undefined) {
       playPromise.then(() => {
+        if (seekSec > 0 && activePlayer.duration && seekSec < activePlayer.duration) {
+          activePlayer.currentTime = seekSec;
+        }
         isStandbyReady = false;
         prepareStandbyTrack();
         updateMediaSession();
@@ -1005,7 +965,7 @@
         console.warn("Autoplay interaction pending:", err);
         isPlaying = false;
         updateTunerUI(currentlyPlayingTrack);
-        showToast("Tap switch to unmute live radio.");
+        showToast("Tap switch to unmute live broadcast.");
       });
     }
   }
@@ -1023,6 +983,10 @@
       sendHeartbeat();
       updateTunerUI(currentlyPlayingTrack);
     } else {
+      // Re-align with live sync offset on play
+      const syncState = getSynchronizedCurrentTrackIndex(activePlaylist);
+      currentIndex = syncState.index;
+
       const playPromise = activePlayer.play();
       isPlaying = true;
       updateTunerUI(currentlyPlayingTrack);
@@ -1030,6 +994,9 @@
 
       if (playPromise !== undefined) {
         playPromise.then(() => {
+          if (syncState.seekSec > 0 && activePlayer.duration && syncState.seekSec < activePlayer.duration) {
+            activePlayer.currentTime = syncState.seekSec;
+          }
           updateMediaSession();
           prepareStandbyTrack();
         }).catch(err => {
@@ -1090,7 +1057,7 @@
 
       document.getElementById('fileMetaName').innerText = file.name;
       const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
-      document.getElementById('fileMetaSize').innerText = `${sizeMB} MB • Selected`;
+      document.getElementById('fileMetaSize').innerText = `${sizeMB} MB • Ready`;
       
       document.getElementById('fileDropZone').style.display = 'none';
       document.getElementById('selectedFileCard').style.display = 'flex';
@@ -1202,7 +1169,6 @@
     }
   }
 
-  // 2) Uploads automatically as "Slot plays"
   async function uploadAudio() {
     const title = document.getElementById('audioTitle').value.trim();
     const description = document.getElementById('audioDesc').value.trim();
@@ -1237,7 +1203,7 @@
         const result = await res.json();
 
         if (result.success) {
-          showToast("Upload Successful! Awaiting Admin Approval.");
+          showToast(result.message || "Upload Successful! Added to Admin Selections.");
           document.getElementById('audioTitle').value = "";
           document.getElementById('audioDesc').value = "";
           clearSelectedFile();

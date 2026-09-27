@@ -1,6 +1,6 @@
 {
-  "name": "Synchro Radio",
-  "short_name": "SynchroRadio",
+  "name": "The Tuner",
+  "short_name": "Tuner",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
