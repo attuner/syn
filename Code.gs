@@ -1,6 +1,6 @@
 /**
  * Synchro Radio Backend - Google Apps Script
- * 4 Day Divisions + 40m/20m Auto-Fill + Live Synced Broadcast Engine
+ * Exact Audio Durations + Dynamic Push Point Sequencing + Timeline Sync
  */
 
 const FOLDER_NAME = "Community Radio";
@@ -12,7 +12,6 @@ function doGet(e) {
     const parameter = e.parameter || {};
     const action = parameter.action || "getStationData";
 
-    // Audio stream proxy
     if (action === "streamAudio") {
       const fileId = parameter.fileId;
       if (!fileId) {
@@ -80,6 +79,7 @@ function doPost(e) {
     else if (action === "adminUpdateAudioApproval") response = handleUpdateAudioApproval(contents);
     else if (action === "adminDeleteTrack") response = handleDeleteTrack(contents);
     else if (action === "adminUpdateTrackCategory") response = handleUpdateTrackCategory(contents);
+    else if (action === "adminUpdateTrackDuration") response = handleUpdateTrackDuration(contents);
     else if (action === "adminSaveSettings") response = handleSaveSettings(contents);
     else if (action === "heartbeat") response = handleHeartbeat(contents);
     else if (action === "saveHourlySchedule") response = handleSaveHourlySchedule(contents);
@@ -95,7 +95,7 @@ function doPost(e) {
   }
 }
 
-// ----------------- SHEET & DRIVE HELPERS -----------------
+// ----------------- SHEET INITIALIZATION -----------------
 
 function getOrCreateFolder() {
   const folders = DriveApp.getFoldersByName(FOLDER_NAME);
@@ -201,8 +201,9 @@ function handleAudioUpload(data) {
   const base64File = data.base64File;
   const fileName = data.fileName || `${title}.mp3`;
   const mimeType = data.mimeType || "audio/mpeg";
+  const durationSec = Math.max(1, Math.round(Number(data.durationSec) || 0));
 
-  if (!base64File) return { success: false, message: "Missing audio data" };
+  if (!base64File) return { success: false, message: "Missing audio payload" };
 
   const { usersSheet, tracksSheet } = getSheets();
   const userRows = usersSheet.getDataRange().getValues();
@@ -225,11 +226,8 @@ function handleAudioUpload(data) {
   const fileId = file.getId();
   const streamUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
   const createdAt = new Date().toISOString();
-
-  // All user uploads are saved as "Admin Selections" by default, pending admin review
   const trackCat = "Admin Selections";
   const approvalStatus = "pending";
-  const durationSec = 300; // 5 min nominal duration
 
   const trackRows = tracksSheet.getDataRange().getValues();
   const nextSeq = trackRows.length;
@@ -238,18 +236,36 @@ function handleAudioUpload(data) {
 
   return {
     success: true,
-    message: "Audio uploaded to Admin Selections! Pending approval.",
+    message: "Audio uploaded successfully! Pending administrator approval.",
     track: { seq: nextSeq, title, description, fileId, streamUrl, createdAt, category: trackCat, approvalStatus, durationSec }
   };
 }
 
-// ----------------- DIVISION AUTO-FILL (40m Admin / 20m Random) -----------------
+function handleUpdateTrackDuration(data) {
+  data = data || {};
+  const fileId = String(data.fileId || "").trim();
+  const durationSec = Math.max(1, Math.round(Number(data.durationSec) || 0));
+  if (!fileId || !durationSec) return { success: false, message: "Invalid payload" };
+
+  const { tracksSheet } = getSheets();
+  const rows = tracksSheet.getDataRange().getValues();
+
+  for (let i = 1; i < rows.length; i++) {
+    if (String(rows[i][4]).trim() === fileId) {
+      tracksSheet.getRange(i + 1, 10).setValue(durationSec);
+      return { success: true, message: "Duration updated" };
+    }
+  }
+  return { success: false, message: "Track not found" };
+}
+
+// ----------------- DIVISION AUTO-FILL ACCORDING TO RUNTIMES -----------------
 
 function handleAutoFillDivision(data) {
   data = data || {};
   if (data.adminKey !== ADMIN_SECRET_KEY) return { success: false, message: "Unauthorized" };
 
-  const divId = Number(data.divisionId); // 1, 2, 3, or 4
+  const divId = Number(data.divisionId);
   const hoursMap = {
     1: [5, 6, 7, 8, 9, 10],      // 5 AM to 11 AM
     2: [11, 12, 13, 14, 15, 16], // 11 AM to 5 PM
@@ -263,36 +279,50 @@ function handleAutoFillDivision(data) {
   const { tracksSheet, hourlySheet, settingsSheet } = getSheets();
   const trackRows = tracksSheet.getDataRange().getValues();
 
-  const adminSelections = [];
-  const randomPlays = [];
+  const adminTracks = [];
+  const randomTracks = [];
 
   for (let i = 1; i < trackRows.length; i++) {
     const fileId = String(trackRows[i][4] || "").trim();
     const cat = String(trackRows[i][7] || "Admin Selections").trim();
     const app = String(trackRows[i][8] || "pending").trim();
+    const dur = Number(trackRows[i][9]) || 300;
 
     if (fileId && app === "approved") {
-      if (cat === "Random Plays") randomPlays.push(fileId);
-      else adminSelections.push(fileId);
+      const item = { fileId, durationSec: dur };
+      if (cat === "Random Plays") randomTracks.push(item);
+      else adminTracks.push(item);
     }
   }
 
-  if (adminSelections.length === 0 && randomPlays.length === 0) {
-    return { success: false, message: "No approved tracks available in the station library." };
+  if (adminTracks.length === 0 && randomTracks.length === 0) {
+    return { success: false, message: "No approved tracks available." };
   }
 
-  // Retrieve existing schedules
   const existingSchedules = getHourlySchedules();
 
   targetHours.forEach(h => {
-    // 40 minutes (approx. 8 tracks of ~5 mins) from Admin Selections
-    // 20 minutes (approx. 4 tracks of ~5 mins) from Random Plays
-    const shuffledAdmin = shuffleArray([...(adminSelections.length > 0 ? adminSelections : randomPlays)]);
-    const shuffledRandom = shuffleArray([...(randomPlays.length > 0 ? randomPlays : adminSelections)]);
+    const shuffledAdmin = shuffleArray([...(adminTracks.length > 0 ? adminTracks : randomTracks)]);
+    const shuffledRandom = shuffleArray([...(randomTracks.length > 0 ? randomTracks : adminTracks)]);
 
-    const first40m = shuffledAdmin.slice(0, 8);
-    const last20m = shuffledRandom.slice(0, 4);
-    const hourTracks = first40m.concat(last20m);
+    const hourTrackIds = [];
+    let adminTime = 0;
+    let aIdx = 0;
+    // Fill up to 40 minutes (2400 seconds)
+    while (adminTime < 2400 && aIdx < shuffledAdmin.length) {
+      hourTrackIds.push(shuffledAdmin[aIdx].fileId);
+      adminTime += shuffledAdmin[aIdx].durationSec;
+      aIdx++;
+    }
+
+    // Fill remaining up to 60 minutes (3600 seconds) with Random Plays
+    let totalTime = adminTime;
+    let rIdx = 0;
+    while (totalTime < 3600 && rIdx < shuffledRandom.length) {
+      hourTrackIds.push(shuffledRandom[rIdx].fileId);
+      totalTime += shuffledRandom[rIdx].durationSec;
+      rIdx++;
+    }
 
     const divNames = {
       1: "Morning Division Block",
@@ -303,11 +333,10 @@ function handleAutoFillDivision(data) {
 
     existingSchedules[String(h)] = {
       name: `${divNames[divId]} (${h % 12 || 12} ${h >= 12 ? 'PM' : 'AM'})`,
-      trackIds: hourTracks
+      trackIds: hourTrackIds
     };
   });
 
-  // Write back to HourlySchedule sheet
   hourlySheet.clearContents();
   hourlySheet.appendRow(["Hour", "SlotName", "TrackIdsJson"]);
 
@@ -319,7 +348,7 @@ function handleAutoFillDivision(data) {
   const newVersion = String(Date.now());
   setSettingValue(settingsSheet, "seq_version", newVersion);
 
-  return { success: true, message: `Division ${divId} filled (40m Admin / 20m Random) across hours ${targetHours.join(', ')}!`, version: newVersion };
+  return { success: true, message: `Division ${divId} auto-scheduled based on exact track times!`, version: newVersion };
 }
 
 function shuffleArray(arr) {
@@ -351,7 +380,7 @@ function handleSaveHourlySchedule(data) {
   const newVersion = String(Date.now());
   setSettingValue(settingsSheet, "seq_version", newVersion);
 
-  return { success: true, message: "Hourly schedule saved successfully!", version: newVersion };
+  return { success: true, message: "Hourly schedule and push points saved!", version: newVersion };
 }
 
 function getHourlySchedules() {
@@ -447,8 +476,9 @@ function handlePushLiveMic(data) {
   const fileId = file.getId();
   const streamUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
   const nextSeq = tracksSheet.getDataRange().getValues().length;
+  const durationSec = Math.max(1, Math.round(Number(data.durationSec) || 60));
 
-  tracksSheet.appendRow([nextSeq, "🔴 Live Admin Broadcast", "Urgent Announcement", "Admin", fileId, streamUrl, new Date().toISOString(), "Admin Selections", "approved", 120]);
+  tracksSheet.appendRow([nextSeq, "🔴 Live Admin Broadcast", "Urgent Announcement", "Admin", fileId, streamUrl, new Date().toISOString(), "Admin Selections", "approved", durationSec]);
 
   const pushVer = String(Date.now());
   setSettingValue(settingsSheet, "pushed_track", fileId);
@@ -536,7 +566,7 @@ function handleSaveSettings(data) {
   return { success: true, message: "Settings saved" };
 }
 
-// ----------------- BROADCAST DATA (Sync Clock Timeline) -----------------
+// ----------------- BROADCAST DATA (Clock Timetable Sync) -----------------
 
 function getStationData() {
   const { tracksSheet, settingsSheet, hourlySheet } = getSheets();
@@ -555,7 +585,7 @@ function getStationData() {
         createdAt: String(trackRows[i][6] || ""),
         category: String(trackRows[i][7] || "Admin Selections"),
         approvalStatus: String(trackRows[i][8] || "pending"),
-        durationSec: Number(trackRows[i][9]) || 300
+        durationSec: Number(trackRows[i][9]) || 0
       });
     }
   }
@@ -582,8 +612,6 @@ function getStationData() {
   };
 }
 
-// ----------------- ADMIN PORTAL DATA -----------------
-
 function handleAdminLogin(data) {
   data = data || {};
   if (data.key === ADMIN_SECRET_KEY) return { success: true, message: "Authenticated" };
@@ -607,8 +635,6 @@ function getAdminData() {
     }
   }
 
-  const activeListeners = getActiveListenersList();
-
   return {
     success: true,
     serverTime: Date.now(),
@@ -616,7 +642,7 @@ function getAdminData() {
     tracks: station.tracks || [],
     settings: station.settings || {},
     hourly: station.hourly || {},
-    activeListeners: activeListeners || []
+    activeListeners: station.activeListeners || []
   };
 }
 
@@ -645,13 +671,4 @@ function setSettingValue(sheet, key, value) {
     }
   }
   sheet.appendRow([key, value]);
-}
-
-function testAllFunctions() {
-  Logger.log("Testing initialization...");
-  const sheets = getSheets();
-  Logger.log("Sheets loaded: " + Object.keys(sheets).join(", "));
-  const station = getStationData();
-  Logger.log("Station tracks: " + station.tracks.length);
-  Logger.log("Zero errors!");
 }

@@ -34,12 +34,7 @@
       background-image: radial-gradient(circle at 50% 10%, #1a2236 0%, #090d16 80%);
       overflow-x: hidden;
     }
-    .app-shell {
-      width: 100%;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+    .app-shell { width: 100%; min-height: 100vh; display: flex; flex-direction: column; }
 
     header {
       width: 100%;
@@ -57,13 +52,7 @@
       overflow: hidden;
       gap: 8px;
     }
-    .logo-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      overflow: hidden;
-      flex-shrink: 1;
-    }
+    .logo-group { display: flex; align-items: center; gap: 8px; overflow: hidden; flex-shrink: 1; }
     .logo {
       display: flex;
       align-items: center;
@@ -86,25 +75,12 @@
       white-space: nowrap;
       flex-shrink: 0;
     }
-    .badge-live {
-      background: rgba(0, 230, 118, 0.15);
-      border: 1px solid rgba(0, 230, 118, 0.4);
-      color: var(--green);
-    }
-    .badge-listeners {
-      background: rgba(0, 210, 255, 0.15);
-      border: 1px solid rgba(0, 210, 255, 0.4);
-      color: var(--cyan);
-    }
+    .badge-live { background: rgba(0, 230, 118, 0.15); border: 1px solid rgba(0, 230, 118, 0.4); color: var(--green); }
+    .badge-listeners { background: rgba(0, 210, 255, 0.15); border: 1px solid rgba(0, 210, 255, 0.4); color: var(--cyan); }
     .pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 1.4s infinite; flex-shrink: 0; }
     @keyframes pulse { 0% { opacity: 0.3; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.3); } 100% { opacity: 0.3; transform: scale(0.9); } }
 
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
-    }
+    .header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
     .btn-header {
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid var(--card-border);
@@ -186,24 +162,13 @@
     }
     @keyframes spin { 100% { transform: rotate(360deg); } }
 
-    .track-info-pane {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+    .track-info-pane { width: 100%; display: flex; flex-direction: column; align-items: center; }
     .track-title { font-size: clamp(1.2rem, 2.5vw, 1.55rem); font-weight: 700; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90%; }
     .track-contributor { font-size: 0.88rem; color: var(--cyan); margin-bottom: 8px; font-weight: 500; }
     .slot-indicator { font-size: 0.78rem; color: #ffc107; margin-bottom: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
     .track-desc { font-size: 0.88rem; color: var(--subtext); line-height: 1.4; margin-bottom: 20px; min-height: 38px; max-width: 90%; }
 
-    .switch-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 90px;
-    }
+    .switch-container { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 90px; }
     .main-switch-btn {
       width: clamp(74px, 12vw, 90px);
       height: clamp(74px, 12vw, 90px);
@@ -234,15 +199,9 @@
     }
     .station-loading-pill i { color: var(--accent); }
 
-    /* Responsive Landscape (height minus header) */
     @media (orientation: landscape) {
       body, .app-shell { height: 100vh; overflow: hidden; }
-      main {
-        height: calc(100vh - var(--header-h));
-        height: calc(100dvh - var(--header-h));
-        padding: 12px 20px;
-        align-items: center;
-      }
+      main { height: calc(100vh - var(--header-h)); height: calc(100dvh - var(--header-h)); padding: 12px 20px; align-items: center; }
       .content-wrapper { max-width: 950px; height: 100%; justify-content: center; }
       .tuner-card {
         height: 100%;
@@ -260,149 +219,32 @@
       .switch-container { align-items: flex-start; min-height: auto; }
     }
 
-    /* Modals */
     .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.75);
-      backdrop-filter: blur(10px);
-      z-index: 100;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
+      position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(10px); z-index: 100;
+      display: none; align-items: center; justify-content: center; padding: 16px;
     }
-    .modal-overlay.open { display: flex; animation: modalFade 0.25s ease-out; }
-    @keyframes modalFade { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
+    .modal-overlay.open { display: flex; }
     .modal-card {
-      width: 100%;
-      max-width: 520px;
-      max-height: 90vh;
-      overflow-y: auto;
-      background: #161b22;
-      border: 1px solid var(--card-border);
-      border-radius: 24px;
-      padding: 24px;
-      box-shadow: 0 24px 48px rgba(0,0,0,0.8);
+      width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; background: #161b22;
+      border: 1px solid var(--card-border); border-radius: 24px; padding: 24px;
     }
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--card-border);
-    }
-    .modal-close { background: none; border: none; color: var(--subtext); font-size: 1.3rem; cursor: pointer; }
-
-    .sched-card {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 12px 16px;
-      margin-bottom: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .sched-card.active-now {
-      border-color: var(--accent);
-      background: rgba(255, 51, 102, 0.08);
-    }
-    .sched-time { font-size: 0.8rem; color: var(--subtext); font-weight: 600; }
-    .sched-title { font-size: 0.95rem; font-weight: 700; color: #fff; margin-top: 2px; }
-
     .form-group { margin-bottom: 14px; width: 100%; }
     .form-group label { display: block; font-size: 0.8rem; color: var(--subtext); margin-bottom: 6px; font-weight: 600; }
     .form-group input, .form-group textarea {
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 12px;
-      background: rgba(0, 0, 0, 0.35);
-      border: 1px solid var(--card-border);
-      color: #fff;
-      font-size: 0.9rem;
-      outline: none;
+      width: 100%; padding: 12px 14px; border-radius: 12px; background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--card-border); color: #fff; font-size: 0.9rem; outline: none;
     }
     .btn {
-      width: 100%;
-      padding: 13px;
-      border-radius: 12px;
-      border: none;
-      font-size: 0.92rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s;
+      width: 100%; padding: 13px; border-radius: 12px; border: none; font-size: 0.92rem;
+      font-weight: 600; cursor: pointer; transition: 0.2s;
     }
     .btn-primary { background: var(--accent); color: #fff; }
     .btn-secondary { background: rgba(255, 255, 255, 0.08); color: #fff; margin-top: 8px; }
 
     .file-dropzone {
-      border: 2px dashed rgba(255, 255, 255, 0.2);
-      border-radius: 14px;
-      padding: 18px 14px;
-      text-align: center;
-      cursor: pointer;
-      background: rgba(0, 0, 0, 0.2);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-    }
-    .file-dropzone i { font-size: 1.8rem; color: var(--cyan); margin-bottom: 4px; }
-    .file-dropzone-text { font-size: 0.85rem; font-weight: 600; color: #fff; }
-    .file-dropzone-sub { font-size: 0.72rem; color: var(--subtext); }
-
-    .selected-file-card {
-      display: none;
-      margin-top: 10px;
-      padding: 12px 14px;
-      background: rgba(0, 230, 118, 0.08);
-      border: 1px solid rgba(0, 230, 118, 0.3);
-      border-radius: 12px;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .selected-file-info { display: flex; align-items: center; gap: 10px; overflow: hidden; }
-    .selected-file-info i { color: var(--green); font-size: 1.2rem; }
-    .file-meta-name { font-size: 0.84rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px; }
-    .file-meta-size { font-size: 0.72rem; color: var(--subtext); }
-    .remove-file-btn { background: none; border: none; color: #ff5252; font-size: 1rem; cursor: pointer; padding: 4px 8px; }
-
-    .profile-card {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--card-border);
-      border-radius: 18px;
-      padding: 16px;
-      margin-bottom: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .user-tag {
-      display: inline-block;
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-size: 0.7rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      margin-top: 4px;
-    }
-    .tag-approved { background: rgba(0, 230, 118, 0.2); color: var(--green); }
-    .tag-pending { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
-
-    .toast {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.9);
-      border: 1px solid var(--accent);
-      padding: 10px 18px;
-      border-radius: 25px;
-      font-size: 0.82rem;
-      z-index: 200;
-      display: none;
+      border: 2px dashed rgba(255, 255, 255, 0.2); border-radius: 14px; padding: 18px 14px;
+      text-align: center; cursor: pointer; background: rgba(0, 0, 0, 0.2); display: flex;
+      flex-direction: column; align-items: center; gap: 6px;
     }
   </style>
 </head>
@@ -417,53 +259,27 @@
         <i class="fa-solid fa-tower-broadcast"></i>
         <span id="stationNameDisplay">Synchro Radio</span>
       </div>
-      <div class="badge badge-live">
-        <span class="pulse-dot"></span>
-        <span>LIVE</span>
-      </div>
-      <div class="badge badge-listeners">
-        <i class="fa-solid fa-headphones"></i>
-        <span id="liveListenerCountDisplay">1</span>
-      </div>
+      <div class="badge badge-live"><span class="pulse-dot"></span><span>LIVE</span></div>
+      <div class="badge badge-listeners"><i class="fa-solid fa-headphones"></i><span id="liveListenerCountDisplay">1</span></div>
     </div>
-
     <div class="header-actions">
-      <button class="btn-header" onclick="openScheduleModal()">
-        <i class="fa-solid fa-calendar-days" style="color:var(--cyan);"></i>
-        <span>Schedule</span>
-      </button>
-
-      <button class="btn-header" onclick="openAccountModal()">
-        <i class="fa-solid fa-user-circle"></i>
-        <span id="headerAccountLabel">Login</span>
-      </button>
+      <button class="btn-header" onclick="openScheduleModal()"><i class="fa-solid fa-calendar-days" style="color:var(--cyan);"></i><span>Schedule</span></button>
+      <button class="btn-header" onclick="openAccountModal()"><i class="fa-solid fa-user-circle"></i><span id="headerAccountLabel">Login</span></button>
     </div>
   </header>
 
   <main>
     <div class="content-wrapper">
       <div class="tuner-card">
-        <div class="vinyl-wrapper">
-          <div id="vinyl" class="vinyl">
-            <div class="vinyl-center"><i class="fa-solid fa-radio"></i></div>
-          </div>
-        </div>
-
+        <div class="vinyl-wrapper"><div id="vinyl" class="vinyl"><div class="vinyl-center"><i class="fa-solid fa-radio"></i></div></div></div>
         <div class="track-info-pane">
           <div class="track-title" id="trackTitleDisplay">Connecting Live...</div>
           <div class="track-contributor" id="trackContributorDisplay">Live Audio Synchronization</div>
           <div class="slot-indicator" id="currentSlotDisplay">Synchronizing Stream...</div>
-          <div class="track-desc" id="trackDescDisplay">Live radio streaming in exact sync with all listeners.</div>
-
+          <div class="track-desc" id="trackDescDisplay">Live radio streaming in exact push point sync.</div>
           <div class="switch-container">
-            <div id="stationLoadingPill" class="station-loading-pill">
-              <i class="fa-solid fa-spinner fa-spin"></i>
-              <span>Synchronizing Live Audio...</span>
-            </div>
-
-            <button id="radioPowerBtn" class="main-switch-btn" onclick="toggleRadio()">
-              <i class="fa-solid fa-power-off"></i>
-            </button>
+            <div id="stationLoadingPill" class="station-loading-pill"><i class="fa-solid fa-spinner fa-spin"></i><span>Connecting to Push Points...</span></div>
+            <button id="radioPowerBtn" class="main-switch-btn" onclick="toggleRadio()"><i class="fa-solid fa-power-off"></i></button>
           </div>
         </div>
       </div>
@@ -471,116 +287,49 @@
   </main>
 </div>
 
-<!-- Modal 1: 4 Day Divisions Schedule Board -->
+<!-- Modal: Schedule -->
 <div id="scheduleModal" class="modal-overlay" onclick="closeScheduleModal(event)">
   <div class="modal-card" onclick="event.stopPropagation()">
-    <div class="modal-header">
-      <h3><i class="fa-solid fa-calendar-days" style="color:var(--cyan); margin-right:8px;"></i>Daily Synchro Schedule</h3>
-      <button class="modal-close" onclick="closeScheduleModal()"><i class="fa-solid fa-xmark"></i></button>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h3><i class="fa-solid fa-calendar-days" style="color:var(--cyan); margin-right:8px;"></i>Daily Push Points Schedule</h3>
+      <button onclick="closeScheduleModal()" style="background:none; border:none; color:var(--subtext); font-size:1.3rem; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <p style="font-size:0.8rem; color:var(--subtext); margin-bottom:14px;">
-      4 Daily Divisions: 5-11 AM, 11 AM-5 PM, 5-11 PM, 11 PM-5 AM. Each hour plays 40m Admin Selections + 20m Random Plays in sync for all listeners.
-    </p>
     <div id="scheduleTimelineList">Loading schedule...</div>
   </div>
 </div>
 
-<!-- Modal 2: Account & Upload -->
+<!-- Modal: Account & Upload -->
 <div id="accountModal" class="modal-overlay" onclick="closeAccountModal(event)">
   <div class="modal-card" onclick="event.stopPropagation()">
-    <div class="modal-header">
-      <h3 id="modalTitle"><i class="fa-solid fa-user-astronaut" style="color:var(--accent); margin-right:8px;"></i>Contributor Portal</h3>
-      <button class="modal-close" onclick="closeAccountModal()"><i class="fa-solid fa-xmark"></i></button>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h3><i class="fa-solid fa-user-astronaut" style="color:var(--accent); margin-right:8px;"></i>Contributor Portal</h3>
+      <button onclick="closeAccountModal()" style="background:none; border:none; color:var(--subtext); font-size:1.3rem; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
     </div>
-
+    
     <div id="authGuestBox">
-      <div id="loginFormBox">
-        <div class="form-group">
-          <label>Mobile Number</label>
-          <input type="tel" id="loginMobile" placeholder="e.g. 9876543210">
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="loginPass" placeholder="Enter password">
-        </div>
-        <button class="btn btn-primary" onclick="submitLogin()">Sign In</button>
-        <button class="btn btn-secondary" onclick="toggleAuthMode('register')">Create New Account</button>
-      </div>
-
-      <div id="registerFormBox" style="display:none;">
-        <div class="form-group">
-          <label>Username (Displayed on Radio)</label>
-          <input type="text" id="regUsername" placeholder="e.g. RJ Rajesh">
-        </div>
-        <div class="form-group">
-          <label>Mobile Number</label>
-          <input type="tel" id="regMobile" placeholder="e.g. 9876543210">
-        </div>
-        <div class="form-group">
-          <label>Unique Password</label>
-          <input type="password" id="regPass" placeholder="Create password">
-        </div>
-        <button class="btn btn-primary" onclick="submitRegister()">Register Now</button>
-        <button class="btn btn-secondary" onclick="toggleAuthMode('login')">Already have an account?</button>
-      </div>
+      <div class="form-group"><label>Mobile Number</label><input type="tel" id="loginMobile" placeholder="e.g. 9876543210"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="loginPass" placeholder="Enter password"></div>
+      <button class="btn btn-primary" onclick="submitLogin()">Sign In</button>
     </div>
 
     <div id="authMemberBox" style="display:none;">
-      <div class="profile-card">
-        <div>
-          <div style="font-weight:700; font-size:1.1rem;" id="profUsername">User</div>
-          <div style="color:var(--subtext); font-size:0.8rem;" id="profMobile">+91-0000000000</div>
-          <div id="profStatusBadge" class="user-tag tag-pending">Pending Approval</div>
-        </div>
-        <button class="btn btn-secondary" style="width:auto; padding:8px 14px; font-size:0.75rem;" onclick="logout()">Logout</button>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <div><strong id="profUsername">User</strong><div style="font-size:0.8rem; color:var(--subtext);" id="profMobile"></div></div>
+        <button class="btn btn-secondary" style="width:auto; padding:6px 12px;" onclick="logout()">Logout</button>
       </div>
 
-      <div id="uploadGateBox">
-        <div id="uploadAllowedSection" style="display:none; margin-bottom: 20px;">
-          <h4 style="margin-bottom:8px;"><i class="fa-solid fa-cloud-arrow-up" style="color:var(--cyan); margin-right:6px;"></i>Upload Audio Track</h4>
-          <p style="font-size:0.78rem; color:var(--subtext); margin-bottom:14px;">Audios upload to Admin Selections for review and scheduling.</p>
-
-          <div class="form-group">
-            <label>Audio Title</label>
-            <input type="text" id="audioTitle" placeholder="e.g. Morning Folk Tunes">
+      <div id="uploadAllowedSection">
+        <div class="form-group"><label>Audio Title</label><input type="text" id="audioTitle" placeholder="Track Title"></div>
+        <div class="form-group"><label>Description</label><textarea id="audioDesc" rows="2" placeholder="Description"></textarea></div>
+        <div class="form-group">
+          <label>Audio File (.mp3, .m4a, .wav)</label>
+          <input type="file" id="audioFileInput" accept="audio/*" style="display:none;" onchange="handleFileSelected(this)">
+          <div class="file-dropzone" onclick="document.getElementById('audioFileInput').click()">
+            <i class="fa-solid fa-file-audio" style="font-size:1.8rem; color:var(--cyan);"></i>
+            <div id="fileStatusText" style="font-size:0.85rem; font-weight:600;">Tap to Select Audio File</div>
           </div>
-          <div class="form-group">
-            <label>Audio Description</label>
-            <textarea id="audioDesc" rows="2" placeholder="Brief info about this audio..."></textarea>
-          </div>
-          
-          <div class="form-group">
-            <label>Audio File (.mp3, .m4a, .wav, .aac)</label>
-            <input type="file" id="audioFileInput" accept=".mp3,audio/mpeg,audio/mp3,audio/*,.m4a,.wav,.aac,.ogg,*" style="display:none;" onchange="handleFileSelected(this)">
-            
-            <div class="file-dropzone" id="fileDropZone" onclick="triggerFilePicker()">
-              <i class="fa-solid fa-file-audio"></i>
-              <div class="file-dropzone-text">Tap to Select MP3 Audio</div>
-              <div class="file-dropzone-sub">Supports MP3, M4A, WAV from Downloads or Storage</div>
-            </div>
-
-            <div class="selected-file-card" id="selectedFileCard">
-              <div class="selected-file-info">
-                <i class="fa-solid fa-circle-check"></i>
-                <div>
-                  <div class="file-meta-name" id="fileMetaName">track.mp3</div>
-                  <div class="file-meta-size" id="fileMetaSize">0.0 MB • Ready</div>
-                </div>
-              </div>
-              <button type="button" class="remove-file-btn" onclick="clearSelectedFile(event)"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-          </div>
-
-          <button class="btn btn-primary" id="uploadBtn" onclick="uploadAudio()">Upload Audio Track</button>
         </div>
-
-        <div id="uploadLockedSection" style="text-align:center; padding: 20px 14px; margin-bottom:20px; display:none; background:rgba(255,255,255,0.03); border-radius:14px;">
-          <i class="fa-solid fa-clock-rotate-left" style="font-size:2rem; color:#ffc107; margin-bottom:10px;"></i>
-          <h4>Contributor Approval Pending</h4>
-          <p style="font-size:0.8rem; color:var(--subtext); margin-top:8px;">
-            You can listen to all live radio broadcasts freely. Upload privileges unlock once approved by administrator.
-          </p>
-        </div>
+        <button class="btn btn-primary" id="uploadBtn" onclick="uploadAudio()">Upload Audio Track</button>
       </div>
     </div>
   </div>
@@ -590,11 +339,8 @@
   // ================= CONFIGURATION =================
   const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxIM9fWOdU4skEnXuxVe6DR6FS7z-a3AdEepC4o6AS5WQiLV_lWp0EmBXCg0rSv-Mj5Cg/exec";
 
-  let listenerId = localStorage.getItem('cr_listener_id');
-  if (!listenerId) {
-    listenerId = 'L_' + Math.random().toString(36).substring(2, 9);
-    localStorage.setItem('cr_listener_id', listenerId);
-  }
+  let listenerId = localStorage.getItem('cr_listener_id') || ('L_' + Math.random().toString(36).substring(2, 9));
+  localStorage.setItem('cr_listener_id', listenerId);
 
   let allTracks = [];
   let hourlySchedules = {};
@@ -603,10 +349,7 @@
   let isPlaying = false;
   let currentUser = JSON.parse(localStorage.getItem('cr_user') || 'null');
   let selectedAudioFile = null;
-  let currentSeqVersion = null;
-  let lastPushVersion = null;
-  let currentActiveHour = -1;
-  let currentlyPlayingTrack = null;
+  let selectedAudioDurationSec = 0;
   let serverTimeOffset = 0;
 
   const audioCache = {};
@@ -615,19 +358,10 @@
   let isStandbyReady = false;
 
   window.addEventListener('load', () => {
-    if ('caches' in window) {
-      caches.keys().then(names => names.forEach(name => caches.delete(name)));
-    }
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').catch(() => {});
-    }
+    if ('caches' in window) caches.keys().then(names => names.forEach(n => caches.delete(n)));
     fetchStationData();
     renderAuth();
-
-    sendHeartbeat();
-    setInterval(sendHeartbeat, 20000);
-    // Periodically re-sync timeline and slot boundaries
-    setInterval(checkLiveSynchronization, 6000);
+    setInterval(checkLiveSynchronization, 5000);
   });
 
   function showToast(msg) {
@@ -638,27 +372,14 @@
   }
 
   function openAccountModal() { document.getElementById('accountModal').classList.add('open'); }
-  function closeAccountModal(e) {
-    if (!e || e.target === document.getElementById('accountModal')) {
-      document.getElementById('accountModal').classList.remove('open');
-    }
-  }
+  function closeAccountModal(e) { if (!e || e.target === document.getElementById('accountModal')) document.getElementById('accountModal').classList.remove('open'); }
+  function openScheduleModal() { renderScheduleTimeline(); document.getElementById('scheduleModal').classList.add('open'); }
+  function closeScheduleModal(e) { if (!e || e.target === document.getElementById('scheduleModal')) document.getElementById('scheduleModal').classList.remove('open'); }
 
-  function openScheduleModal() {
-    renderScheduleTimeline();
-    document.getElementById('scheduleModal').classList.add('open');
-  }
-  function closeScheduleModal(e) {
-    if (!e || e.target === document.getElementById('scheduleModal')) {
-      document.getElementById('scheduleModal').classList.remove('open');
-    }
-  }
-
-  function getDivisionName(hour) {
-    if (hour >= 5 && hour < 11) return "Division 1: Morning (05:00 AM - 11:00 AM)";
-    if (hour >= 11 && hour < 17) return "Division 2: Afternoon (11:00 AM - 05:00 PM)";
-    if (hour >= 17 && hour < 23) return "Division 3: Evening (05:00 PM - 11:00 PM)";
-    return "Division 4: Night (11:00 PM - 05:00 AM)";
+  function formatTimeHMS(sec) {
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
   }
 
   function renderScheduleTimeline() {
@@ -667,66 +388,40 @@
     let html = '';
 
     for (let h = 0; h <= 23; h++) {
-      const slot = hourlySchedules[String(h)];
-      const name = (slot && slot.name && slot.name.trim() !== '') ? slot.name : 'Synchronized Hourly Block';
-      const formattedTime = (h % 12 || 12) + ':00 ' + (h >= 12 ? 'PM' : 'AM') + ' – ' + ((h + 1) % 12 || 12) + ':00 ' + ((h + 1) >= 12 && (h + 1) < 24 ? 'PM' : 'AM');
+      const slot = hourlySchedules[String(h)] || { name: "", trackIds: [] };
+      const name = slot.name || `Hour ${h} Stream`;
       const isCurrent = (h === nowHour);
-
       html += `
-        <div class="sched-card ${isCurrent ? 'active-now' : ''}">
-          <div>
-            <div class="sched-time">${formattedTime} • <span style="color:var(--cyan);">${getDivisionName(h)}</span> ${isCurrent ? '• <span style="color:var(--green);">LIVE NOW</span>' : ''}</div>
-            <div class="sched-title">${name}</div>
-          </div>
-          <i class="fa-solid fa-radio" style="color:${isCurrent ? 'var(--accent)' : 'var(--subtext)'}; font-size:1.1rem;"></i>
+        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); padding:10px 14px; border-radius:10px; margin-bottom:8px;">
+          <div style="font-size:0.8rem; color:${isCurrent ? 'var(--green)' : 'var(--cyan)'}; font-weight:700;">Hour ${h}:00 ${isCurrent ? '• LIVE NOW' : ''}</div>
+          <div style="font-size:0.92rem; font-weight:600; color:#fff;">${name} (${slot.trackIds.length} tracks scheduled)</div>
         </div>
       `;
     }
     box.innerHTML = html;
   }
 
-  async function sendHeartbeat() {
-    try {
-      const res = await fetch(BACKEND_URL, {
-        method: 'POST',
-        body: JSON.stringify({
-          action: "heartbeat",
-          listenerId,
-          username: currentUser ? currentUser.username : "Guest Listener",
-          isPlaying
-        })
-      });
-      const data = await res.json();
-      if (data.success && typeof data.activeCount === 'number') {
-        const count = isPlaying ? Math.max(1, data.activeCount) : data.activeCount;
-        document.getElementById('liveListenerCountDisplay').innerText = `${count}`;
-      }
-    } catch(err) {}
-  }
-
-  // 3) Synchronized Live Timeline Engine
-  // Computes exact track and current playback seek point based on shared clock time
+  // 1 & 3) Exact Synchronization to Dynamic Push Points
   function getSynchronizedCurrentTrackIndex(playlist) {
     if (!playlist || playlist.length === 0) return { index: 0, seekSec: 0 };
 
     const now = new Date(Date.now() + serverTimeOffset);
-    // Number of elapsed seconds inside current hour
     const elapsedSecInHour = (now.getMinutes() * 60) + now.getSeconds();
 
     let cumulativeSec = 0;
     for (let i = 0; i < playlist.length; i++) {
-      const duration = playlist[i].durationSec || 300;
+      const duration = playlist[i].durationSec || 180;
       if (elapsedSecInHour >= cumulativeSec && elapsedSecInHour < (cumulativeSec + duration)) {
         return { index: i, seekSec: elapsedSecInHour - cumulativeSec };
       }
       cumulativeSec += duration;
     }
 
-    // If tracks don't fill full 3600 seconds, wrap around in sequence
+    // If total track durations < 3600, loop smoothly through the playlist
     const loopSec = elapsedSecInHour % (cumulativeSec || 1);
     let wrapCumulative = 0;
     for (let i = 0; i < playlist.length; i++) {
-      const duration = playlist[i].durationSec || 300;
+      const duration = playlist[i].durationSec || 180;
       if (loopSec >= wrapCumulative && loopSec < (wrapCumulative + duration)) {
         return { index: i, seekSec: loopSec - wrapCumulative };
       }
@@ -739,9 +434,6 @@
   function resolveCurrentHourPlaylist() {
     const now = new Date(Date.now() + serverTimeOffset);
     const hour = now.getHours();
-    currentActiveHour = hour;
-
-    const slotBadge = document.getElementById('currentSlotDisplay');
     const slot = hourlySchedules[String(hour)];
 
     if (slot && slot.trackIds && slot.trackIds.length > 0) {
@@ -750,17 +442,14 @@
         const found = allTracks.find(t => t.fileId === id && t.approvalStatus === "approved");
         if (found) scheduled.push(found);
       });
-
       if (scheduled.length > 0) {
-        const slotName = slot.name && slot.name.trim() !== '' ? slot.name : `${hour % 12 || 12} ${hour >= 12 ? 'PM' : 'AM'} Slot`;
-        slotBadge.innerText = `${getDivisionName(hour)} • ${slotName}`;
+        document.getElementById('currentSlotDisplay').innerText = `Hour ${hour} • ${slot.name || 'Live Slot'}`;
         return scheduled;
       }
     }
 
-    // Default fallback if no tracks in slot
     const approved = allTracks.filter(t => t.approvalStatus === "approved");
-    slotBadge.innerText = `${getDivisionName(hour)} • Synchronized Block`;
+    document.getElementById('currentSlotDisplay').innerText = `Hour ${hour} • Live Rotation`;
     return approved.length > 0 ? approved : allTracks;
   }
 
@@ -769,23 +458,9 @@
       const res = await fetch(`${BACKEND_URL}?action=getStationData`);
       const data = await res.json();
       if (data.success) {
-        if (data.serverTime) {
-          serverTimeOffset = data.serverTime - Date.now();
-        }
+        if (data.serverTime) serverTimeOffset = data.serverTime - Date.now();
         allTracks = data.tracks || [];
         hourlySchedules = data.hourly || {};
-
-        if (data.settings) {
-          if (data.settings.station_name) {
-            document.getElementById('stationNameDisplay').innerText = data.settings.station_name;
-          }
-          currentSeqVersion = data.settings.seq_version || currentSeqVersion;
-          lastPushVersion = data.settings.push_version || lastPushVersion;
-        }
-        if (typeof data.liveListenersCount === 'number') {
-          const count = isPlaying ? Math.max(1, data.liveListenersCount) : data.liveListenersCount;
-          document.getElementById('liveListenerCountDisplay').innerText = `${count}`;
-        }
 
         activePlaylist = resolveCurrentHourPlaylist();
 
@@ -793,85 +468,28 @@
           document.getElementById('stationLoadingPill').style.display = 'none';
           document.getElementById('radioPowerBtn').style.display = 'block';
 
-          // Sync exact track and offset for instant play
           const syncState = getSynchronizedCurrentTrackIndex(activePlaylist);
           currentIndex = syncState.index;
           playCurrentTrackImmediate(syncState.seekSec);
-        } else {
-          document.getElementById('stationLoadingPill').innerHTML = `<span>No approved tracks ready to broadcast</span>`;
         }
       }
     } catch (e) {
-      console.warn("Backend connection pending.");
-      document.getElementById('stationLoadingPill').innerHTML = `<span style="color:#ff5252;">Connection Error. Retrying...</span>`;
       setTimeout(fetchStationData, 4000);
     }
   }
 
-  // 3) Synchronizes with boundary pushes, hourly division changes, and admin priorities
   async function checkLiveSynchronization() {
-    const now = new Date(Date.now() + serverTimeOffset);
-    const currentHour = now.getHours();
-
-    // Hour change transition
-    if (currentActiveHour !== -1 && currentHour !== currentActiveHour) {
-      currentActiveHour = currentHour;
-      activePlaylist = resolveCurrentHourPlaylist();
-      const syncState = getSynchronizedCurrentTrackIndex(activePlaylist);
+    const syncState = getSynchronizedCurrentTrackIndex(activePlaylist);
+    // If the scheduled push point boundary advanced to next audio
+    if (syncState.index !== currentIndex) {
       currentIndex = syncState.index;
-      showToast(`Tuning into ${getDivisionName(currentHour)}`);
-      if (isPlaying && activePlaylist.length > 0) {
-        playCurrentTrackImmediate(syncState.seekSec);
-      }
-      return;
+      playCurrentTrackImmediate(syncState.seekSec);
     }
-
-    try {
-      const res = await fetch(`${BACKEND_URL}?action=getStationData`);
-      const data = await res.json();
-      if (data.success && data.settings) {
-        if (data.serverTime) serverTimeOffset = data.serverTime - Date.now();
-
-        if (typeof data.liveListenersCount === 'number') {
-          const count = isPlaying ? Math.max(1, data.liveListenersCount) : data.liveListenersCount;
-          document.getElementById('liveListenerCountDisplay').innerText = `${count}`;
-        }
-
-        // Live Admin Priority Push
-        if (data.settings.push_version && data.settings.push_version !== lastPushVersion) {
-          lastPushVersion = data.settings.push_version;
-          const pushedFileId = data.settings.pushed_track;
-          const target = allTracks.find(t => t.fileId === pushedFileId);
-          if (target) {
-            showToast("Priority Broadcast: " + target.title);
-            activePlaylist = [target, ...resolveCurrentHourPlaylist()];
-            currentIndex = 0;
-            playCurrentTrackImmediate(0);
-            return;
-          }
-        }
-
-        // Schedule Updates
-        if (currentSeqVersion && data.settings.seq_version !== currentSeqVersion) {
-          currentSeqVersion = data.settings.seq_version;
-          allTracks = data.tracks || [];
-          hourlySchedules = data.hourly || {};
-          activePlaylist = resolveCurrentHourPlaylist();
-          showToast("Schedule updated. Re-syncing audio...");
-          const syncState = getSynchronizedCurrentTrackIndex(activePlaylist);
-          currentIndex = syncState.index;
-          if (isPlaying && activePlaylist.length > 0) {
-            playCurrentTrackImmediate(syncState.seekSec);
-          }
-        }
-      }
-    } catch(err) {}
   }
 
   async function resolveTrackAudio(track) {
     if (!track) return null;
     if (audioCache[track.fileId]) return audioCache[track.fileId];
-
     try {
       const res = await fetch(`${BACKEND_URL}?action=streamAudio&fileId=${encodeURIComponent(track.fileId)}`);
       const data = await res.json();
@@ -879,13 +497,11 @@
         audioCache[track.fileId] = data.dataUri;
         return data.dataUri;
       }
-    } catch(err) {
-      console.warn("Proxy fallback");
-    }
+    } catch(err) {}
     return track.streamUrl;
   }
 
-  // ================= ZERO-GAP DUAL BUFFER ENGINE =================
+  // Dual Player Engine for Instant Pre-buffered Boundary Pushes
   function setupPlayerEvents(player) {
     player.addEventListener('timeupdate', () => {
       if (player.duration && (player.duration - player.currentTime <= 4) && !isStandbyReady) {
@@ -893,11 +509,7 @@
       }
     });
     player.addEventListener('ended', () => { advanceTrackInstantly(); });
-    player.addEventListener('error', () => {
-      if (isPlaying) advanceTrackInstantly();
-    });
   }
-
   setupPlayerEvents(activePlayer);
   setupPlayerEvents(standbyPlayer);
 
@@ -914,7 +526,6 @@
     }
   }
 
-  // 2) Ending time of scheduled track triggers the push time for next audio
   async function advanceTrackInstantly() {
     if (activePlaylist.length === 0) return;
     currentIndex = (currentIndex + 1) % activePlaylist.length;
@@ -924,20 +535,16 @@
     standbyPlayer = temp;
     isStandbyReady = false;
 
-    currentlyPlayingTrack = activePlayer._trackRef || activePlaylist[currentIndex];
-
-    if (!activePlayer.src || activePlayer.src === "" || activePlayer.src.includes("data:audio/wav;base64")) {
-      const src = await resolveTrackAudio(currentlyPlayingTrack);
-      activePlayer.src = src;
-      activePlayer._trackRef = currentlyPlayingTrack;
+    const currentTrack = activePlayer._trackRef || activePlaylist[currentIndex];
+    if (!activePlayer.src || activePlayer.src === "") {
+      activePlayer.src = await resolveTrackAudio(currentTrack);
+      activePlayer._trackRef = currentTrack;
     }
 
     activePlayer.play().catch(e => console.warn(e));
-    updateMediaSession();
-    updateTunerUI(currentlyPlayingTrack);
+    updateTunerUI(currentTrack);
   }
 
-  // 3) Synchronous seek-and-play for live parity across users
   async function playCurrentTrackImmediate(seekSec = 0) {
     if (!activePlaylist || activePlaylist.length === 0) return;
     const track = activePlaylist[currentIndex];
@@ -945,12 +552,10 @@
 
     activePlayer.src = audioSource;
     activePlayer._trackRef = track;
-    currentlyPlayingTrack = track;
-    updateTunerUI(currentlyPlayingTrack);
+    updateTunerUI(track);
 
     const playPromise = activePlayer.play();
     isPlaying = true;
-    sendHeartbeat();
 
     if (playPromise !== undefined) {
       playPromise.then(() => {
@@ -959,70 +564,36 @@
         }
         isStandbyReady = false;
         prepareStandbyTrack();
-        updateMediaSession();
-        updateTunerUI(currentlyPlayingTrack);
       }).catch(err => {
-        console.warn("Autoplay interaction pending:", err);
         isPlaying = false;
-        updateTunerUI(currentlyPlayingTrack);
-        showToast("Tap switch to unmute live broadcast.");
+        updateTunerUI(track);
       });
     }
   }
 
   function toggleRadio() {
-    if (activePlaylist.length === 0) {
-      showToast("Radio is tuning. Please wait a moment.");
-      return;
-    }
-
+    if (activePlaylist.length === 0) return;
     if (isPlaying) {
       activePlayer.pause();
-      standbyPlayer.pause();
       isPlaying = false;
-      sendHeartbeat();
-      updateTunerUI(currentlyPlayingTrack);
+      updateTunerUI(activePlaylist[currentIndex]);
     } else {
-      // Re-align with live sync offset on play
       const syncState = getSynchronizedCurrentTrackIndex(activePlaylist);
       currentIndex = syncState.index;
-
-      const playPromise = activePlayer.play();
-      isPlaying = true;
-      updateTunerUI(currentlyPlayingTrack);
-      sendHeartbeat();
-
-      if (playPromise !== undefined) {
-        playPromise.then(() => {
-          if (syncState.seekSec > 0 && activePlayer.duration && syncState.seekSec < activePlayer.duration) {
-            activePlayer.currentTime = syncState.seekSec;
-          }
-          updateMediaSession();
-          prepareStandbyTrack();
-        }).catch(err => {
-          resolveTrackAudio(currentlyPlayingTrack || activePlaylist[currentIndex]).then(src => {
-            activePlayer.src = src;
-            activePlayer.play().catch(() => {});
-          });
-        });
-      }
+      playCurrentTrackImmediate(syncState.seekSec);
     }
   }
 
-  function updateTunerUI(trackObj) {
-    const track = trackObj || currentlyPlayingTrack || (activePlaylist ? activePlaylist[currentIndex] : null);
+  function updateTunerUI(track) {
     const btn = document.getElementById('radioPowerBtn');
     const vinyl = document.getElementById('vinyl');
     const title = document.getElementById('trackTitleDisplay');
     const contrib = document.getElementById('trackContributorDisplay');
-    const desc = document.getElementById('trackDescDisplay');
 
     if (track) {
       title.innerText = track.title;
       contrib.innerText = "Curated by " + (track.contributor || "Synchro Voice");
-      desc.innerText = track.description || "Live Synchronized Broadcast";
     }
-
     if (isPlaying) {
       btn.classList.add('playing');
       vinyl.classList.add('spinning');
@@ -1032,140 +603,22 @@
     }
   }
 
-  function updateMediaSession() {
-    const track = currentlyPlayingTrack || activePlaylist[currentIndex];
-    if ('mediaSession' in navigator && track) {
-      navigator.mediaSession.metadata = new MediaMetadata({
-        title: track.title,
-        artist: track.contributor || "Synchro Radio",
-        album: "Synchro Radio 24/7",
-        artwork: [{ src: 'https://cdn-icons-png.flaticon.com/512/3075/3075906.png', sizes: '512x512', type: 'image/png' }]
-      });
-      navigator.mediaSession.setActionHandler('play', () => toggleRadio());
-      navigator.mediaSession.setActionHandler('pause', () => toggleRadio());
-      navigator.mediaSession.setActionHandler('nexttrack', () => advanceTrackInstantly());
-    }
-  }
-
-  // ================= FILE SELECTION =================
-  function triggerFilePicker() { document.getElementById('audioFileInput').click(); }
-
+  // 1) Dynamic Client-Side Runtime Measure on File Selection
   function handleFileSelected(input) {
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
       selectedAudioFile = file;
 
-      document.getElementById('fileMetaName').innerText = file.name;
-      const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
-      document.getElementById('fileMetaSize').innerText = `${sizeMB} MB • Ready`;
-      
-      document.getElementById('fileDropZone').style.display = 'none';
-      document.getElementById('selectedFileCard').style.display = 'flex';
-      
+      // Extract exact audio duration before uploading
+      const tempAudio = new Audio();
+      tempAudio.src = URL.createObjectURL(file);
+      tempAudio.onloadedmetadata = () => {
+        selectedAudioDurationSec = Math.round(tempAudio.duration) || 180;
+        document.getElementById('fileStatusText').innerText = `${file.name} (${formatTimeHMS(selectedAudioDurationSec)})`;
+      };
+
       const titleInput = document.getElementById('audioTitle');
-      if (!titleInput.value.trim()) {
-        titleInput.value = file.name.replace(/\.[^/.]+$/, "");
-      }
-    }
-  }
-
-  function clearSelectedFile(e) {
-    if (e) e.stopPropagation();
-    selectedAudioFile = null;
-    document.getElementById('audioFileInput').value = "";
-    document.getElementById('selectedFileCard').style.display = 'none';
-    document.getElementById('fileDropZone').style.display = 'flex';
-  }
-
-  // ================= AUTHENTICATION & UPLOADS =================
-  function toggleAuthMode(mode) {
-    document.getElementById('loginFormBox').style.display = mode === 'login' ? 'block' : 'none';
-    document.getElementById('registerFormBox').style.display = mode === 'register' ? 'block' : 'none';
-  }
-
-  async function submitRegister() {
-    const username = document.getElementById('regUsername').value.trim();
-    const mobile = document.getElementById('regMobile').value.trim();
-    const password = document.getElementById('regPass').value.trim();
-
-    if (!username || !mobile || !password) return showToast("Please fill all fields.");
-
-    showToast("Registering account...");
-    try {
-      const res = await fetch(BACKEND_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: "register", username, mobile, password })
-      });
-      const data = await res.json();
-      if (data.success) {
-        currentUser = data.user;
-        localStorage.setItem('cr_user', JSON.stringify(currentUser));
-        renderAuth();
-        showToast("Account created!");
-      } else {
-        showToast(data.message || "Registration failed");
-      }
-    } catch(e) {
-      showToast("Network error. Verify Script URL.");
-    }
-  }
-
-  async function submitLogin() {
-    const mobile = document.getElementById('loginMobile').value.trim();
-    const password = document.getElementById('loginPass').value.trim();
-    if (!mobile || !password) return showToast("Enter mobile & password");
-
-    showToast("Authenticating...");
-    try {
-      const res = await fetch(BACKEND_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: "login", mobile, password })
-      });
-      const data = await res.json();
-      if (data.success) {
-        currentUser = data.user;
-        localStorage.setItem('cr_user', JSON.stringify(currentUser));
-        renderAuth();
-        showToast("Welcome, " + currentUser.username);
-      } else {
-        showToast(data.message || "Login failed");
-      }
-    } catch(e) {
-      showToast("Error connecting to backend");
-    }
-  }
-
-  function logout() {
-    currentUser = null;
-    localStorage.removeItem('cr_user');
-    renderAuth();
-  }
-
-  function renderAuth() {
-    const guestBox = document.getElementById('authGuestBox');
-    const memberBox = document.getElementById('authMemberBox');
-    const headerLabel = document.getElementById('headerAccountLabel');
-
-    if (!currentUser) {
-      guestBox.style.display = 'block';
-      memberBox.style.display = 'none';
-      headerLabel.innerText = "Login";
-    } else {
-      guestBox.style.display = 'none';
-      memberBox.style.display = 'block';
-      headerLabel.innerText = currentUser.username;
-
-      document.getElementById('profUsername').innerText = currentUser.username;
-      document.getElementById('profMobile').innerText = currentUser.mobile;
-
-      const badge = document.getElementById('profStatusBadge');
-      const isApproved = (currentUser.status === 'approved');
-
-      badge.className = isApproved ? "user-tag tag-approved" : "user-tag tag-pending";
-      badge.innerText = isApproved ? "Approved Contributor" : "Pending Admin Approval";
-
-      document.getElementById('uploadAllowedSection').style.display = isApproved ? 'block' : 'none';
-      document.getElementById('uploadLockedSection').style.display = isApproved ? 'none' : 'block';
+      if (!titleInput.value.trim()) titleInput.value = file.name.replace(/\.[^/.]+$/, "");
     }
   }
 
@@ -1174,12 +627,10 @@
     const description = document.getElementById('audioDesc').value.trim();
     const btn = document.getElementById('uploadBtn');
 
-    if (!title) return showToast("Enter a title for your audio");
-    if (!selectedAudioFile) return showToast("Please select an audio file first");
-    if (selectedAudioFile.size > 25 * 1024 * 1024) return showToast("File exceeds max 25MB limit.");
+    if (!title || !selectedAudioFile) return showToast("Enter title and choose file");
 
     btn.disabled = true;
-    btn.innerText = "Encoding & Uploading to Drive...";
+    btn.innerText = "Encoding with exact runtime...";
 
     const reader = new FileReader();
     reader.onload = async function() {
@@ -1191,26 +642,20 @@
           username: currentUser.username,
           title,
           description,
+          durationSec: selectedAudioDurationSec,
           fileName: selectedAudioFile.name,
           mimeType: selectedAudioFile.type || "audio/mpeg",
           base64File: base64Data
         };
 
-        const res = await fetch(BACKEND_URL, {
-          method: 'POST',
-          body: JSON.stringify(payload)
-        });
+        const res = await fetch(BACKEND_URL, { method: 'POST', body: JSON.stringify(payload) });
         const result = await res.json();
-
         if (result.success) {
-          showToast(result.message || "Upload Successful! Added to Admin Selections.");
-          document.getElementById('audioTitle').value = "";
-          document.getElementById('audioDesc').value = "";
-          clearSelectedFile();
-          fetchStationData();
+          showToast("Uploaded with exact runtime! Awaiting admin approval.");
           closeAccountModal();
+          fetchStationData();
         } else {
-          showToast(result.message || "Upload rejected");
+          showToast(result.message || "Upload failed");
         }
       } catch (err) {
         showToast("Error uploading track.");
@@ -1220,6 +665,36 @@
       }
     };
     reader.readAsDataURL(selectedAudioFile);
+  }
+
+  async function submitLogin() {
+    const mobile = document.getElementById('loginMobile').value.trim();
+    const password = document.getElementById('loginPass').value.trim();
+    try {
+      const res = await fetch(BACKEND_URL, { method: 'POST', body: JSON.stringify({ action: "login", mobile, password }) });
+      const data = await res.json();
+      if (data.success) {
+        currentUser = data.user;
+        localStorage.setItem('cr_user', JSON.stringify(currentUser));
+        renderAuth();
+      } else showToast("Login failed");
+    } catch(e) {}
+  }
+
+  function logout() { currentUser = null; localStorage.removeItem('cr_user'); renderAuth(); }
+
+  function renderAuth() {
+    if (!currentUser) {
+      document.getElementById('authGuestBox').style.display = 'block';
+      document.getElementById('authMemberBox').style.display = 'none';
+      document.getElementById('headerAccountLabel').innerText = "Login";
+    } else {
+      document.getElementById('authGuestBox').style.display = 'none';
+      document.getElementById('authMemberBox').style.display = 'block';
+      document.getElementById('headerAccountLabel').innerText = currentUser.username;
+      document.getElementById('profUsername').innerText = currentUser.username;
+      document.getElementById('profMobile').innerText = currentUser.mobile;
+    }
   }
 </script>
 
