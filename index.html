@@ -34,7 +34,12 @@
       background-image: radial-gradient(circle at 50% 10%, #1a2236 0%, #090d16 80%);
       overflow-x: hidden;
     }
-    .app-shell { width: 100%; min-height: 100vh; display: flex; flex-direction: column; }
+    .app-shell {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
     header {
       width: 100%;
@@ -52,7 +57,13 @@
       overflow: hidden;
       gap: 8px;
     }
-    .logo-group { display: flex; align-items: center; gap: 8px; overflow: hidden; flex-shrink: 1; }
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow: hidden;
+      flex-shrink: 1;
+    }
     .logo {
       display: flex;
       align-items: center;
@@ -75,12 +86,25 @@
       white-space: nowrap;
       flex-shrink: 0;
     }
-    .badge-live { background: rgba(0, 230, 118, 0.15); border: 1px solid rgba(0, 230, 118, 0.4); color: var(--green); }
-    .badge-listeners { background: rgba(0, 210, 255, 0.15); border: 1px solid rgba(0, 210, 255, 0.4); color: var(--cyan); }
+    .badge-live {
+      background: rgba(0, 230, 118, 0.15);
+      border: 1px solid rgba(0, 230, 118, 0.4);
+      color: var(--green);
+    }
+    .badge-listeners {
+      background: rgba(0, 210, 255, 0.15);
+      border: 1px solid rgba(0, 210, 255, 0.4);
+      color: var(--cyan);
+    }
     .pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 1.4s infinite; flex-shrink: 0; }
     @keyframes pulse { 0% { opacity: 0.3; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.3); } 100% { opacity: 0.3; transform: scale(0.9); } }
 
-    .header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
     .btn-header {
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid var(--card-border);
@@ -96,6 +120,7 @@
       white-space: nowrap;
       transition: all 0.2s ease;
     }
+    .btn-header:hover { background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.2); }
 
     main {
       flex: 1;
@@ -105,7 +130,13 @@
       justify-content: center;
       align-items: center;
     }
-    .content-wrapper { width: 100%; max-width: 600px; display: flex; flex-direction: column; align-items: center; }
+    .content-wrapper {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
     .tuner-card {
       width: 100%;
       background: var(--card-bg);
@@ -155,13 +186,25 @@
     }
     @keyframes spin { 100% { transform: rotate(360deg); } }
 
-    .track-info-pane { width: 100%; display: flex; flex-direction: column; align-items: center; }
+    .track-info-pane {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
     .track-title { font-size: clamp(1.2rem, 2.5vw, 1.55rem); font-weight: 700; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90%; }
     .track-contributor { font-size: 0.88rem; color: var(--cyan); margin-bottom: 8px; font-weight: 500; }
-    .slot-indicator { font-size: 0.78rem; color: #ffc107; margin-bottom: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .slot-indicator { font-size: 0.78rem; color: #ffc107; margin-bottom: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .push-indicator { font-size: 0.78rem; color: var(--cyan); margin-bottom: 12px; font-weight: 600; background: rgba(0, 210, 255, 0.1); padding: 4px 12px; border-radius: 12px; }
     .track-desc { font-size: 0.88rem; color: var(--subtext); line-height: 1.4; margin-bottom: 20px; min-height: 38px; max-width: 90%; }
 
-    .switch-container { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 90px; }
+    .switch-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 90px;
+    }
     .main-switch-btn {
       width: clamp(74px, 12vw, 90px);
       height: clamp(74px, 12vw, 90px);
@@ -190,13 +233,20 @@
       font-size: 0.85rem;
       font-weight: 600;
     }
+    .station-loading-pill i { color: var(--accent); }
 
     @media (orientation: landscape) {
       body, .app-shell { height: 100vh; overflow: hidden; }
-      main { height: calc(100dvh - var(--header-h)); padding: 12px 20px; align-items: center; }
+      main {
+        height: calc(100vh - var(--header-h));
+        height: calc(100dvh - var(--header-h));
+        padding: 12px 20px;
+        align-items: center;
+      }
       .content-wrapper { max-width: 950px; height: 100%; justify-content: center; }
       .tuner-card {
         height: 100%;
+        max-height: calc(100vh - var(--header-h) - 24px);
         max-height: calc(100dvh - var(--header-h) - 24px);
         flex-direction: row;
         justify-content: space-evenly;
@@ -205,6 +255,8 @@
       }
       .vinyl-wrapper { width: min(44vh, 250px); height: min(44vh, 250px); margin: 0; }
       .track-info-pane { align-items: flex-start; text-align: left; max-width: 50%; }
+      .track-title { max-width: 100%; }
+      .track-desc { max-width: 100%; margin-bottom: 12px; }
       .switch-container { align-items: flex-start; min-height: auto; }
     }
 
@@ -223,15 +275,23 @@
     @keyframes modalFade { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
     .modal-card {
       width: 100%;
-      max-width: 520px;
+      max-width: 540px;
       max-height: 90vh;
       overflow-y: auto;
       background: #161b22;
       border: 1px solid var(--card-border);
       border-radius: 24px;
       padding: 24px;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.8);
     }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--card-border); }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--card-border);
+    }
     .modal-close { background: none; border: none; color: var(--subtext); font-size: 1.3rem; cursor: pointer; }
 
     .sched-card {
@@ -244,7 +304,10 @@
       justify-content: space-between;
       align-items: center;
     }
-    .sched-card.active-now { border-color: var(--accent); background: rgba(255, 51, 102, 0.08); }
+    .sched-card.active-now {
+      border-color: var(--accent);
+      background: rgba(255, 51, 102, 0.08);
+    }
     .sched-time { font-size: 0.8rem; color: var(--subtext); font-weight: 600; }
     .sched-title { font-size: 0.95rem; font-weight: 700; color: #fff; margin-top: 2px; }
 
@@ -260,7 +323,16 @@
       font-size: 0.9rem;
       outline: none;
     }
-    .btn { width: 100%; padding: 13px; border-radius: 12px; border: none; font-size: 0.92rem; font-weight: 600; cursor: pointer; }
+    .btn {
+      width: 100%;
+      padding: 13px;
+      border-radius: 12px;
+      border: none;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
     .btn-primary { background: var(--accent); color: #fff; }
     .btn-secondary { background: rgba(255, 255, 255, 0.08); color: #fff; margin-top: 8px; }
 
@@ -276,6 +348,10 @@
       align-items: center;
       gap: 6px;
     }
+    .file-dropzone i { font-size: 1.8rem; color: var(--cyan); margin-bottom: 4px; }
+    .file-dropzone-text { font-size: 0.85rem; font-weight: 600; color: #fff; }
+    .file-dropzone-sub { font-size: 0.72rem; color: var(--subtext); }
+
     .selected-file-card {
       display: none;
       margin-top: 10px;
@@ -286,6 +362,33 @@
       align-items: center;
       justify-content: space-between;
     }
+    .selected-file-info { display: flex; align-items: center; gap: 10px; overflow: hidden; }
+    .selected-file-info i { color: var(--green); font-size: 1.2rem; }
+    .file-meta-name { font-size: 0.84rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px; }
+    .file-meta-size { font-size: 0.72rem; color: var(--subtext); }
+    .remove-file-btn { background: none; border: none; color: #ff5252; font-size: 1rem; cursor: pointer; padding: 4px 8px; }
+
+    .profile-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .user-tag {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .tag-approved { background: rgba(0, 230, 118, 0.2); color: var(--green); }
+    .tag-pending { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
 
     .toast {
       position: fixed;
@@ -346,15 +449,16 @@
         </div>
 
         <div class="track-info-pane">
-          <div class="track-title" id="trackTitleDisplay">Radio Ready</div>
-          <div class="track-contributor" id="trackContributorDisplay">Click to Start Playing</div>
-          <div class="slot-indicator" id="currentSlotDisplay">Synchronizing Timeline...</div>
-          <div class="track-desc" id="trackDescDisplay">Live radio streaming.</div>
+          <div class="track-title" id="trackTitleDisplay">Connecting Live...</div>
+          <div class="track-contributor" id="trackContributorDisplay">Live Audio Synchronization</div>
+          <div class="slot-indicator" id="currentSlotDisplay">Synchronizing Stream...</div>
+          <div class="push-indicator" id="currentPushPointDisplay">Push Point: --:--</div>
+          <div class="track-desc" id="trackDescDisplay">Live radio streaming in exact sync with all listeners.</div>
 
           <div class="switch-container">
             <div id="stationLoadingPill" class="station-loading-pill">
               <i class="fa-solid fa-spinner fa-spin"></i>
-              <span>Connecting to Synchro Radio...</span>
+              <span>Synchronizing Live Audio...</span>
             </div>
 
             <button id="radioPowerBtn" class="main-switch-btn" onclick="toggleRadio()">
@@ -367,18 +471,21 @@
   </main>
 </div>
 
-<!-- Schedule Modal -->
+<!-- Modal 1: Day Divisions Schedule Board -->
 <div id="scheduleModal" class="modal-overlay" onclick="closeScheduleModal(event)">
   <div class="modal-card" onclick="event.stopPropagation()">
     <div class="modal-header">
-      <h3><i class="fa-solid fa-calendar-days" style="color:var(--cyan); margin-right:8px;"></i>Daily Radio Schedule</h3>
+      <h3><i class="fa-solid fa-calendar-days" style="color:var(--cyan); margin-right:8px;"></i>Daily Synchro Timeline</h3>
       <button class="modal-close" onclick="closeScheduleModal()"><i class="fa-solid fa-xmark"></i></button>
     </div>
+    <p style="font-size:0.8rem; color:var(--subtext); margin-bottom:14px;">
+      Synchronized 24-Hour Broadcast. Every audio plays sequentially based on its exact time length, advancing to the next push point without gaps.
+    </p>
     <div id="scheduleTimelineList">Loading schedule...</div>
   </div>
 </div>
 
-<!-- Account & Upload Modal -->
+<!-- Modal 2: Contributor Portal -->
 <div id="accountModal" class="modal-overlay" onclick="closeAccountModal(event)">
   <div class="modal-card" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -402,7 +509,7 @@
 
       <div id="registerFormBox" style="display:none;">
         <div class="form-group">
-          <label>Username</label>
+          <label>Username (Displayed on Radio)</label>
           <input type="text" id="regUsername" placeholder="e.g. RJ Rajesh">
         </div>
         <div class="form-group">
@@ -410,7 +517,7 @@
           <input type="tel" id="regMobile" placeholder="e.g. 9876543210">
         </div>
         <div class="form-group">
-          <label>Password</label>
+          <label>Unique Password</label>
           <input type="password" id="regPass" placeholder="Create password">
         </div>
         <button class="btn btn-primary" onclick="submitRegister()">Register Now</button>
@@ -419,10 +526,11 @@
     </div>
 
     <div id="authMemberBox" style="display:none;">
-      <div style="background:rgba(255,255,255,0.03); border:1px solid var(--card-border); border-radius:18px; padding:16px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
+      <div class="profile-card">
         <div>
           <div style="font-weight:700; font-size:1.1rem;" id="profUsername">User</div>
-          <div style="color:var(--subtext); font-size:0.8rem;" id="profMobile"></div>
+          <div style="color:var(--subtext); font-size:0.8rem;" id="profMobile">+91-0000000000</div>
+          <div id="profStatusBadge" class="user-tag tag-pending">Pending Approval</div>
         </div>
         <button class="btn btn-secondary" style="width:auto; padding:8px 14px; font-size:0.75rem;" onclick="logout()">Logout</button>
       </div>
@@ -430,6 +538,8 @@
       <div id="uploadGateBox">
         <div id="uploadAllowedSection" style="display:none; margin-bottom: 20px;">
           <h4 style="margin-bottom:8px;"><i class="fa-solid fa-cloud-arrow-up" style="color:var(--cyan); margin-right:6px;"></i>Upload Audio Track</h4>
+          <p style="font-size:0.78rem; color:var(--subtext); margin-bottom:14px;">Audios upload to Admin Selections for review and dynamic scheduling.</p>
+
           <div class="form-group">
             <label>Audio Title</label>
             <input type="text" id="audioTitle" placeholder="e.g. Morning Folk Tunes">
@@ -438,22 +548,38 @@
             <label>Audio Description</label>
             <textarea id="audioDesc" rows="2" placeholder="Brief info about this audio..."></textarea>
           </div>
+          
           <div class="form-group">
-            <label>Audio File (.mp3, .m4a, .wav)</label>
-            <input type="file" id="audioFileInput" accept=".mp3,audio/*" style="display:none;" onchange="handleFileSelected(this)">
+            <label>Audio File (.mp3, .m4a, .wav, .aac)</label>
+            <input type="file" id="audioFileInput" accept=".mp3,audio/mpeg,audio/mp3,audio/*,.m4a,.wav,.aac,.ogg,*" style="display:none;" onchange="handleFileSelected(this)">
+            
             <div class="file-dropzone" id="fileDropZone" onclick="triggerFilePicker()">
-              <i class="fa-solid fa-file-audio" style="font-size:1.8rem; color:var(--cyan);"></i>
-              <div style="font-size:0.85rem; font-weight:600; color:#fff;">Tap to Select Audio</div>
+              <i class="fa-solid fa-file-audio"></i>
+              <div class="file-dropzone-text">Tap to Select MP3 Audio</div>
+              <div class="file-dropzone-sub">Exact duration is automatically detected for flawless sync</div>
             </div>
+
             <div class="selected-file-card" id="selectedFileCard">
-              <div id="fileMetaName" style="font-size:0.85rem; font-weight:600;"></div>
+              <div class="selected-file-info">
+                <i class="fa-solid fa-circle-check"></i>
+                <div>
+                  <div class="file-meta-name" id="fileMetaName">track.mp3</div>
+                  <div class="file-meta-size" id="fileMetaSize">0.0 MB • Ready</div>
+                </div>
+              </div>
+              <button type="button" class="remove-file-btn" onclick="clearSelectedFile(event)"><i class="fa-solid fa-xmark"></i></button>
             </div>
           </div>
+
           <button class="btn btn-primary" id="uploadBtn" onclick="uploadAudio()">Upload Audio Track</button>
         </div>
 
-        <div id="uploadLockedSection" style="text-align:center; padding: 20px 14px; display:none;">
-          <p style="font-size:0.8rem; color:var(--subtext);">Contributor privileges unlock upon admin approval.</p>
+        <div id="uploadLockedSection" style="text-align:center; padding: 20px 14px; margin-bottom:20px; display:none; background:rgba(255,255,255,0.03); border-radius:14px;">
+          <i class="fa-solid fa-clock-rotate-left" style="font-size:2rem; color:#ffc107; margin-bottom:10px;"></i>
+          <h4>Contributor Approval Pending</h4>
+          <p style="font-size:0.8rem; color:var(--subtext); margin-top:8px;">
+            You can listen to all live radio broadcasts freely. Upload privileges unlock once approved by administrator.
+          </p>
         </div>
       </div>
     </div>
@@ -461,30 +587,47 @@
 </div>
 
 <script>
+  // ================= CONFIGURATION =================
   const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxIM9fWOdU4skEnXuxVe6DR6FS7z-a3AdEepC4o6AS5WQiLV_lWp0EmBXCg0rSv-Mj5Cg/exec";
 
-  let listenerId = localStorage.getItem('cr_listener_id') || ('L_' + Math.random().toString(36).substring(2, 9));
-  localStorage.setItem('cr_listener_id', listenerId);
+  let listenerId = localStorage.getItem('cr_listener_id');
+  if (!listenerId) {
+    listenerId = 'L_' + Math.random().toString(36).substring(2, 9);
+    localStorage.setItem('cr_listener_id', listenerId);
+  }
 
   let allTracks = [];
   let hourlySchedules = {};
-  let sharedHourlyRandomSeq = [];
+  let activePlaylist = [];
+  let currentIndex = 0;
   let isPlaying = false;
   let currentUser = JSON.parse(localStorage.getItem('cr_user') || 'null');
   let selectedAudioFile = null;
-  let detectedDuration = 0;
+  let detectedDurationSec = 140;
   let currentSeqVersion = null;
   let lastPushVersion = null;
+  let currentActiveHour = -1;
+  let currentlyPlayingTrack = null;
+  let serverTimeOffset = 0;
 
+  const audioCache = {};
   let activePlayer = new Audio();
-  let scheduledTimeline = []; // [{ track, startOffset, endOffset }]
-  let currentTrackItem = null;
+  let standbyPlayer = new Audio();
+  let isStandbyReady = false;
 
   window.addEventListener('load', () => {
+    if ('caches' in window) {
+      caches.keys().then(names => names.forEach(name => caches.delete(name)));
+    }
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
     fetchStationData();
     renderAuth();
+
+    sendHeartbeat();
     setInterval(sendHeartbeat, 20000);
-    setInterval(maintainTimelineSync, 3000);
+    setInterval(checkLiveSynchronization, 5000);
   });
 
   function showToast(msg) {
@@ -492,6 +635,15 @@
     t.innerText = msg;
     t.style.display = 'block';
     setTimeout(() => { t.style.display = 'none'; }, 3200);
+  }
+
+  function formatTimeHHMMSS(dateObj) {
+    let hours = dateObj.getHours();
+    const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+    const seconds = String(dateObj.getSeconds()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12;
+    return `${hours}:${minutes}:${seconds} ${ampm}`;
   }
 
   function openAccountModal() { document.getElementById('accountModal').classList.add('open'); }
@@ -511,21 +663,28 @@
     }
   }
 
+  function getDivisionName(hour) {
+    if (hour >= 5 && hour < 11) return "Division 1: Morning (05:00 AM - 11:00 AM)";
+    if (hour >= 11 && hour < 17) return "Division 2: Afternoon (11:00 AM - 05:00 PM)";
+    if (hour >= 17 && hour < 23) return "Division 3: Evening (05:00 PM - 11:00 PM)";
+    return "Division 4: Night (11:00 PM - 05:00 AM)";
+  }
+
   function renderScheduleTimeline() {
     const box = document.getElementById('scheduleTimelineList');
-    const nowHour = new Date().getHours();
+    const nowHour = new Date(Date.now() + serverTimeOffset).getHours();
     let html = '';
 
-    for (let h = 5; h <= 23; h++) {
+    for (let h = 0; h <= 23; h++) {
       const slot = hourlySchedules[String(h)];
-      const name = (slot && slot.name && slot.name.trim() !== '') ? slot.name : 'Synchronized Timeline Rotation';
-      const formattedTime = (h % 12 || 12) + (h >= 12 ? ':00 PM' : ':00 AM') + ' – ' + ((h + 1) % 12 || 12) + ((h + 1) >= 12 && (h + 1) < 24 ? ':00 PM' : ':00 AM');
+      const name = (slot && slot.name && slot.name.trim() !== '') ? slot.name : 'Synchronized Hourly Block';
+      const formattedTime = (h % 12 || 12) + ':00 ' + (h >= 12 ? 'PM' : 'AM') + ' – ' + ((h + 1) % 12 || 12) + ':00 ' + ((h + 1) >= 12 && (h + 1) < 24 ? 'PM' : 'AM');
       const isCurrent = (h === nowHour);
 
       html += `
         <div class="sched-card ${isCurrent ? 'active-now' : ''}">
           <div>
-            <div class="sched-time">${formattedTime} ${isCurrent ? '• <span style="color:var(--green);">LIVE NOW</span>' : ''}</div>
+            <div class="sched-time">${formattedTime} • <span style="color:var(--cyan);">${getDivisionName(h)}</span> ${isCurrent ? '• <span style="color:var(--green);">LIVE NOW</span>' : ''}</div>
             <div class="sched-title">${name}</div>
           </div>
           <i class="fa-solid fa-radio" style="color:${isCurrent ? 'var(--accent)' : 'var(--subtext)'}; font-size:1.1rem;"></i>
@@ -554,194 +713,323 @@
     } catch(err) {}
   }
 
-  // ================= 3) TIMELINE SYNCHRONIZATION ENGINE =================
-  // Builds exact push points for the current hour based on each track's real duration
-  function buildCurrentHourTimeline() {
-    const now = new Date();
-    const currentHour = now.getHours();
-    const slot = hourlySchedules[String(currentHour)];
-    let trackList = [];
+  // 1 & 3) Exact End-of-Audio Push Point Timeline Calculation
+  // Eliminates 5-minute fixed assumption and calculates the precise current track and seek position
+  function getSynchronizedCurrentTrackIndex(playlist) {
+    if (!playlist || playlist.length === 0) return { index: 0, seekSec: 0, currentStartSec: 0 };
+
+    const now = new Date(Date.now() + serverTimeOffset);
+    const elapsedSecInHour = (now.getMinutes() * 60) + now.getSeconds();
+
+    let cumulativeSec = 0;
+    for (let i = 0; i < playlist.length; i++) {
+      const duration = playlist[i].durationSec || 140; // Exact length
+      if (elapsedSecInHour >= cumulativeSec && elapsedSecInHour < (cumulativeSec + duration)) {
+        return { index: i, seekSec: elapsedSecInHour - cumulativeSec, currentStartSec: cumulativeSec };
+      }
+      cumulativeSec += duration;
+    }
+
+    // Sequence wrap-around if audios do not completely sum to 3600s
+    const totalPlaylistDuration = cumulativeSec || 1;
+    const loopSec = elapsedSecInHour % totalPlaylistDuration;
+    let wrapCumulative = 0;
+    for (let i = 0; i < playlist.length; i++) {
+      const duration = playlist[i].durationSec || 140;
+      if (loopSec >= wrapCumulative && loopSec < (wrapCumulative + duration)) {
+        return { index: i, seekSec: loopSec - wrapCumulative, currentStartSec: wrapCumulative };
+      }
+      wrapCumulative += duration;
+    }
+
+    return { index: 0, seekSec: 0, currentStartSec: 0 };
+  }
+
+  function resolveCurrentHourPlaylist() {
+    const now = new Date(Date.now() + serverTimeOffset);
+    const hour = now.getHours();
+    currentActiveHour = hour;
+
+    const slotBadge = document.getElementById('currentSlotDisplay');
+    const slot = hourlySchedules[String(hour)];
 
     if (slot && slot.trackIds && slot.trackIds.length > 0) {
+      const scheduled = [];
       slot.trackIds.forEach(id => {
-        const t = allTracks.find(item => item.fileId === id && item.approvalStatus === "approved");
-        if (t) trackList.push(t);
+        const found = allTracks.find(t => t.fileId === id && t.approvalStatus === "approved");
+        if (found) scheduled.push(found);
       });
-    }
 
-    // Fallback: fill remaining timeline with approved random sequence tracks
-    const randomTracks = (sharedHourlyRandomSeq.length > 0 ? sharedHourlyRandomSeq : [])
-      .map(id => allTracks.find(t => t.fileId === id && t.approvalStatus === "approved"))
-      .filter(Boolean);
-
-    if (randomTracks.length === 0) {
-      trackList = allTracks.filter(t => t.approvalStatus === "approved");
-    }
-
-    // Line up push points end-to-end to fill the 3600-second hour window
-    const timeline = [];
-    let currentOffset = 0;
-    let fallbackIdx = 0;
-
-    // Line up scheduled slot tracks first
-    for (let trk of trackList) {
-      const dur = trk.duration > 0 ? trk.duration : 180;
-      timeline.push({ track: trk, startOffset: currentOffset, endOffset: currentOffset + dur });
-      currentOffset += dur;
-      if (currentOffset >= 3600) break;
-    }
-
-    // Continue filling until the 1-hour push point loop is covered
-    while (currentOffset < 3600 && randomTracks.length > 0) {
-      const trk = randomTracks[fallbackIdx % randomTracks.length];
-      const dur = trk.duration > 0 ? trk.duration : 180;
-      timeline.push({ track: trk, startOffset: currentOffset, endOffset: currentOffset + dur });
-      currentOffset += dur;
-      fallbackIdx++;
-    }
-
-    return timeline;
-  }
-
-  // Matches absolute wall-clock time so every listener hears identical audio at identical timestamps
-  function getCurrentScheduledAudio() {
-    if (scheduledTimeline.length === 0) return null;
-    const now = new Date();
-    const currentSecondOfHour = (now.getMinutes() * 60) + now.getSeconds() + (now.getMilliseconds() / 1000);
-
-    for (let item of scheduledTimeline) {
-      if (currentSecondOfHour >= item.startOffset && currentSecondOfHour < item.endOffset) {
-        return {
-          track: item.track,
-          seekSeconds: currentSecondOfHour - item.startOffset,
-          pushStart: item.startOffset,
-          pushEnd: item.endOffset
-        };
+      if (scheduled.length > 0) {
+        const slotName = slot.name && slot.name.trim() !== '' ? slot.name : `${hour % 12 || 12} ${hour >= 12 ? 'PM' : 'AM'} Slot`;
+        slotBadge.innerText = `${getDivisionName(hour)} • ${slotName}`;
+        return scheduled;
       }
     }
 
-    // If past all tracks in hour, loop back to the last or first item seamlessly
-    const item = scheduledTimeline[scheduledTimeline.length - 1];
-    return { track: item.track, seekSeconds: 0 };
+    const approved = allTracks.filter(t => t.approvalStatus === "approved");
+    slotBadge.innerText = `${getDivisionName(hour)} • Synchronized Block`;
+    return approved.length > 0 ? approved : allTracks;
   }
-
-  async function maintainTimelineSync() {
-    if (!isPlaying) return;
-    const current = getCurrentScheduledAudio();
-    if (!current || !current.track) return;
-
-    if (!currentTrackItem || currentTrackItem.track.fileId !== current.track.fileId) {
-      currentTrackItem = current;
-      await playTrackAtOffset(current.track, current.seekSeconds);
-    } else {
-      // Keep drifted clients tightly in sync (within 2 seconds threshold)
-      const expectedTime = current.seekSeconds;
-      if (Math.abs(activePlayer.currentTime - expectedTime) > 2.5) {
-        activePlayer.currentTime = expectedTime;
-      }
-    }
-  }
-
-  async function playTrackAtOffset(track, seekSeconds) {
-    const audioSrc = await resolveTrackAudio(track);
-    if (!audioSrc) return;
-
-    activePlayer.src = audioSrc;
-    activePlayer.currentTime = seekSeconds || 0;
-    activePlayer.play().catch(e => console.warn(e));
-
-    updateTunerUI(track);
-  }
-
-  function setupPlayer() {
-    activePlayer.addEventListener('ended', () => {
-      // Audio finished naturally: jump to the next calculated push point track
-      maintainTimelineSync();
-    });
-    activePlayer.addEventListener('loadedmetadata', () => {
-      // Self-heal: if backend duration was 0, capture actual duration and report back
-      if (currentTrackItem && currentTrackItem.track && !currentTrackItem.track.duration && activePlayer.duration) {
-        const exactDur = Math.round(activePlayer.duration);
-        currentTrackItem.track.duration = exactDur;
-        fetch(BACKEND_URL, {
-          method: 'POST',
-          body: JSON.stringify({ action: "updateTrackDuration", fileId: currentTrackItem.track.fileId, duration: exactDur })
-        }).catch(() => {});
-      }
-    });
-  }
-  setupPlayer();
 
   async function fetchStationData() {
     try {
       const res = await fetch(`${BACKEND_URL}?action=getStationData`);
       const data = await res.json();
       if (data.success) {
+        if (data.serverTime) {
+          serverTimeOffset = data.serverTime - Date.now();
+        }
         allTracks = data.tracks || [];
         hourlySchedules = data.hourly || {};
-        sharedHourlyRandomSeq = data.hourlyRandomSequence || [];
 
-        if (data.settings && data.settings.station_name) {
-          document.getElementById('stationNameDisplay').innerText = data.settings.station_name;
+        if (data.settings) {
+          if (data.settings.station_name) {
+            document.getElementById('stationNameDisplay').innerText = data.settings.station_name;
+          }
+          currentSeqVersion = data.settings.seq_version || currentSeqVersion;
+          lastPushVersion = data.settings.push_version || lastPushVersion;
+        }
+        if (typeof data.liveListenersCount === 'number') {
+          const count = isPlaying ? Math.max(1, data.liveListenersCount) : data.liveListenersCount;
+          document.getElementById('liveListenerCountDisplay').innerText = `${count}`;
         }
 
-        scheduledTimeline = buildCurrentHourTimeline();
+        activePlaylist = resolveCurrentHourPlaylist();
 
-        document.getElementById('stationLoadingPill').style.display = 'none';
-        document.getElementById('radioPowerBtn').style.display = 'block';
+        if (activePlaylist.length > 0) {
+          document.getElementById('stationLoadingPill').style.display = 'none';
+          document.getElementById('radioPowerBtn').style.display = 'block';
 
-        const scheduled = getCurrentScheduledAudio();
-        if (scheduled && scheduled.track) {
-          updateTunerUI(scheduled.track);
+          const syncState = getSynchronizedCurrentTrackIndex(activePlaylist);
+          currentIndex = syncState.index;
+          playCurrentTrackImmediate(syncState.seekSec);
+        } else {
+          document.getElementById('stationLoadingPill').innerHTML = `<span>No approved tracks ready to broadcast</span>`;
         }
       }
-    } catch(e) {
+    } catch (e) {
+      document.getElementById('stationLoadingPill').innerHTML = `<span style="color:#ff5252;">Connection Error. Retrying...</span>`;
       setTimeout(fetchStationData, 4000);
     }
   }
 
+  // Continuous synchronization against broadcast timeline
+  async function checkLiveSynchronization() {
+    const now = new Date(Date.now() + serverTimeOffset);
+    const currentHour = now.getHours();
+
+    if (currentActiveHour !== -1 && currentHour !== currentActiveHour) {
+      currentActiveHour = currentHour;
+      activePlaylist = resolveCurrentHourPlaylist();
+      const syncState = getSynchronizedCurrentTrackIndex(activePlaylist);
+      currentIndex = syncState.index;
+      showToast(`Tuning into ${getDivisionName(currentHour)}`);
+      if (isPlaying && activePlaylist.length > 0) {
+        playCurrentTrackImmediate(syncState.seekSec);
+      }
+      return;
+    }
+
+    try {
+      const res = await fetch(`${BACKEND_URL}?action=getStationData`);
+      const data = await res.json();
+      if (data.success && data.settings) {
+        if (data.serverTime) serverTimeOffset = data.serverTime - Date.now();
+
+        if (typeof data.liveListenersCount === 'number') {
+          const count = isPlaying ? Math.max(1, data.liveListenersCount) : data.liveListenersCount;
+          document.getElementById('liveListenerCountDisplay').innerText = `${count}`;
+        }
+
+        // Live Admin Priority Push
+        if (data.settings.push_version && data.settings.push_version !== lastPushVersion) {
+          lastPushVersion = data.settings.push_version;
+          const pushedFileId = data.settings.pushed_track;
+          const target = allTracks.find(t => t.fileId === pushedFileId);
+          if (target) {
+            showToast("Priority Broadcast: " + target.title);
+            activePlaylist = [target, ...resolveCurrentHourPlaylist()];
+            currentIndex = 0;
+            playCurrentTrackImmediate(0);
+            return;
+          }
+        }
+
+        // Live Push Point & Schedule Changes
+        if (currentSeqVersion && data.settings.seq_version !== currentSeqVersion) {
+          currentSeqVersion = data.settings.seq_version;
+          allTracks = data.tracks || [];
+          hourlySchedules = data.hourly || {};
+          activePlaylist = resolveCurrentHourPlaylist();
+          showToast("Timeline updated. Synchronizing push point...");
+          const syncState = getSynchronizedCurrentTrackIndex(activePlaylist);
+          currentIndex = syncState.index;
+          if (isPlaying && activePlaylist.length > 0) {
+            playCurrentTrackImmediate(syncState.seekSec);
+          }
+        }
+      }
+    } catch(err) {}
+  }
+
   async function resolveTrackAudio(track) {
     if (!track) return null;
+    if (audioCache[track.fileId]) return audioCache[track.fileId];
+
     try {
       const res = await fetch(`${BACKEND_URL}?action=streamAudio&fileId=${encodeURIComponent(track.fileId)}`);
       const data = await res.json();
-      if (data.success && data.dataUri) return data.dataUri;
+      if (data.success && data.dataUri) {
+        audioCache[track.fileId] = data.dataUri;
+        return data.dataUri;
+      }
     } catch(err) {}
     return track.streamUrl;
   }
 
+  // ================= ZERO-GAP PLAYBACK ENGINE =================
+  function setupPlayerEvents(player) {
+    player.addEventListener('timeupdate', () => {
+      if (player.duration && (player.duration - player.currentTime <= 4) && !isStandbyReady) {
+        prepareStandbyTrack();
+      }
+    });
+    // Immediately pushes to next track precisely at the finish of the first audio
+    player.addEventListener('ended', () => { advanceTrackInstantly(); });
+    player.addEventListener('error', () => {
+      if (isPlaying) advanceTrackInstantly();
+    });
+  }
+
+  setupPlayerEvents(activePlayer);
+  setupPlayerEvents(standbyPlayer);
+
+  async function prepareStandbyTrack() {
+    if (activePlaylist.length === 0) return;
+    const nextIdx = (currentIndex + 1) % activePlaylist.length;
+    const nextTrack = activePlaylist[nextIdx];
+    const src = await resolveTrackAudio(nextTrack);
+    if (src) {
+      standbyPlayer.src = src;
+      standbyPlayer.load();
+      standbyPlayer._trackRef = nextTrack;
+      isStandbyReady = true;
+    }
+  }
+
+  async function advanceTrackInstantly() {
+    if (activePlaylist.length === 0) return;
+    currentIndex = (currentIndex + 1) % activePlaylist.length;
+
+    const temp = activePlayer;
+    activePlayer = standbyPlayer;
+    standbyPlayer = temp;
+    isStandbyReady = false;
+
+    currentlyPlayingTrack = activePlayer._trackRef || activePlaylist[currentIndex];
+
+    if (!activePlayer.src || activePlayer.src === "") {
+      const src = await resolveTrackAudio(currentlyPlayingTrack);
+      activePlayer.src = src;
+      activePlayer._trackRef = currentlyPlayingTrack;
+    }
+
+    activePlayer.play().catch(e => console.warn(e));
+    updateMediaSession();
+    updateTunerUI(currentlyPlayingTrack);
+  }
+
+  async function playCurrentTrackImmediate(seekSec = 0) {
+    if (!activePlaylist || activePlaylist.length === 0) return;
+    const track = activePlaylist[currentIndex];
+    const audioSource = await resolveTrackAudio(track);
+
+    activePlayer.src = audioSource;
+    activePlayer._trackRef = track;
+    currentlyPlayingTrack = track;
+    updateTunerUI(currentlyPlayingTrack);
+
+    const playPromise = activePlayer.play();
+    isPlaying = true;
+    sendHeartbeat();
+
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        if (seekSec > 0 && activePlayer.duration && seekSec < activePlayer.duration) {
+          activePlayer.currentTime = seekSec;
+        }
+        isStandbyReady = false;
+        prepareStandbyTrack();
+        updateMediaSession();
+        updateTunerUI(currentlyPlayingTrack);
+      }).catch(err => {
+        isPlaying = false;
+        updateTunerUI(currentlyPlayingTrack);
+        showToast("Tap switch to unmute live broadcast.");
+      });
+    }
+  }
+
   function toggleRadio() {
+    if (activePlaylist.length === 0) {
+      showToast("Radio is tuning. Please wait a moment.");
+      return;
+    }
+
     if (isPlaying) {
       activePlayer.pause();
+      standbyPlayer.pause();
       isPlaying = false;
       sendHeartbeat();
-      updateTunerUI(currentTrackItem ? currentTrackItem.track : null);
+      updateTunerUI(currentlyPlayingTrack);
     } else {
+      const syncState = getSynchronizedCurrentTrackIndex(activePlaylist);
+      currentIndex = syncState.index;
+
+      const playPromise = activePlayer.play();
       isPlaying = true;
+      updateTunerUI(currentlyPlayingTrack);
       sendHeartbeat();
-      scheduledTimeline = buildCurrentHourTimeline();
-      currentTrackItem = getCurrentScheduledAudio();
-      if (currentTrackItem && currentTrackItem.track) {
-        playTrackAtOffset(currentTrackItem.track, currentTrackItem.seekSeconds);
+
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          if (syncState.seekSec > 0 && activePlayer.duration && syncState.seekSec < activePlayer.duration) {
+            activePlayer.currentTime = syncState.seekSec;
+          }
+          updateMediaSession();
+          prepareStandbyTrack();
+        }).catch(err => {
+          resolveTrackAudio(currentlyPlayingTrack || activePlaylist[currentIndex]).then(src => {
+            activePlayer.src = src;
+            activePlayer.play().catch(() => {});
+          });
+        });
       }
     }
   }
 
-  function updateTunerUI(track) {
+  function updateTunerUI(trackObj) {
+    const track = trackObj || currentlyPlayingTrack || (activePlaylist ? activePlaylist[currentIndex] : null);
     const btn = document.getElementById('radioPowerBtn');
     const vinyl = document.getElementById('vinyl');
     const title = document.getElementById('trackTitleDisplay');
     const contrib = document.getElementById('trackContributorDisplay');
     const desc = document.getElementById('trackDescDisplay');
-    const slotBadge = document.getElementById('currentSlotDisplay');
+    const pushPointDisplay = document.getElementById('currentPushPointDisplay');
 
     if (track) {
       title.innerText = track.title;
       contrib.innerText = "Curated by " + (track.contributor || "Synchro Voice");
-      desc.innerText = track.description || "Live Synchronized Timeline";
-      const nowH = new Date().getHours();
-      const slot = hourlySchedules[String(nowH)];
-      slotBadge.innerText = (slot && slot.name) ? `Slot: ${slot.name}` : `Hourly Push Synchronized`;
+      desc.innerText = track.description || "Live Synchronized Broadcast";
+
+      // Calculate push point based on scheduled timeline in the current hour
+      const now = new Date(Date.now() + serverTimeOffset);
+      const sync = getSynchronizedCurrentTrackIndex(activePlaylist);
+      const trackDur = track.durationSec || 140;
+      const nextPushInSec = Math.max(0, trackDur - sync.seekSec);
+      const nextPushDate = new Date(Date.now() + (nextPushInSec * 1000));
+      pushPointDisplay.innerText = `Next Push Point: ${formatTimeHHMMSS(nextPushDate)} (Dur: ${Math.floor(trackDur / 60)}m ${trackDur % 60}s)`;
     }
 
     if (isPlaying) {
@@ -753,7 +1041,22 @@
     }
   }
 
-  // File selection with automatic duration measurement
+  function updateMediaSession() {
+    const track = currentlyPlayingTrack || activePlaylist[currentIndex];
+    if ('mediaSession' in navigator && track) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: track.title,
+        artist: track.contributor || "Synchro Radio",
+        album: "Synchro Radio 24/7",
+        artwork: [{ src: 'https://cdn-icons-png.flaticon.com/512/3075/3075906.png', sizes: '512x512', type: 'image/png' }]
+      });
+      navigator.mediaSession.setActionHandler('play', () => toggleRadio());
+      navigator.mediaSession.setActionHandler('pause', () => toggleRadio());
+      navigator.mediaSession.setActionHandler('nexttrack', () => advanceTrackInstantly());
+    }
+  }
+
+  // ================= FILE SELECTION & EXACT DURATION DETECTION =================
   function triggerFilePicker() { document.getElementById('audioFileInput').click(); }
 
   function handleFileSelected(input) {
@@ -761,16 +1064,22 @@
       const file = input.files[0];
       selectedAudioFile = file;
 
+      // Extract accurate duration directly from file
+      const tempAudio = new Audio();
+      const objectUrl = URL.createObjectURL(file);
+      tempAudio.src = objectUrl;
+      tempAudio.onloadedmetadata = () => {
+        detectedDurationSec = Math.round(tempAudio.duration) || 140;
+        const mins = Math.floor(detectedDurationSec / 60);
+        const secs = detectedDurationSec % 60;
+        document.getElementById('fileMetaSize').innerText = `${(file.size / (1024 * 1024)).toFixed(2)} MB • Exact Duration: ${mins}m ${secs}s`;
+        URL.revokeObjectURL(objectUrl);
+      };
+
       document.getElementById('fileMetaName').innerText = file.name;
       document.getElementById('fileDropZone').style.display = 'none';
       document.getElementById('selectedFileCard').style.display = 'flex';
-
-      const tempAudio = new Audio();
-      tempAudio.src = URL.createObjectURL(file);
-      tempAudio.onloadedmetadata = () => {
-        detectedDuration = Math.round(tempAudio.duration || 0);
-      };
-
+      
       const titleInput = document.getElementById('audioTitle');
       if (!titleInput.value.trim()) {
         titleInput.value = file.name.replace(/\.[^/.]+$/, "");
@@ -778,6 +1087,16 @@
     }
   }
 
+  function clearSelectedFile(e) {
+    if (e) e.stopPropagation();
+    selectedAudioFile = null;
+    detectedDurationSec = 140;
+    document.getElementById('audioFileInput').value = "";
+    document.getElementById('selectedFileCard').style.display = 'none';
+    document.getElementById('fileDropZone').style.display = 'flex';
+  }
+
+  // ================= AUTHENTICATION & UPLOADS =================
   function toggleAuthMode(mode) {
     document.getElementById('loginFormBox').style.display = mode === 'login' ? 'block' : 'none';
     document.getElementById('registerFormBox').style.display = mode === 'register' ? 'block' : 'none';
@@ -787,8 +1106,10 @@
     const username = document.getElementById('regUsername').value.trim();
     const mobile = document.getElementById('regMobile').value.trim();
     const password = document.getElementById('regPass').value.trim();
+
     if (!username || !mobile || !password) return showToast("Please fill all fields.");
 
+    showToast("Registering account...");
     try {
       const res = await fetch(BACKEND_URL, {
         method: 'POST',
@@ -800,9 +1121,11 @@
         localStorage.setItem('cr_user', JSON.stringify(currentUser));
         renderAuth();
         showToast("Account created!");
+      } else {
+        showToast(data.message || "Registration failed");
       }
     } catch(e) {
-      showToast("Network error");
+      showToast("Network error. Verify Script URL.");
     }
   }
 
@@ -811,6 +1134,7 @@
     const password = document.getElementById('loginPass').value.trim();
     if (!mobile || !password) return showToast("Enter mobile & password");
 
+    showToast("Authenticating...");
     try {
       const res = await fetch(BACKEND_URL, {
         method: 'POST',
@@ -849,10 +1173,16 @@
       guestBox.style.display = 'none';
       memberBox.style.display = 'block';
       headerLabel.innerText = currentUser.username;
+
       document.getElementById('profUsername').innerText = currentUser.username;
       document.getElementById('profMobile').innerText = currentUser.mobile;
 
+      const badge = document.getElementById('profStatusBadge');
       const isApproved = (currentUser.status === 'approved');
+
+      badge.className = isApproved ? "user-tag tag-approved" : "user-tag tag-pending";
+      badge.innerText = isApproved ? "Approved Contributor" : "Pending Admin Approval";
+
       document.getElementById('uploadAllowedSection').style.display = isApproved ? 'block' : 'none';
       document.getElementById('uploadLockedSection').style.display = isApproved ? 'none' : 'block';
     }
@@ -863,9 +1193,12 @@
     const description = document.getElementById('audioDesc').value.trim();
     const btn = document.getElementById('uploadBtn');
 
-    if (!title || !selectedAudioFile) return showToast("Provide a title and select a track");
+    if (!title) return showToast("Enter a title for your audio");
+    if (!selectedAudioFile) return showToast("Please select an audio file first");
+    if (selectedAudioFile.size > 25 * 1024 * 1024) return showToast("File exceeds max 25MB limit.");
+
     btn.disabled = true;
-    btn.innerText = "Uploading to station...";
+    btn.innerText = "Uploading with exact audio timing...";
 
     const reader = new FileReader();
     reader.onload = async function() {
@@ -877,10 +1210,10 @@
           username: currentUser.username,
           title,
           description,
-          duration: detectedDuration || 0,
           fileName: selectedAudioFile.name,
           mimeType: selectedAudioFile.type || "audio/mpeg",
-          base64File: base64Data
+          base64File: base64Data,
+          durationSec: detectedDurationSec // Passed accurately to backend
         };
 
         const res = await fetch(BACKEND_URL, {
@@ -888,17 +1221,19 @@
           body: JSON.stringify(payload)
         });
         const result = await res.json();
+
         if (result.success) {
-          showToast("Upload Successful! Awaiting Approval.");
+          showToast("Upload Successful! Added with precise duration.");
           document.getElementById('audioTitle').value = "";
           document.getElementById('audioDesc').value = "";
-          closeAccountModal();
+          clearSelectedFile();
           fetchStationData();
+          closeAccountModal();
         } else {
           showToast(result.message || "Upload rejected");
         }
-      } catch(e) {
-        showToast("Error uploading file");
+      } catch (err) {
+        showToast("Error uploading track.");
       } finally {
         btn.disabled = false;
         btn.innerText = "Upload Audio Track";
