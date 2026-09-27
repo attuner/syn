@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Synchro Radio Admin</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card: #161b22;
+      --border: rgba(255, 255, 255, 0.1);
+      --accent: #ff3366;
+      --green: #00e676;
+      --cyan: #00d2ff;
+      --text: #f0f6fc;
+      --sub: #8b949e;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: clamp(14px, 3vw, 28px);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .admin-container { width: 100%; max-width: 1100px; }
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+    .header h1 { font-size: clamp(1.2rem, 3vw, 1.7rem); }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: clamp(16px, 3vw, 24px);
+      margin-bottom: 24px;
+    }
+    h2 { font-size: 1.25rem; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 0.8rem; color: var(--sub); margin-bottom: 6px; }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: #090d16;
+      border: 1px solid var(--border);
+      color: #fff;
+    }
+    .btn {
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: 0.2s;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-green { background: var(--green); color: #000; }
+    .btn-danger { background: #e63946; color: #fff; }
+    .btn-push { background: linear-gradient(135deg, #00d2ff, #0077ff); color: #fff; }
+    .btn-mic { background: linear-gradient(135deg, #ff3366, #ff7700); color: #fff; }
+    .btn-sm { padding: 6px 12px; font-size: 0.78rem; }
+
+    /* 3) Scrollbar for lists exceeding 20 entries & Search inputs */
+    .table-responsive {
+      width: 100%;
+      max-height: 520px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    .scroll-container {
+      max-height: 520px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .list-search-bar {
+      margin-bottom: 12px;
+      position: relative;
+    }
+    .list-search-bar input {
+      width: 100%;
+      padding: 8px 14px;
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.84rem;
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { color: var(--sub); font-size: 0.75rem; text-transform: uppercase; background: #161b22; position: sticky; top: 0; z-index: 2; }
+
+    .track-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 8px;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+    }
+    .track-meta { flex: 1; min-width: 250px; }
+    .track-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+    .cat-select {
+      background: #090d16;
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 8px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+    }
+
+    .badge-tag {
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      display: inline-block;
+    }
+    .badge-approved { background: rgba(0, 230, 118, 0.2); color: var(--green); }
+    .badge-pending { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
+
+    .slot-item {
+      background: rgba(0,0,0,0.25);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .slot-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .slot-name-input {
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: #fff;
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      width: 220px;
+    }
+    .slot-track-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      margin: 4px 4px 4px 0;
+    }
+    .slot-track-tag i { cursor: pointer; color: #ff5252; }
+
+    /* Live Mic Box */
+    .mic-box {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(255, 51, 102, 0.08);
+      border: 1px dashed var(--accent);
+      border-radius: 14px;
+      padding: 16px;
+      flex-wrap: wrap;
+    }
+
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #ff3366;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      display: none;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+
+<div id="toast" class="toast"></div>
+
+<div class="admin-container">
+  <div class="header">
+    <h1><i class="fa-solid fa-sliders" style="color:var(--accent); margin-right:8px;"></i>Synchro Radio Admin</h1>
+    <a href="index.html" style="color:var(--sub); text-decoration:none; font-size:0.88rem;">
+      <i class="fa-solid fa-arrow-left"></i> Open Radio App
+    </a>
+  </div>
+
+  <!-- Passcode Gate -->
+  <div id="authGate" class="panel" style="max-width: 420px; margin: 40px auto; text-align: center;">
+    <h2>Admin Authentication</h2>
+    <div class="form-group" style="text-align:left; margin-top:16px;">
+      <label>Passcode Key</label>
+      <input type="password" id="adminPasscode" placeholder="Default: admin123">
+    </div>
+    <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="verifyAdmin()">Login to Station Panel</button>
+  </div>
+
+  <div id="adminDashboard" style="display:none;">
+    
+    <!-- 6) LIVE MIC BROADCAST PUSH PANEL -->
+    <div class="panel">
+      <h2><i class="fa-solid fa-microphone-lines" style="color:var(--accent);"></i> Live Mic Instant Push</h2>
+      <p style="font-size:0.8rem; color:var(--sub); margin-bottom:14px;">
+        Record an instant announcement directly via your mic and push it immediately to all listeners.
+      </p>
+      <div class="mic-box">
+        <button id="recordMicBtn" class="btn btn-mic" onclick="toggleMicRecording()">
+          <i class="fa-solid fa-microphone"></i> Start Recording
+        </button>
+        <span id="micRecordingStatus" style="font-size:0.85rem; font-weight:600; color:var(--sub);">Mic Idle</span>
+        <button id="pushMicBtn" class="btn btn-push" style="display:none;" onclick="pushRecordedMicAudio()">
+          <i class="fa-solid fa-bolt"></i> Push Recording Now
+        </button>
+      </div>
+    </div>
+
+    <!-- AUDIO APPROVALS MANAGEMENT PANEL -->
+    <div class="panel">
+      <h2><i class="fa-solid fa-file-circle-check" style="color:var(--cyan);"></i> Audio Upload Approvals</h2>
+      <p style="font-size:0.8rem; color:var(--sub); margin-bottom:12px;">
+        New audios automatically upload as <strong>Slot plays</strong> with pending status. Approve or move them to <strong>Random plays</strong> below.
+      </p>
+
+      <div class="list-search-bar">
+        <input type="text" id="searchApprovalsInput" placeholder="🔍 Search audio approvals by title or contributor..." oninput="renderAudioApprovals()">
+      </div>
+
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Contributor</th>
+              <th>Category</th>
+              <th>Status</th>
+              <th>Hourly Debut</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="audioApprovalsTableBody">
+            <tr><td colspan="6" style="text-align:center; color:var(--sub);">Loading audio requests...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- LIVE ONLINE LISTENERS -->
+    <div class="panel">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h2><i class="fa-solid fa-tower-broadcast" style="color:var(--green);"></i> Live Online Listeners Details</h2>
+        <button class="btn btn-sm" style="background:#21262d; color:#fff;" onclick="refreshAdminData()"><i class="fa-solid fa-rotate"></i> Refresh</button>
+      </div>
+      
+      <div class="list-search-bar">
+        <input type="text" id="searchListenersInput" placeholder="🔍 Search online listeners by ID or name..." oninput="renderLiveListeners(cachedListeners)">
+      </div>
+
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Listener ID</th>
+              <th>Username</th>
+              <th>Status</th>
+              <th>Last Active</th>
+            </tr>
+          </thead>
+          <tbody id="liveListenersTableBody">
+            <tr><td colspan="4" style="text-align:center; color:var(--sub);">No listeners currently online.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- NAMED HOURLY SLOTS SCHEDULER -->
+    <div class="panel">
+      <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; margin-bottom:14px;">
+        <h2><i class="fa-solid fa-clock" style="color:var(--cyan);"></i> Named Hourly Slots (5 AM – 11 PM)</h2>
+        <button class="btn btn-primary btn-sm" onclick="saveHourlySlots()"><i class="fa-solid fa-floppy-disk"></i> Save Schedule & Names</button>
+      </div>
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-bottom: 16px;">
+        <div class="form-group">
+          <label>Select Hourly Slot</label>
+          <select id="slotHourSelector">
+            <option value="5">05:00 AM - 06:00 AM</option>
+            <option value="6">06:00 AM - 07:00 AM</option>
+            <option value="7">07:00 AM - 08:00 AM</option>
+            <option value="8">08:00 AM - 09:00 AM</option>
+            <option value="9">09:00 AM - 10:00 AM</option>
+            <option value="10">10:00 AM - 11:00 AM</option>
+            <option value="11">11:00 AM - 12:00 PM</option>
+            <option value="12">12:00 PM - 01:00 PM</option>
+            <option value="13">01:00 PM - 02:00 PM</option>
+            <option value="14">02:00 PM - 03:00 PM</option>
+            <option value="15">03:00 PM - 04:00 PM</option>
+            <option value="16">04:00 PM - 05:00 PM</option>
+            <option value="17">05:00 PM - 06:00 PM</option>
+            <option value="18">06:00 PM - 07:00 PM</option>
+            <option value="19">07:00 PM - 08:00 PM</option>
+            <option value="20">08:00 PM - 09:00 PM</option>
+            <option value="21">09:00 PM - 10:00 PM</option>
+            <option value="22">10:00 PM - 11:00 PM</option>
+            <option value="23">11:00 PM - 12:00 AM</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label><i class="fa-solid fa-magnifying-glass"></i> Search & Find Audio</label>
+          <input type="text" id="slotTrackSearch" placeholder="Type title or contributor..." oninput="filterSlotTrackSelector()">
+        </div>
+
+        <div class="form-group">
+          <label>Approved Audio Track</label>
+          <select id="slotTrackSelector"></select>
+        </div>
+
+        <div style="display:flex; align-items:flex-end; margin-bottom:12px;">
+          <button class="btn btn-green btn-sm" style="width:100%; height:40px;" onclick="addTrackToSelectedSlot()"><i class="fa-solid fa-plus"></i> Add to Slot</button>
+        </div>
+      </div>
+
+      <div class="list-search-bar">
+        <input type="text" id="searchHourlySlotsInput" placeholder="🔍 Search hourly slots by slot name or hour..." oninput="renderHourlySlotsUI()">
+      </div>
+
+      <div id="hourlySlotsDisplay" class="scroll-container"></div>
+    </div>
+
+    <!-- AUDIO LIBRARY & INSTANT PUSH -->
+    <div class="panel">
+      <h2><i class="fa-solid fa-list" style="color:var(--accent);"></i> Audio Library & Instant Push</h2>
+      <div class="list-search-bar">
+        <input type="text" id="searchLibraryInput" placeholder="🔍 Search library tracks by title or contributor..." oninput="renderChronologicalTracks()">
+      </div>
+      <div id="chronologicalList" class="scroll-container">Loading library...</div>
+    </div>
+
+    <!-- CONTRIBUTOR USER APPROVALS -->
+    <div class="panel">
+      <h2><i class="fa-solid fa-user-check"></i> Contributor User Approvals</h2>
+      <div class="list-search-bar">
+        <input type="text" id="searchUsersInput" placeholder="🔍 Search contributors by username or mobile..." oninput="renderUsers()">
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Mobile</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="userTableBody">
+            <tr><td colspan="4" style="text-align:center;">Loading users...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- STATION SETTINGS -->
+    <div class="panel">
+      <h2><i class="fa-solid fa-gear"></i> Broadcast Settings</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px;">
+        <div class="form-group">
+          <label>Station Display Name</label>
+          <input type="text" id="cfgStationName" value="Synchro Radio">
+        </div>
+        <div class="form-group">
+          <label>Broadcast Engine Mode</label>
+          <input type="text" value="Synchronized Hourly Random & Named Slots" disabled>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="saveSettings()">Save Settings</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ================= CONFIGURATION =================
+  const BACKEND_URL = "https://script.google.com/macros/s/AKfycbzNtk3YwXCPq7uBLmUrPlaEFmYfrVMFbjodbKZTJZGmddcqh91Dju-z8Hx3gdwBBBKtsQ/exec";
+
+  let adminPasscode = "";
+  let tracks = [];
+  let users = [];
+  let hourlySchedules = {};
+  let cachedListeners = [];
+
+  // Live Mic Recording State
+  let mediaRecorder = null;
+  let micAudioChunks = [];
+  let micBase64Data = null;
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.innerText = msg;
+    t.style.display = 'block';
+    setTimeout(() => { t.style.display = 'none'; }, 3000);
+  }
+
+  async function verifyAdmin() {
+    const pass = document.getElementById('adminPasscode').value.trim();
+    if (!pass) return showToast("Enter passcode");
+
+    try {
+      const res = await fetch(`${BACKEND_URL}?action=getAdminData&key=${encodeURIComponent(pass)}`);
+      const data = await res.json();
+      if (data.success) {
+        adminPasscode = pass;
+        tracks = data.tracks || [];
+        users = data.users || [];
+        hourlySchedules = data.hourly || {};
+        cachedListeners = data.activeListeners || [];
+
+        document.getElementById('authGate').style.display = 'none';
+        document.getElementById('adminDashboard').style.display = 'block';
+        if (data.settings && data.settings.station_name) {
+          document.getElementById('cfgStationName').value = data.settings.station_name;
+        }
+
+        renderAudioApprovals();
+        renderChronologicalTracks();
+        renderUsers();
+        renderLiveListeners(cachedListeners);
+        renderHourlySlotsUI();
+        filterSlotTrackSelector();
+
+        setInterval(refreshAdminData, 15000);
+      } else {
+        showToast(data.message || "Invalid Passcode");
+      }
+    } catch(e) {
+      showToast("Could not connect to Google Apps Script");
+    }
+  }
+
+  async function refreshAdminData() {
+    if (!adminPasscode) return;
+    try {
+      const res = await fetch(`${BACKEND_URL}?action=getAdminData&key=${encodeURIComponent(adminPasscode)}`);
+      const data = await res.json();
+      if (data.success) {
+        tracks = data.tracks || [];
+        cachedListeners = data.activeListeners || [];
+        renderAudioApprovals();
+        renderChronologicalTracks();
+        renderLiveListeners(cachedListeners);
+      }
+    } catch(e) {}
+  }
+
+  // 6) Live Mic Recording & Push Actions
+  async function toggleMicRecording() {
+    const btn = document.getElementById('recordMicBtn');
+    const status = document.getElementById('micRecordingStatus');
+    const pushBtn = document.getElementById('pushMicBtn');
+
+    if (!mediaRecorder || mediaRecorder.state === "inactive") {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        micAudioChunks = [];
+
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data.size > 0) micAudioChunks.push(e.data);
+        };
+
+        mediaRecorder.onstop = () => {
+          const audioBlob = new Blob(micAudioChunks, { type: 'audio/webm' });
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            micBase64Data = reader.result.split(',')[1];
+            status.innerText = "Recording ready to push!";
+            pushBtn.style.display = "inline-flex";
+          };
+          reader.readAsDataURL(audioBlob);
+        };
+
+        mediaRecorder.start();
+        btn.innerHTML = `<i class="fa-solid fa-stop"></i> Stop Recording`;
+        status.innerHTML = `<span style="color:#ff3366;"><i class="fa-solid fa-circle fa-beat"></i> Recording live...</span>`;
+        pushBtn.style.display = "none";
+      } catch(err) {
+        showToast("Microphone permission denied");
+      }
+    } else if (mediaRecorder.state === "recording") {
+      mediaRecorder.stop();
+      btn.innerHTML = `<i class="fa-solid fa-microphone"></i> Record Again`;
+      status.innerText = "Encoding audio...";
+    }
+  }
+
+  async function pushRecordedMicAudio() {
+    if (!micBase64Data) return showToast("No recording found to push");
+    showToast("Pushing live mic broadcast to all listeners...");
+    try {
+      const res = await fetch(BACKEND_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "adminPushLiveMic", adminKey: adminPasscode, base64File: micBase64Data })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast("Live mic broadcast pushed successfully!");
+        document.getElementById('pushMicBtn').style.display = 'none';
+        document.getElementById('micRecordingStatus').innerText = "Mic Idle";
+        refreshAdminData();
+      }
+    } catch(e) {
+      showToast("Error pushing live mic audio");
+    }
+  }
+
+  // 3) Filtered Audio Approvals
+  function renderAudioApprovals() {
+    const q = (document.getElementById('searchApprovalsInput').value || "").toLowerCase().trim();
+    const tbody = document.getElementById('audioApprovalsTableBody');
+
+    const filtered = tracks.filter(t => {
+      const title = (t.title || "").toLowerCase();
+      const contrib = (t.contributor || "").toLowerCase();
+      return title.includes(q) || contrib.includes(q);
+    });
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--sub);">No matching audio requests.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(t => {
+      const isApproved = (t.approvalStatus === "approved");
+      return `
+        <tr>
+          <td><strong>${t.title}</strong></td>
+          <td>${t.contributor || 'Community'}</td>
+          <td>
+            <select class="cat-select" onchange="changeTrackCategory('${t.fileId}', this.value)">
+              <option value="Slot plays" ${t.category === 'Slot plays' ? 'selected' : ''}>Slot plays</option>
+              <option value="Random plays" ${t.category !== 'Slot plays' ? 'selected' : ''}>Random plays</option>
+            </select>
+          </td>
+          <td><span class="badge-tag ${isApproved ? 'badge-approved' : 'badge-pending'}">${t.approvalStatus || 'pending'}</span></td>
+          <td>
+            <span style="font-size:0.75rem; color:${t.playedInSlot ? 'var(--green)' : 'var(--sub)'};">
+              ${t.playedInSlot ? '<i class="fa-solid fa-check"></i> Debut Complete' : '<i class="fa-solid fa-hourglass-start"></i> Waiting Debut'}
+            </span>
+          </td>
+          <td>
+            ${isApproved
+              ? `<button class="btn btn-danger btn-sm" onclick="setAudioApproval('${t.fileId}', 'pending')">Revoke</button>`
+              : `<button class="btn btn-green btn-sm" onclick="setAudioApproval('${t.fileId}', 'approved')"><i class="fa-solid fa-check"></i> Approve</button>`
+            }
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  async function setAudioApproval(fileId, status) {
+    showToast("Updating audio approval...");
+    try {
+      const res = await fetch(BACKEND_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "adminUpdateAudioApproval", adminKey: adminPasscode, fileId, status })
+      });
+      const data = await res.json();
+      if (data.success) {
+        const trk = tracks.find(t => t.fileId === fileId);
+        if (trk) trk.approvalStatus = status;
+        renderAudioApprovals();
+        renderChronologicalTracks();
+        filterSlotTrackSelector();
+        showToast(data.message);
+      }
+    } catch(err) {
+      showToast("Error updating audio approval");
+    }
+  }
+
+  // 3) Filtered Live Listeners
+  function renderLiveListeners(listeners) {
+    const q = (document.getElementById('searchListenersInput').value || "").toLowerCase().trim();
+    const tbody = document.getElementById('liveListenersTableBody');
+
+    const filtered = (listeners || []).filter(l => {
+      const id = (l.listenerId || "").toLowerCase();
+      const user = (l.username || "").toLowerCase();
+      return id.includes(q) || user.includes(q);
+    });
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--sub);">No matching listeners.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = filtered.map(l => `
+      <tr>
+        <td><code>${l.listenerId}</code></td>
+        <td><strong>${l.username}</strong></td>
+        <td><span style="color: ${l.status === 'Listening Live' ? 'var(--green)' : 'var(--sub)'}; font-weight:600;"><i class="fa-solid fa-circle" style="font-size:0.5rem; vertical-align:middle; margin-right:4px;"></i>${l.status}</span></td>
+        <td style="color:var(--sub); font-size:0.8rem;">${l.lastSeen}</td>
+      </tr>
+    `).join('');
+  }
+
+  function filterSlotTrackSelector() {
+    const query = (document.getElementById('slotTrackSearch').value || "").toLowerCase().trim();
+    const sel = document.getElementById('slotTrackSelector');
+    
+    const filtered = tracks.filter(t => {
+      const approved = (t.approvalStatus === "approved");
+      const title = (t.title || "").toLowerCase();
+      const contrib = (t.contributor || "").toLowerCase();
+      return approved && (title.includes(query) || contrib.includes(query));
+    });
+
+    if (filtered.length === 0) {
+      sel.innerHTML = `<option value="">No matching approved tracks</option>`;
+      return;
+    }
+
+    sel.innerHTML = filtered.map(t => {
+      const debutBadge = t.playedInSlot ? "" : "[First Debut]";
+      return `<option value="${t.fileId}">${debutBadge} ${t.title} (${t.contributor || 'Community'})</option>`;
+    }).join('');
+  }
+
+  // 3) Filtered Hourly Slots
+  function renderHourlySlotsUI() {
+    const q = (document.getElementById('searchHourlySlotsInput').value || "").toLowerCase().trim();
+    const container = document.getElementById('hourlySlotsDisplay');
+    let html = '';
+
+    for (let h = 5; h <= 23; h++) {
+      const slot = hourlySchedules[String(h)] || { name: "", trackIds: [] };
+      const formattedHour = (h % 12 || 12) + (h >= 12 ? ':00 PM' : ':00 AM') + ' – ' + ((h + 1) % 12 || 12) + ((h + 1) >= 12 && (h + 1) < 24 ? ':00 PM' : ':00 AM');
+      const list = slot.trackIds || [];
+      const slotName = slot.name || '';
+
+      if (q && !formattedHour.toLowerCase().includes(q) && !slotName.toLowerCase().includes(q)) {
+        continue;
+      }
+
+      html += `
+        <div class="slot-item">
+          <div class="slot-header">
+            <div>
+              <strong style="color:var(--cyan); font-size:0.9rem;"><i class="fa-regular fa-clock" style="margin-right:6px;"></i>${formattedHour}</strong>
+            </div>
+            <div>
+              <input type="text" class="slot-name-input" placeholder="Slot Name (e.g. Folk Hour)" value="${slotName}" onchange="updateSlotName(${h}, this.value)">
+            </div>
+          </div>
+          <div>
+            ${list.length === 0 ? '<span style="font-size:0.75rem; color:var(--sub);">Empty slot: plays synchronized random sequence.</span>' : ''}
+            ${list.map((fileId, idx) => {
+              const trk = tracks.find(t => t.fileId === fileId);
+              const title = trk ? trk.title : 'Track (' + fileId + ')';
+              return `
+                <span class="slot-track-tag">
+                  <strong>#${idx + 1}</strong> ${title}
+                  <i class="fa-solid fa-circle-xmark" onclick="removeTrackFromSlot(${h},${idx})"></i>
+                </span>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+    container.innerHTML = html || `<p style="color:var(--sub); font-size:0.85rem; padding:10px;">No matching slots found.</p>`;
+  }
+
+  function updateSlotName(hour, name) {
+    if (!hourlySchedules[String(hour)]) hourlySchedules[String(hour)] = { name: "", trackIds: [] };
+    hourlySchedules[String(hour)].name = name;
+  }
+
+  function addTrackToSelectedSlot() {
+    const hour = document.getElementById('slotHourSelector').value;
+    const fileId = document.getElementById('slotTrackSelector').value;
+    if (!fileId) return showToast("Select an approved audio track");
+
+    if (!hourlySchedules[hour]) hourlySchedules[hour] = { name: "", trackIds: [] };
+    hourlySchedules[hour].trackIds.push(fileId);
+    renderHourlySlotsUI();
+    showToast(`Added track to ${hour}:00 slot.`);
+  }
+
+  function removeTrackFromSlot(hour, index) {
+    if (hourlySchedules[String(hour)] && hourlySchedules[String(hour)].trackIds) {
+      hourlySchedules[String(hour)].trackIds.splice(index, 1);
+      renderHourlySlotsUI();
+    }
+  }
+
+  async function saveHourlySlots() {
+    showToast("Saving hourly schedules and slot names...");
+    try {
+      const res = await fetch(BACKEND_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "saveHourlySchedule", adminKey: adminPasscode, schedules: hourlySchedules })
+      });
+      const data = await res.json();
+      showToast(data.message || "Hourly schedule saved!");
+    } catch(e) {
+      showToast("Error saving hourly schedule");
+    }
+  }
+
+  // 3) Filtered Library Tracks
+  function renderChronologicalTracks() {
+    const q = (document.getElementById('searchLibraryInput').value || "").toLowerCase().trim();
+    const box = document.getElementById('chronologicalList');
+
+    const filtered = tracks.filter(t => {
+      const title = (t.title || "").toLowerCase();
+      const contrib = (t.contributor || "").toLowerCase();
+      return title.includes(q) || contrib.includes(q);
+    });
+
+    if (filtered.length === 0) {
+      box.innerHTML = `<p style="color:var(--sub); font-size:0.85rem;">No matching tracks found.</p>`;
+      return;
+    }
+    box.innerHTML = filtered.map((t, idx) => {
+      const isApproved = (t.approvalStatus === "approved");
+      return `
+        <div class="track-row">
+          <div style="display:flex; align-items:center; gap:12px;" class="track-meta">
+            <strong style="width:24px; color:var(--accent);">${idx + 1}</strong>
+            <div>
+              <div style="font-weight:600; font-size:0.95rem;">${t.title}</div>
+              <div style="font-size:0.75rem; color:var(--sub);">
+                by ${t.contributor || 'Community'} • ${t.createdAt ? new Date(t.createdAt).toLocaleDateString() : 'Original'}
+                • <span class="badge-tag ${isApproved ? 'badge-approved' : 'badge-pending'}" style="font-size:0.65rem;">${t.approvalStatus || 'pending'}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="track-actions">
+            <select class="cat-select" onchange="changeTrackCategory('${t.fileId}', this.value)">
+              <option value="Slot plays" ${t.category === 'Slot plays' ? 'selected' : ''}>Slot plays</option>
+              <option value="Random plays" ${t.category !== 'Slot plays' ? 'selected' : ''}>Random plays</option>
+            </select>
+
+            <button class="btn btn-push btn-sm" ${!isApproved ? 'disabled style="opacity:0.4; cursor:not-allowed;"' : ''} onclick="pushTrackToLive('${t.fileId}', '${t.title.replace(/'/g, "\\'")}')">
+              <i class="fa-solid fa-bolt"></i> Push Now
+            </button>
+
+            <button class="btn btn-danger btn-sm" onclick="deleteTrack('${t.fileId}')"><i class="fa-solid fa-trash"></i></button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  async function changeTrackCategory(fileId, newCategory) {
+    showToast("Updating category...");
+    try {
+      const res = await fetch(BACKEND_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "adminUpdateTrackCategory", adminKey: adminPasscode, fileId, category: newCategory })
+      });
+      const data = await res.json();
+      if (data.success) {
+        const trk = tracks.find(t => t.fileId === fileId);
+        if (trk) trk.category = newCategory;
+        filterSlotTrackSelector();
+        showToast(data.message);
+      }
+    } catch(err) {
+      showToast("Error updating category");
+    }
+  }
+
+  async function pushTrackToLive(fileId, title) {
+    if (!confirm(`Are you sure you want to push "${title}" immediately to ALL live listeners?`)) return;
+    showToast(`Pushing "${title}" to all radios...`);
+    try {
+      const res = await fetch(BACKEND_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "adminPushTrack", adminKey: adminPasscode, fileId })
+      });
+      const data = await res.json();
+      showToast(data.message || "Pushed successfully!");
+    } catch(e) {
+      showToast("Error pushing track");
+    }
+  }
+
+  async function deleteTrack(fileId) {
+    if (!confirm("Are you sure you want to delete this track from Community Radio?")) return;
+    showToast("Deleting...");
+    try {
+      const res = await fetch(BACKEND_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "adminDeleteTrack", adminKey: adminPasscode, fileId })
+      });
+      const data = await res.json();
+      if (data.success) {
+        tracks = tracks.filter(t => t.fileId !== fileId);
+        renderAudioApprovals();
+        renderChronologicalTracks();
+        filterSlotTrackSelector();
+        showToast("Track deleted");
+      }
+    } catch(e) {
+      showToast("Error deleting track");
+    }
+  }
+
+  // 3) Filtered Users
+  function renderUsers() {
+    const q = (document.getElementById('searchUsersInput').value || "").toLowerCase().trim();
+    const tbody = document.getElementById('userTableBody');
+
+    const filtered = users.filter(u => {
+      const user = (u.username || "").toLowerCase();
+      const mob = (u.mobile || "").toLowerCase();
+      return user.includes(q) || mob.includes(q);
+    });
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--sub);">No matching users found.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = filtered.map(u => `
+      <tr>
+        <td><strong>${u.username}</strong></td>
+        <td>${u.mobile}</td>
+        <td>
+          <span style="color:${u.status === 'approved' ? 'var(--green)' : '#ffc107'}; font-weight:600; text-transform:uppercase; font-size:0.75rem;">
+            ${u.status}
+          </span>
+        </td>
+        <td>
+          ${u.status === 'approved' 
+            ? `<button class="btn btn-danger btn-sm" onclick="setUserStatus('${u.mobile}', 'pending')">Revoke</button>`
+            : `<button class="btn btn-green btn-sm" onclick="setUserStatus('${u.mobile}', 'approved')">Approve</button>`
+          }
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  async function setUserStatus(mobile, status) {
+    showToast("Updating user...");
+    try {
+      const res = await fetch(BACKEND_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "adminUpdateUserStatus", adminKey: adminPasscode, mobile, status })
+      });
+      const data = await res.json();
+      if (data.success) {
+        const target = users.find(u => String(u.mobile) === String(mobile));
+        if (target) target.status = status;
+        renderUsers();
+        showToast(data.message);
+      }
+    } catch(e) {
+      showToast("Error updating user status");
+    }
+  }
+
+  async function saveSettings() {
+    const station_name = document.getElementById('cfgStationName').value.trim();
+    showToast("Saving settings...");
+    try {
+      const res = await fetch(BACKEND_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "adminSaveSettings", adminKey: adminPasscode, settings: { station_name } })
+      });
+      const data = await res.json();
+      showToast(data.message || "Settings Saved");
+    } catch(e) {
+      showToast("Error saving settings");
+    }
+  }
+</script>
+
+</body>
+</html>
