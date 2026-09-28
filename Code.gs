@@ -13,7 +13,7 @@ function doGet(e) {
     const parameter = e.parameter || {};
     const action = parameter.action || "getStationData";
 
-    // 1) Audio Streamer: Preserves 100% of original fidelity and sample rates without compression
+    // 1) Audio Streamer: Preserves original fidelity and sample rates without compression
     if (action === "streamAudio") {
       const fileId = parameter.fileId;
       if (!fileId) {
@@ -92,6 +92,7 @@ function doPost(e) {
     else if (action === "saveHourlySchedule") response = handleSaveHourlySchedule(contents);
     else if (action === "autoFillDivision") response = handleAutoFillDivision(contents);
     else if (action === "autoScheduleAllRandom") response = handleAutoScheduleAllRandom(contents);
+    else if (action === "clearAllHourlySlots") response = handleClearAllHourlySlots(contents);
     else if (action === "adminPushTrack") response = handlePushTrack(contents);
     else if (action === "adminPushLiveMic") response = handlePushLiveMic(contents);
 
@@ -250,6 +251,26 @@ function handleAudioUpload(data) {
   };
 }
 
+// ----------------- CLEAR ALL HOURLY SLOTS -----------------
+
+function handleClearAllHourlySlots(data) {
+  data = data || {};
+  if (data.adminKey !== ADMIN_SECRET_KEY) return { success: false, message: "Unauthorized" };
+
+  const { hourlySheet, settingsSheet } = getSheets();
+  hourlySheet.clearContents();
+  hourlySheet.appendRow(["Hour", "SlotName", "TrackIdsJson"]);
+
+  for (let h = 0; h <= 23; h++) {
+    hourlySheet.appendRow([h, "", "[]"]);
+  }
+
+  const newVersion = String(Date.now());
+  setSettingValue(settingsSheet, "seq_version", newVersion);
+
+  return { success: true, message: "All hourly slots cleared successfully!", version: newVersion };
+}
+
 // ----------------- AUTO-SCHEDULE ALL 24 SLOTS FROM RANDOM PLAYS -----------------
 
 function handleAutoScheduleAllRandom(data) {
@@ -271,7 +292,6 @@ function handleAutoScheduleAllRandom(data) {
     }
   }
 
-  // Fallback to all approved tracks if Random Plays list is empty
   let pool = randomPlayTracks;
   if (pool.length === 0) {
     for (let i = 1; i < trackRows.length; i++) {
@@ -297,7 +317,6 @@ function handleAutoScheduleAllRandom(data) {
     let secTotal = 0;
     let idx = 0;
 
-    // Fill each hour with tracks totaling at least 3600 seconds (60 mins)
     while (secTotal < 3600 && shuffled.length > 0 && idx < 40) {
       const t = shuffled[idx % shuffled.length];
       hourTrackIds.push(t.fileId);

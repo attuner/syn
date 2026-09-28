@@ -352,8 +352,9 @@
             <p style="font-size:0.8rem; color:var(--sub);">Audios play in exact sequential time lengths. <strong>Click any audio chip to modify/replace it</strong> or delete it.</p>
           </div>
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <!-- 3) Auto-Schedule All Slots with Random Plays -->
             <button class="btn btn-purple btn-sm" onclick="triggerAutoScheduleRandom()"><i class="fa-solid fa-shuffle"></i> Auto-Schedule 24h (Random Plays)</button>
+            <!-- 2) Clear All Filled Slots Option -->
+            <button class="btn btn-danger btn-sm" onclick="triggerClearAllSlots()"><i class="fa-solid fa-trash-can"></i> Clear All Slots</button>
             <button class="btn btn-primary btn-sm" onclick="saveHourlySlots()"><i class="fa-solid fa-floppy-disk"></i> Save Broadcast Schedule</button>
           </div>
         </div>
@@ -651,7 +652,30 @@
     trackSel.innerHTML = approved.map(t => `<option value="${t.fileId}">${escapeHtml(t.title)} (${formatSecs(t.durationSec || 140)}) [${t.category}]</option>`).join('');
   }
 
-  // 3) Auto-Schedule All 24 Slots from Random Plays
+  // 2) Clear All Filled Slots Function
+  async function triggerClearAllSlots() {
+    if (!confirm("Are you sure you want to clear ALL filled audios and schedules across all 24 hours?")) return;
+    showToast("Clearing all 24 hourly slots...");
+    try {
+      const res = await fetch(BACKEND_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "clearAllHourlySlots", adminKey: adminPasscode })
+      });
+      const data = await res.json();
+      if (data.success) {
+        for (let h = 0; h <= 23; h++) {
+          hourlySchedules[String(h)] = { name: "", trackIds: [] };
+        }
+        renderHourlySlotsUI();
+        showToast("All slots successfully cleared!");
+      } else {
+        showToast(data.message || "Failed to clear slots");
+      }
+    } catch(e) {
+      showToast("Error communicating with backend");
+    }
+  }
+
   async function triggerAutoScheduleRandom() {
     if (!confirm("Auto-schedule all 24 hours using approved audios from the 'Random Plays' category?")) return;
     showToast("Auto-scheduling all slots with Random Plays...");
@@ -663,7 +687,6 @@
       const data = await res.json();
       if (data.success) {
         showToast(data.message || "All 24 hours scheduled with Random Plays!");
-        // Reload admin schedules
         const resAdmin = await fetch(`${BACKEND_URL}?action=getAdminData&key=${encodeURIComponent(adminPasscode)}`);
         const dataAdmin = await resAdmin.json();
         if (dataAdmin.success) {
