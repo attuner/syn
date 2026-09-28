@@ -3,135 +3,242 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tuner Radio Admin</title>
+  <title>Kutumb Radio • Admin Studio</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
-      --bg: #0d1117;
-      --card: #161b22;
-      --border: rgba(255, 255, 255, 0.1);
-      --accent: #ff3366;
-      --green: #00e676;
+      --bg: #090d16;
+      --surface: #121824;
+      --surface-card: #182030;
+      --border: rgba(255, 255, 255, 0.08);
+      --accent: #ff4760;
       --cyan: #00d2ff;
+      --green: #00e676;
       --text: #f0f6fc;
       --sub: #8b949e;
+      --radius: 14px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background: var(--bg);
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      padding: clamp(14px, 3vw, 28px);
-      display: flex;
-      justify-content: center;
       min-height: 100vh;
-    }
-    .admin-container { width: 100%; max-width: 1100px; }
-    .header {
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+    }
+    .admin-container { width: 100%; max-width: 1240px; }
+
+    /* Top Bar */
+    .topbar {
+      display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 16px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+      flex-wrap: wrap;
       gap: 12px;
-      padding-bottom: 20px;
+    }
+    .station-brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon {
+      width: 42px; height: 42px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), #ff758c);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.25rem; color: #fff;
+    }
+    .brand-title { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.5px; }
+    .brand-subtitle { font-size: 0.75rem; color: var(--sub); }
+
+    .clock-badge {
+      font-family: monospace;
+      font-size: 0.95rem;
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: rgba(0, 210, 255, 0.1);
+      border: 1px solid rgba(0, 210, 255, 0.3);
+      color: var(--cyan);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pulse-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 1.4s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+    /* Navigation Tabs */
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
       border-bottom: 1px solid var(--border);
-      margin-bottom: 24px;
+      margin-bottom: 20px;
+      overflow-x: auto;
+      padding-bottom: 4px;
     }
-    .header h1 { font-size: clamp(1.2rem, 3vw, 1.7rem); }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--sub);
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.04); }
+    .tab-btn.active { color: #fff; background: var(--surface); border: 1px solid var(--border); border-bottom: 2px solid var(--accent); }
+
+    /* Panels & Cards */
     .panel {
-      background: var(--card);
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: clamp(16px, 3vw, 24px);
-      margin-bottom: 24px;
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 20px;
     }
-    h2 { font-size: 1.25rem; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
-    .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; font-size: 0.8rem; color: var(--sub); margin-bottom: 6px; }
-    .form-group input, .form-group select {
-      width: 100%;
-      padding: 10px 14px;
-      border-radius: 8px;
-      background: #090d16;
-      border: 1px solid var(--border);
-      color: #fff;
-    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeIn 0.25s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Controls & Buttons */
     .btn {
-      padding: 10px 16px;
+      padding: 9px 16px;
       border-radius: 8px;
       border: none;
       font-weight: 600;
       cursor: pointer;
-      font-size: 0.85rem;
-      transition: 0.2s;
+      font-size: 0.84rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.15s ease;
     }
     .btn-primary { background: var(--accent); color: #fff; }
+    .btn-cyan { background: var(--cyan); color: #000; }
     .btn-green { background: var(--green); color: #000; }
     .btn-danger { background: #e63946; color: #fff; }
-    .btn-push { background: linear-gradient(135deg, #00d2ff, #0077ff); color: #fff; }
-    .btn-sm { padding: 6px 12px; font-size: 0.78rem; }
+    .btn-secondary { background: rgba(255, 255, 255, 0.08); color: #fff; }
+    .btn-sm { padding: 6px 12px; font-size: 0.76rem; border-radius: 6px; }
 
-    .table-responsive { width: 100%; overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-    th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
-    th { color: var(--sub); font-size: 0.75rem; text-transform: uppercase; }
-
-    .track-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 8px;
-      border-bottom: 1px solid var(--border);
-      gap: 12px;
-    }
-
-    .slot-item {
-      background: rgba(0,0,0,0.25);
+    /* Hourly Organizer Grid */
+    .slot-row {
+      background: var(--surface-card);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 14px;
+      padding: 16px;
       margin-bottom: 12px;
+      transition: border-color 0.2s;
     }
+    .slot-row.active-hour { border-color: var(--cyan); box-shadow: 0 0 16px rgba(0, 210, 255, 0.12); }
     .slot-header {
       display: flex;
-      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-      gap: 8px;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding-bottom: 10px;
       margin-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
-    .slot-name-input {
+    .slot-title-group { display: flex; align-items: center; gap: 10px; }
+    .slot-badge {
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+    .slot-badge.live { background: rgba(0, 230, 118, 0.15); color: var(--green); border: 1px solid rgba(0, 230, 118, 0.4); }
+    .slot-name-field {
       background: #090d16;
       border: 1px solid var(--border);
       border-radius: 6px;
       color: #fff;
       padding: 6px 10px;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       width: 220px;
     }
-    .slot-track-tag {
-      display: inline-flex;
-      align-items: center;
+
+    /* Push Point Timeline chips */
+    .timeline-container {
+      display: flex;
+      flex-direction: column;
       gap: 6px;
-      background: rgba(255, 255, 255, 0.08);
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 0.78rem;
-      margin: 4px 4px 4px 0;
     }
-    .slot-track-tag i { cursor: pointer; color: #ff5252; }
+    .track-chip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .track-chip:hover {
+      background: rgba(0, 210, 255, 0.06);
+      border-color: rgba(0, 210, 255, 0.3);
+    }
+    .chip-left { display: flex; align-items: center; gap: 10px; overflow: hidden; }
+    .chip-time-point {
+      font-family: monospace;
+      font-size: 0.78rem;
+      background: rgba(0, 210, 255, 0.12);
+      color: var(--cyan);
+      padding: 3px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      font-weight: 700;
+    }
+    .chip-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .chip-dur { color: var(--sub); font-size: 0.75rem; margin-left: 6px; }
+
+    /* Tables */
+    .table-box { width: 100%; overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+    th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { color: var(--sub); font-size: 0.72rem; text-transform: uppercase; background: var(--surface-card); }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(8px); z-index: 300; display: none;
+      align-items: center; justify-content: center; padding: 16px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-card {
+      width: 100%; max-width: 500px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 18px; padding: 22px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+    }
+
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 0.78rem; color: var(--sub); margin-bottom: 6px; }
+    .form-group input, .form-group select {
+      width: 100%; padding: 10px 12px; background: #090d16; border: 1px solid var(--border);
+      border-radius: 8px; color: #fff; font-size: 0.88rem; outline: none;
+    }
 
     .toast {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #ff3366;
-      color: #fff;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      display: none;
-      z-index: 100;
+      position: fixed; top: 20px; right: 20px; background: var(--accent);
+      color: #fff; padding: 10px 18px; border-radius: 20px; font-size: 0.85rem;
+      display: none; z-index: 400; box-shadow: 0 6px 16px rgba(0,0,0,0.4);
     }
   </style>
 </head>
@@ -139,165 +246,284 @@
 
 <div id="toast" class="toast"></div>
 
-<div class="admin-container">
-  <div class="header">
-    <h1><i class="fa-solid fa-sliders" style="color:var(--accent); margin-right:8px;"></i>Tuner Portal</h1>
-    <a href="index.html" style="color:var(--sub); text-decoration:none; font-size:0.88rem;">
-      <i class="fa-solid fa-arrow-left"></i> Open Radio App
-    </a>
+<!-- Track Replacement/Modification Modal -->
+<div id="replaceModal" class="modal-overlay" onclick="closeReplaceModal(event)">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <h3 style="font-size:1.05rem;"><i class="fa-solid fa-arrow-right-arrow-left" style="color:var(--cyan); margin-right:8px;"></i>Replace / Modify Audio</h3>
+      <button onclick="closeReplaceModal()" style="background:none; border:none; color:var(--sub); font-size:1.2rem; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <p style="font-size:0.8rem; color:var(--sub); margin-bottom:14px;">Choose another approved audio from the library. The real-time timeline push points adjust automatically.</p>
+    <div class="form-group">
+      <label>Choose Replacement Audio</label>
+      <select id="modalTrackSelector"></select>
+    </div>
+    <div style="display:flex; justify-content:space-between; gap:10px; margin-top:20px;">
+      <button class="btn btn-danger btn-sm" onclick="deleteTargetTrackFromSlot()"><i class="fa-solid fa-trash"></i> Remove</button>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-secondary btn-sm" onclick="closeReplaceModal()">Cancel</button>
+        <button class="btn btn-cyan btn-sm" onclick="confirmTrackReplacement()"><i class="fa-solid fa-check"></i> Apply Audio</button>
+      </div>
+    </div>
   </div>
+</div>
 
-  <!-- Passcode Gate -->
-  <div id="authGate" class="panel" style="max-width: 420px; margin: 40px auto; text-align: center;">
-    <h2>Admin Authentication</h2>
-    <div class="form-group" style="text-align:left; margin-top:16px;">
-      <label>Passcode Key</label>
+<div class="admin-container">
+
+  <!-- Passcode Auth Gate -->
+  <div id="authGate" class="panel" style="max-width: 400px; margin: 60px auto; text-align: center;">
+    <div class="brand-icon" style="margin: 0 auto 14px;"><i class="fa-solid fa-people-roof"></i></div>
+    <h2 style="font-size:1.3rem; margin-bottom:4px;">Kutumb Radio</h2>
+    <p style="font-size:0.8rem; color:var(--sub); margin-bottom:18px;">The Big Family Radio Studio</p>
+    <div class="form-group" style="text-align:left;">
+      <label>Admin Passcode</label>
       <input type="password" id="adminPasscode" placeholder="Default: admin123">
     </div>
-    <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="verifyAdmin()">Login to Station Panel</button>
+    <button class="btn btn-primary" style="width:100%; justify-content:center;" onclick="verifyAdmin()"><i class="fa-solid fa-key"></i> Authenticate Studio</button>
   </div>
 
+  <!-- Studio Dashboard -->
   <div id="adminDashboard" style="display:none;">
     
-    <!-- LIVE ONLINE LISTENERS -->
-    <div class="panel">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <h2><i class="fa-solid fa-tower-broadcast" style="color:var(--green);"></i> Live Online Listeners Details</h2>
-        <button class="btn btn-sm" style="background:#21262d; color:#fff;" onclick="refreshAdminData()"><i class="fa-solid fa-rotate"></i> Refresh</button>
-      </div>
-      <p style="font-size:0.8rem; color:var(--sub); margin-bottom:14px;">
-        Real-time list of listeners currently streaming live broadcasts.
-      </p>
-
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>Listener ID</th>
-              <th>Username</th>
-              <th>Status</th>
-              <th>Last Active</th>
-            </tr>
-          </thead>
-          <tbody id="liveListenersTableBody">
-            <tr><td colspan="4" style="text-align:center; color:var(--sub);">No listeners currently online.</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- 1 & 4) NAMED HOURLY SLOTS SCHEDULER (5 AM - 11 PM) -->
-    <div class="panel">
-      <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; margin-bottom:14px;">
-        <h2><i class="fa-solid fa-clock" style="color:var(--cyan);"></i> Named Hourly Slots (5 AM – 11 PM)</h2>
-        <button class="btn btn-primary btn-sm" onclick="saveHourlySlots()"><i class="fa-solid fa-floppy-disk"></i> Save Schedule & Names</button>
-      </div>
-      <p style="font-size:0.8rem; color:var(--sub); margin-bottom:14px;">
-        Give custom names to every hourly slot and attach tracks. The names display on the listener radio schedule. If tracks run under 60 minutes or the slot is empty, audio will play randomly from the total library.
-      </p>
-
-      <!-- Add Track to Slot Form -->
-      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-bottom: 16px;">
-        <div class="form-group">
-          <label>Select Hourly Slot</label>
-          <select id="slotHourSelector">
-            <option value="5">05:00 AM - 06:00 AM</option>
-            <option value="6">06:00 AM - 07:00 AM</option>
-            <option value="7">07:00 AM - 08:00 AM</option>
-            <option value="8">08:00 AM - 09:00 AM</option>
-            <option value="9">09:00 AM - 10:00 AM</option>
-            <option value="10">10:00 AM - 11:00 AM</option>
-            <option value="11">11:00 AM - 12:00 PM</option>
-            <option value="12">12:00 PM - 01:00 PM</option>
-            <option value="13">01:00 PM - 02:00 PM</option>
-            <option value="14">02:00 PM - 03:00 PM</option>
-            <option value="15">03:00 PM - 04:00 PM</option>
-            <option value="16">04:00 PM - 05:00 PM</option>
-            <option value="17">05:00 PM - 06:00 PM</option>
-            <option value="18">06:00 PM - 07:00 PM</option>
-            <option value="19">07:00 PM - 08:00 PM</option>
-            <option value="20">08:00 PM - 09:00 PM</option>
-            <option value="21">09:00 PM - 10:00 PM</option>
-            <option value="22">10:00 PM - 11:00 PM</option>
-            <option value="23">11:00 PM - 12:00 AM</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Select Audio Track to Add</label>
-          <select id="slotTrackSelector"></select>
-        </div>
-        <div style="display:flex; align-items:flex-end; margin-bottom:12px;">
-          <button class="btn btn-green btn-sm" style="width:100%; height:40px;" onclick="addTrackToSelectedSlot()"><i class="fa-solid fa-plus"></i> Add to Slot</button>
+    <header class="topbar">
+      <div class="station-brand">
+        <div class="brand-icon"><i class="fa-solid fa-tower-broadcast"></i></div>
+        <div>
+          <div class="brand-title" id="topStationName">Kutumb Radio</div>
+          <div class="brand-subtitle">The Big Family Radio • Real-Time Synchronized Broadcast</div>
         </div>
       </div>
 
-      <div id="hourlySlotsDisplay"></div>
-    </div>
-
-    <!-- 3 & 5) CHRONOLOGICAL LIBRARY & INSTANT PUSH AUDIO -->
-    <div class="panel">
-      <h2><i class="fa-solid fa-list" style="color:var(--accent);"></i> Chronological Audio Library & Instant Push</h2>
-      <p style="font-size:0.8rem; color:var(--sub); margin-bottom:16px;">
-        All uploaded audios are listed chronologically by upload date. Click <strong><i class="fa-solid fa-bolt"></i> Push Now</strong> on any track to instantly interrupt and play that track live on all listeners' radios.
-      </p>
-
-      <div id="chronologicalList">Loading library...</div>
-    </div>
-
-    <!-- CONTRIBUTOR APPROVALS -->
-    <div class="panel">
-      <h2><i class="fa-solid fa-user-check"></i> Contributor User Approvals</h2>
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>Username</th>
-              <th>Mobile</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="userTableBody">
-            <tr><td colspan="4" style="text-align:center;">Loading users...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- STATION SETTINGS -->
-    <div class="panel">
-      <h2><i class="fa-solid fa-gear"></i> Broadcast Settings</h2>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px;">
-        <div class="form-group">
-          <label>Station Display Name</label>
-          <input type="text" id="cfgStationName" value="Community Voice FM">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div class="clock-badge">
+          <span class="pulse-dot"></span>
+          <span id="liveClockDisplay">--:--:--</span>
         </div>
-        <div class="form-group">
-          <label>Broadcast Engine Mode</label>
-          <input type="text" value="Chronological & Random Hourly" disabled>
+        <a href="index.html" target="_blank" class="btn btn-secondary btn-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open Tuner</a>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('slotsTab', this)"><i class="fa-solid fa-clock"></i> 24-Hr Hourly Timeline</button>
+      <button class="tab-btn" onclick="switchTab('libraryTab', this)"><i class="fa-solid fa-music"></i> Audio Library & Push</button>
+      <button class="tab-btn" onclick="switchTab('approvalsTab', this)"><i class="fa-solid fa-check-double"></i> Approvals</button>
+      <button class="tab-btn" onclick="switchTab('liveTab', this)"><i class="fa-solid fa-headphones"></i> Listeners & Family</button>
+      <button class="tab-btn" onclick="switchTab('settingsTab', this)"><i class="fa-solid fa-sliders"></i> Settings</button>
+    </nav>
+
+    <!-- TAB 1: 24-HOUR HOURLY TIMELINE ORGANIZER -->
+    <section id="slotsTab" class="tab-content active">
+      <div class="panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+          <div>
+            <h2 style="font-size:1.15rem;"><i class="fa-solid fa-timeline" style="color:var(--cyan); margin-right:8px;"></i>Hourly Push Points Timeline</h2>
+            <p style="font-size:0.8rem; color:var(--sub);">Audios play in exact sequential time lengths. <strong>Click any audio chip to modify/replace it</strong> or delete it.</p>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="saveHourlySlots()"><i class="fa-solid fa-floppy-disk"></i> Save Broadcast Schedule</button>
+        </div>
+
+        <!-- Add Track Directly to Hour Slot -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; background:var(--surface-card); padding:14px; border-radius:10px; margin-bottom:16px;">
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Select Hour</label>
+            <select id="quickHourSelector"></select>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Approved Audio Track</label>
+            <select id="quickTrackSelector"></select>
+          </div>
+          <div style="display:flex; align-items:flex-end;">
+            <button class="btn btn-green btn-sm" style="width:100%; height:38px; justify-content:center;" onclick="addTrackToSelectedSlot()"><i class="fa-solid fa-plus"></i> Append to Slot</button>
+          </div>
+        </div>
+
+        <div id="hourlySlotsGrid">Loading timeline...</div>
+      </div>
+    </section>
+
+    <!-- TAB 2: LIBRARY & LIVE INSTANT PUSH -->
+    <section id="libraryTab" class="tab-content">
+      <div class="panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+          <div>
+            <h2 style="font-size:1.15rem;"><i class="fa-solid fa-compact-disc" style="color:var(--accent); margin-right:8px;"></i>Chronological Library & Urgent Push</h2>
+            <p style="font-size:0.8rem; color:var(--sub);">All approved audios. Pushing a track immediately broadcasts it across all family radios.</p>
+          </div>
+          <input type="text" id="libSearchInput" placeholder="Filter by title or contributor..." oninput="renderLibrary()" style="padding:8px 12px; background:#090d16; border:1px solid var(--border); border-radius:8px; color:#fff; font-size:0.82rem; width:260px;">
+        </div>
+
+        <div id="libraryList">Loading library...</div>
+      </div>
+
+      <!-- Live Mic Push Panel -->
+      <div class="panel">
+        <h2 style="font-size:1.15rem;"><i class="fa-solid fa-microphone-lines" style="color:var(--accent); margin-right:8px;"></i>Live Family Mic Broadcast</h2>
+        <p style="font-size:0.8rem; color:var(--sub); margin-bottom:14px;">Make a real-time voice announcement and push it immediately to every active listener.</p>
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+          <button id="micBtn" class="btn btn-primary" onclick="toggleMicRecording()"><i class="fa-solid fa-microphone"></i> Start Voice Announcement</button>
+          <span id="micStatus" style="font-size:0.85rem; color:var(--sub); font-weight:600;">Mic Idle</span>
+          <button id="pushMicBtn" class="btn btn-cyan" style="display:none;" onclick="pushRecordedMicAudio()"><i class="fa-solid fa-bolt"></i> Push Recording Now</button>
         </div>
       </div>
-      <button class="btn btn-primary btn-sm" onclick="saveSettings()">Save Settings</button>
-    </div>
+    </section>
+
+    <!-- TAB 3: AUDIO APPROVALS -->
+    <section id="approvalsTab" class="tab-content">
+      <div class="panel">
+        <h2 style="font-size:1.15rem; margin-bottom:12px;"><i class="fa-solid fa-circle-check" style="color:var(--green); margin-right:8px;"></i>Audio Approval Manager</h2>
+        <div class="table-box">
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Length</th>
+                <th>Contributor</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="approvalsTableBody">
+              <tr><td colspan="6" style="text-align:center; color:var(--sub);">Loading tracks...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: LISTENERS & USERS -->
+    <section id="liveTab" class="tab-content">
+      <div class="panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <h2 style="font-size:1.15rem;"><i class="fa-solid fa-tower-broadcast" style="color:var(--green); margin-right:8px;"></i>Live Family Listeners Online</h2>
+          <button class="btn btn-secondary btn-sm" onclick="refreshAdminData()"><i class="fa-solid fa-rotate"></i> Refresh</button>
+        </div>
+        <div class="table-box" style="margin-bottom:20px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Listener ID</th>
+                <th>Family Member</th>
+                <th>Status</th>
+                <th>Last Active</th>
+              </tr>
+            </thead>
+            <tbody id="listenersTableBody">
+              <tr><td colspan="4" style="text-align:center; color:var(--sub);">No listeners online.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 style="font-size:1.15rem; margin-bottom:12px;"><i class="fa-solid fa-user-group" style="margin-right:8px;"></i>Family Contributor Accounts</h2>
+        <div class="table-box">
+          <table>
+            <thead>
+              <tr>
+                <th>Member Name</th>
+                <th>Mobile</th>
+                <th>Permission</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <tr><td colspan="4" style="text-align:center; color:var(--sub);">Loading users...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: BROADCAST SETTINGS -->
+    <section id="settingsTab" class="tab-content">
+      <div class="panel">
+        <h2 style="font-size:1.15rem; margin-bottom:14px;"><i class="fa-solid fa-gear" style="margin-right:8px;"></i>Radio Settings</h2>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:14px; margin-bottom:14px;">
+          <div class="form-group">
+            <label>Station Display Name</label>
+            <input type="text" id="cfgStationName" value="Kutumb Radio">
+          </div>
+          <div class="form-group">
+            <label>Station Tagline</label>
+            <input type="text" id="cfgStationTagline" value="The Big Family Radio">
+          </div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="saveSettings()"><i class="fa-solid fa-check"></i> Save Settings</button>
+      </div>
+    </section>
 
   </div>
 </div>
 
 <script>
-  // ================= CONFIGURATION =================
-  const BACKEND_URL = "https://script.google.com/macros/s/AKfycbz8gdJKo0jiCzYXlTGneBmK-hUrWJsm5AKAl3T7qk4c-tFTUpP1EbiTuV1uEz8eeqi3/exec";
+  const BACKEND_URL = "https://script.google.com/macros/s/AKfycbzMKFB_sBJYVAuK17j3u7RCXplO3t47c1Dk93k0MrwoWehqS4mlwBfhlsleo1YzPqRykA/exec";
 
   let adminPasscode = "";
   let tracks = [];
   let users = [];
-  let hourlySchedules = {}; // { "5": { name: "...", trackIds: [] } }
+  let hourlySchedules = {};
+  let cachedListeners = [];
+  let serverTimeOffset = 0;
+
+  // Replacer Modal State
+  let replaceTargetHour = null;
+  let replaceTargetIndex = null;
+
+  // Live Mic State
+  let mediaRecorder = null;
+  let micAudioChunks = [];
+  let micBase64Data = null;
+  let micRecordStartTime = 0;
 
   function showToast(msg) {
     const t = document.getElementById('toast');
     t.innerText = msg;
     t.style.display = 'block';
-    setTimeout(() => { t.style.display = 'none'; }, 3000);
+    setTimeout(() => { t.style.display = 'none'; }, 3200);
   }
+
+  function escapeHtml(str) {
+    return String(str || "").replace(/[&<>'"]/g, 
+      tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+    );
+  }
+
+  function formatSecs(sec) {
+    const m = Math.floor(sec / 60);
+    const s = Math.round(sec % 60);
+    return `${m}m ${s < 10 ? '0' : ''}${s}s`;
+  }
+
+  function formatTimeOffset(hour, offsetSec) {
+    const totalSec = (hour * 3600) + offsetSec;
+    const h = Math.floor(totalSec / 3600) % 24;
+    const m = Math.floor((totalSec % 3600) / 60);
+    const s = Math.floor(totalSec % 60);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const dispH = h % 12 || 12;
+    return `${dispH}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')} ${ampm}`;
+  }
+
+  function switchTab(tabId, btn) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // Live real-time studio clock
+  setInterval(() => {
+    const now = new Date(Date.now() + serverTimeOffset);
+    const clockEl = document.getElementById('liveClockDisplay');
+    if (clockEl) {
+      let h = now.getHours();
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const s = String(now.getSeconds()).padStart(2, '0');
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      clockEl.innerText = `${h}:${m}:${s} ${ampm}`;
+    }
+  }, 1000);
 
   async function verifyAdmin() {
     const pass = document.getElementById('adminPasscode').value.trim();
@@ -308,26 +534,36 @@
       const data = await res.json();
       if (data.success) {
         adminPasscode = pass;
+        if (data.serverTime) serverTimeOffset = data.serverTime - Date.now();
         tracks = data.tracks || [];
         users = data.users || [];
         hourlySchedules = data.hourly || {};
+        cachedListeners = data.activeListeners || [];
+
         document.getElementById('authGate').style.display = 'none';
         document.getElementById('adminDashboard').style.display = 'block';
+
         if (data.settings && data.settings.station_name) {
+          document.getElementById('topStationName').innerText = data.settings.station_name;
           document.getElementById('cfgStationName').value = data.settings.station_name;
         }
-        renderChronologicalTracks();
-        renderUsers();
-        renderLiveListeners(data.activeListeners || []);
+        if (data.settings && data.settings.station_tagline) {
+          document.getElementById('cfgStationTagline').value = data.settings.station_tagline;
+        }
+
+        initQuickDropdowns();
         renderHourlySlotsUI();
-        populateTrackSelector();
+        renderLibrary();
+        renderApprovals();
+        renderListeners(cachedListeners);
+        renderUsers();
 
         setInterval(refreshAdminData, 15000);
       } else {
         showToast(data.message || "Invalid Passcode");
       }
     } catch(e) {
-      showToast("Could not connect to Google Apps Script");
+      showToast("Could not connect to Google Apps Script.");
     }
   }
 
@@ -337,144 +573,215 @@
       const res = await fetch(`${BACKEND_URL}?action=getAdminData&key=${encodeURIComponent(adminPasscode)}`);
       const data = await res.json();
       if (data.success) {
-        renderLiveListeners(data.activeListeners || []);
+        tracks = data.tracks || [];
+        users = data.users || [];
+        cachedListeners = data.activeListeners || [];
+        renderApprovals();
+        renderListeners(cachedListeners);
+        renderUsers();
       }
     } catch(e) {}
   }
 
-  function renderLiveListeners(listeners) {
-    const tbody = document.getElementById('liveListenersTableBody');
-    if (!listeners || listeners.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--sub);">No listeners currently online.</td></tr>`;
-      return;
-    }
-    tbody.innerHTML = listeners.map(l => `
-      <tr>
-        <td><code>${l.listenerId}</code></td>
-        <td><strong>${l.username}</strong></td>
-        <td><span style="color: ${l.status === 'Listening Live' ? 'var(--green)' : 'var(--sub)'}; font-weight:600;"><i class="fa-solid fa-circle" style="font-size:0.5rem; vertical-align:middle; margin-right:4px;"></i>${l.status}</span></td>
-        <td style="color:var(--sub); font-size:0.8rem;">${l.lastSeen}</td>
-      </tr>
-    `).join('');
+  function initQuickDropdowns() {
+    const hourSel = document.getElementById('quickHourSelector');
+    hourSel.innerHTML = Array.from({ length: 24 }, (_, h) => {
+      const disp = (h % 12 || 12) + ':00 ' + (h >= 12 ? 'PM' : 'AM');
+      return `<option value="${h}">Hour ${h} (${disp})</option>`;
+    }).join('');
+
+    updateQuickTrackDropdown();
   }
 
-  function populateTrackSelector() {
-    const sel = document.getElementById('slotTrackSelector');
-    if (tracks.length === 0) {
-      sel.innerHTML = `<option value="">No tracks available</option>`;
+  function updateQuickTrackDropdown() {
+    const trackSel = document.getElementById('quickTrackSelector');
+    const approved = tracks.filter(t => t.approvalStatus === "approved");
+    if (approved.length === 0) {
+      trackSel.innerHTML = `<option value="">No approved tracks</option>`;
       return;
     }
-    sel.innerHTML = tracks.map(t => `<option value="${t.fileId}">${t.title} (${t.contributor || 'Community'})</option>`).join('');
+    trackSel.innerHTML = approved.map(t => `<option value="${t.fileId}">${escapeHtml(t.title)} (${formatSecs(t.durationSec || 140)})</option>`).join('');
   }
 
-  // 1) Render Named Hourly Slots UI
+  // 1) Clear & Modern Hourly Slots with Exact Push Points
   function renderHourlySlotsUI() {
-    const container = document.getElementById('hourlySlotsDisplay');
+    const container = document.getElementById('hourlySlotsGrid');
+    if (!container) return;
+    const nowHour = new Date(Date.now() + serverTimeOffset).getHours();
     let html = '';
 
-    for (let h = 5; h <= 23; h++) {
-      const slot = hourlySchedules[String(h)] || { name: "", trackIds: [] };
-      const formattedHour = (h % 12 || 12) + (h >= 12 ? ':00 PM' : ':00 AM') + ' – ' + ((h + 1) % 12 || 12) + ((h + 1) >= 12 && (h + 1) < 24 ? ':00 PM' : ':00 AM');
+    for (let h = 0; h <= 23; h++) {
+      const slot = (hourlySchedules && hourlySchedules[String(h)]) ? hourlySchedules[String(h)] : { name: "", trackIds: [] };
+      const formattedHour = (h % 12 || 12) + ':00 ' + (h >= 12 ? 'PM' : 'AM') + ' – ' + ((h + 1) % 12 || 12) + ':00 ' + ((h + 1) >= 12 && (h + 1) < 24 ? 'PM' : 'AM');
       const list = slot.trackIds || [];
+      const slotName = String(slot.name || '');
+      const isLiveNow = (h === nowHour);
+
+      let cumulativeSec = 0;
+      let chipsHtml = '';
+
+      if (list.length === 0) {
+        chipsHtml = `<span style="font-size:0.75rem; color:var(--sub); padding:6px 0;">No scheduled audios in this hour.</span>`;
+      } else {
+        chipsHtml = `<div class="timeline-container">` + list.map((fileId, idx) => {
+          const trk = tracks.find(t => t.fileId === fileId);
+          const title = trk ? trk.title : 'Track (' + fileId + ')';
+          const dur = trk ? (trk.durationSec || 140) : 140;
+          const pushPoint = formatTimeOffset(h, cumulativeSec);
+          cumulativeSec += dur;
+
+          return `
+            <div class="track-chip" onclick="openReplaceModal(${h}, ${idx})" title="Click to replace or re-sequence">
+              <div class="chip-left">
+                <span class="chip-time-point"><i class="fa-solid fa-play" style="font-size:0.6rem; margin-right:3px;"></i>${pushPoint}</span>
+                <span class="chip-title"><strong>#${idx + 1}</strong> ${escapeHtml(title)}</span>
+                <span class="chip-dur">(${formatSecs(dur)})</span>
+              </div>
+              <div style="display:flex; gap:6px;" onclick="event.stopPropagation()">
+                <button class="btn btn-sm btn-secondary" onclick="openReplaceModal(${h}, ${idx})"><i class="fa-solid fa-pen"></i></button>
+                <button class="btn btn-sm btn-danger" onclick="removeTrackFromSlot(${h}, ${idx})"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+            </div>
+          `;
+        }).join('') + `</div>`;
+      }
 
       html += `
-        <div class="slot-item">
+        <div class="slot-row ${isLiveNow ? 'active-hour' : ''}">
           <div class="slot-header">
-            <div>
-              <strong style="color:var(--cyan); font-size:0.9rem;"><i class="fa-regular fa-clock" style="margin-right:6px;"></i>${formattedHour}</strong>
+            <div class="slot-title-group">
+              <span class="slot-badge ${isLiveNow ? 'live' : ''}">${isLiveNow ? '● ON AIR NOW' : 'HOUR ' + h}</span>
+              <strong style="font-size:0.95rem;">${formattedHour}</strong>
+              <span style="font-size:0.75rem; color:var(--sub);">Total Duration: ${formatSecs(cumulativeSec)}</span>
             </div>
             <div>
-              <input type="text" class="slot-name-input" placeholder="Slot Name (e.g. Folk Hour)" value="${slot.name || ''}" onchange="updateSlotName(${h}, this.value)">
+              <input type="text" class="slot-name-field" placeholder="Slot Name (e.g. Morning Family Raga)" value="${escapeHtml(slotName)}" onchange="updateSlotName(${h}, this.value)">
             </div>
           </div>
-          <div>
-            ${list.length === 0 ? '<span style="font-size:0.75rem; color:var(--sub);">Empty slot: audios will play randomly from total library.</span>' : ''}
-            ${list.map((fileId, idx) => {
-              const trk = tracks.find(t => t.fileId === fileId);
-              const title = trk ? trk.title : 'Track (' + fileId + ')';
-              return `
-                <span class="slot-track-tag">
-                  <strong>#${idx + 1}</strong>${title}
-                  <i class="fa-solid fa-circle-xmark" onclick="removeTrackFromSlot(${h},${idx})"></i>
-                </span>
-              `;
-            }).join('')}
-          </div>
+          ${chipsHtml}
         </div>
       `;
     }
     container.innerHTML = html;
   }
 
-  function updateSlotName(hour, name) {
-    if (!hourlySchedules[String(hour)]) hourlySchedules[String(hour)] = { name: "", trackIds: [] };
-    hourlySchedules[String(hour)].name = name;
+  function updateSlotName(h, val) {
+    if (!hourlySchedules[String(h)]) hourlySchedules[String(h)] = { name: "", trackIds: [] };
+    hourlySchedules[String(h)].name = val;
   }
 
   function addTrackToSelectedSlot() {
-    const hour = document.getElementById('slotHourSelector').value;
-    const fileId = document.getElementById('slotTrackSelector').value;
-    if (!fileId) return showToast("Select an audio track");
+    const h = document.getElementById('quickHourSelector').value;
+    const fileId = document.getElementById('quickTrackSelector').value;
+    if (!fileId) return showToast("Select an approved audio track first");
 
-    if (!hourlySchedules[hour]) hourlySchedules[hour] = { name: "", trackIds: [] };
-    hourlySchedules[hour].trackIds.push(fileId);
+    if (!hourlySchedules[String(h)]) hourlySchedules[String(h)] = { name: "", trackIds: [] };
+    hourlySchedules[String(h)].trackIds.push(fileId);
     renderHourlySlotsUI();
-    showToast(`Added track to ${hour}:00 slot.`);
+    showToast(`Track added to Hour ${h}. Push points updated!`);
   }
 
-  function removeTrackFromSlot(hour, index) {
-    if (hourlySchedules[String(hour)] && hourlySchedules[String(hour)].trackIds) {
-      hourlySchedules[String(hour)].trackIds.splice(index, 1);
+  function removeTrackFromSlot(h, idx) {
+    if (hourlySchedules[String(h)] && hourlySchedules[String(h)].trackIds) {
+      hourlySchedules[String(h)].trackIds.splice(idx, 1);
       renderHourlySlotsUI();
+      showToast("Track removed. Push points updated!");
     }
   }
 
+  // 3) Quick Replace / Modify Modal Handlers
+  function openReplaceModal(h, idx) {
+    replaceTargetHour = h;
+    replaceTargetIndex = idx;
+    const modalSel = document.getElementById('modalTrackSelector');
+    const approved = tracks.filter(t => t.approvalStatus === "approved");
+
+    modalSel.innerHTML = approved.map(t => {
+      const dur = formatSecs(t.durationSec || 140);
+      return `<option value="${t.fileId}">${escapeHtml(t.title)} (${dur})</option>`;
+    }).join('');
+
+    const currentTrackId = hourlySchedules[String(h)].trackIds[idx];
+    if (currentTrackId) modalSel.value = currentTrackId;
+
+    document.getElementById('replaceModal').classList.add('open');
+  }
+
+  function closeReplaceModal(e) {
+    if (!e || e.target === document.getElementById('replaceModal')) {
+      document.getElementById('replaceModal').classList.remove('open');
+    }
+  }
+
+  function confirmTrackReplacement() {
+    const newFileId = document.getElementById('modalTrackSelector').value;
+    if (!newFileId) return;
+
+    if (hourlySchedules[String(replaceTargetHour)] && hourlySchedules[String(replaceTargetHour)].trackIds) {
+      hourlySchedules[String(replaceTargetHour)].trackIds[replaceTargetIndex] = newFileId;
+      renderHourlySlotsUI();
+      closeReplaceModal();
+      showToast("Audio modified! Push points updated.");
+    }
+  }
+
+  function deleteTargetTrackFromSlot() {
+    removeTrackFromSlot(replaceTargetHour, replaceTargetIndex);
+    closeReplaceModal();
+  }
+
   async function saveHourlySlots() {
-    showToast("Saving hourly schedules and slot names...");
+    showToast("Saving hourly timeline...");
     try {
       const res = await fetch(BACKEND_URL, {
         method: 'POST',
         body: JSON.stringify({ action: "saveHourlySchedule", adminKey: adminPasscode, schedules: hourlySchedules })
       });
       const data = await res.json();
-      showToast(data.message || "Hourly schedule saved!");
+      showToast(data.message || "Broadcast schedule saved!");
     } catch(e) {
-      showToast("Error saving hourly schedule");
+      showToast("Error saving schedule");
     }
   }
 
-  // 3 & 5) Render Chronological Tracks & Instant Push
-  function renderChronologicalTracks() {
-    const box = document.getElementById('chronologicalList');
-    if (tracks.length === 0) {
-      box.innerHTML = `<p style="color:var(--sub); font-size:0.85rem;">No tracks uploaded yet.</p>`;
+  // Library & Push Action
+  function renderLibrary() {
+    const q = (document.getElementById('libSearchInput') ? document.getElementById('libSearchInput').value : "").toLowerCase().trim();
+    const box = document.getElementById('libraryList');
+    if (!box) return;
+
+    const filtered = tracks.filter(t => {
+      return String(t.title || "").toLowerCase().includes(q) || String(t.contributor || "").toLowerCase().includes(q);
+    });
+
+    if (filtered.length === 0) {
+      box.innerHTML = `<p style="color:var(--sub); font-size:0.85rem; padding:10px;">No tracks found.</p>`;
       return;
     }
-    box.innerHTML = tracks.map((t, idx) => `
-      <div class="track-row">
-        <div style="display:flex; align-items:center; gap:12px; overflow:hidden;">
-          <strong style="width:24px; color:var(--accent);">${idx + 1}</strong>
-          <div style="overflow:hidden;">
-            <div style="font-weight:600; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">${t.title}</div>
-            <div style="font-size:0.75rem; color:var(--sub); white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">
-              by ${t.contributor || 'Community'} • ${t.createdAt ? new Date(t.createdAt).toLocaleDateString() : 'Original'}
+
+    box.innerHTML = filtered.map((t, idx) => {
+      const isApproved = (t.approvalStatus === "approved");
+      const dur = formatSecs(t.durationSec || 140);
+      return `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:8px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <strong style="color:var(--accent); width:20px;">${idx + 1}</strong>
+            <div>
+              <div style="font-weight:600; font-size:0.92rem;">${escapeHtml(t.title)} <span style="font-size:0.75rem; color:var(--cyan);">(${dur})</span></div>
+              <div style="font-size:0.74rem; color:var(--sub);">by ${escapeHtml(t.contributor || 'Family Member')} • ${isApproved ? '<span style="color:var(--green)">Approved</span>' : '<span style="color:#ffc107">Pending</span>'}</div>
             </div>
           </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-cyan btn-sm" ${!isApproved ? 'disabled style="opacity:0.4; cursor:not-allowed;"' : ''} onclick="pushTrackLive('${t.fileId}', '${escapeHtml(t.title)}')"><i class="fa-solid fa-bolt"></i> Push Now</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteTrack('${t.fileId}')"><i class="fa-solid fa-trash"></i></button>
+          </div>
         </div>
-        <div style="display:flex; gap:8px; flex-shrink:0;">
-          <!-- 5) Push specific audio instantly to all radios -->
-          <button class="btn btn-push btn-sm" onclick="pushTrackToLive('${t.fileId}', '${t.title.replace(/'/g, "\\'")}')">
-            <i class="fa-solid fa-bolt"></i> Push Now
-          </button>
-          <button class="btn btn-danger btn-sm" onclick="deleteTrack('${t.fileId}')"><i class="fa-solid fa-trash"></i></button>
-        </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   }
 
-  // 5) Instant Push Action
-  async function pushTrackToLive(fileId, title) {
-    if (!confirm(`Are you sure you want to push "${title}" immediately to ALL live listeners?`)) return;
+  async function pushTrackLive(fileId, title) {
+    if (!confirm(`Push "${title}" instantly to ALL listeners?`)) return;
     showToast(`Pushing "${title}" to all radios...`);
     try {
       const res = await fetch(BACKEND_URL, {
@@ -482,14 +789,14 @@
         body: JSON.stringify({ action: "adminPushTrack", adminKey: adminPasscode, fileId })
       });
       const data = await res.json();
-      showToast(data.message || "Pushed successfully!");
+      showToast(data.message || "Pushed live!");
     } catch(e) {
       showToast("Error pushing track");
     }
   }
 
   async function deleteTrack(fileId) {
-    if (!confirm("Are you sure you want to delete this track from Community Radio?")) return;
+    if (!confirm("Delete this audio track?")) return;
     showToast("Deleting...");
     try {
       const res = await fetch(BACKEND_URL, {
@@ -499,42 +806,189 @@
       const data = await res.json();
       if (data.success) {
         tracks = tracks.filter(t => t.fileId !== fileId);
-        renderChronologicalTracks();
-        populateTrackSelector();
-        showToast("Track deleted");
+        renderLibrary();
+        renderApprovals();
+        updateQuickTrackDropdown();
+        showToast("Deleted");
       }
     } catch(e) {
       showToast("Error deleting track");
     }
   }
 
-  function renderUsers() {
-    const tbody = document.getElementById('userTableBody');
-    if (users.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--sub);">No users registered yet.</td></tr>`;
+  // Live Mic Recording
+  async function toggleMicRecording() {
+    const btn = document.getElementById('micBtn');
+    const status = document.getElementById('micStatus');
+    const pushBtn = document.getElementById('pushMicBtn');
+
+    if (!mediaRecorder || mediaRecorder.state === "inactive") {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        micAudioChunks = [];
+        micRecordStartTime = Date.now();
+
+        mediaRecorder.ondataavailable = e => { if (e.data.size > 0) micAudioChunks.push(e.data); };
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(micAudioChunks, { type: 'audio/webm' });
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            micBase64Data = reader.result.split(',')[1];
+            status.innerText = "Announcement ready to push!";
+            pushBtn.style.display = "inline-flex";
+          };
+          reader.readAsDataURL(blob);
+        };
+
+        mediaRecorder.start();
+        btn.innerHTML = `<i class="fa-solid fa-stop"></i> Stop Announcement`;
+        status.innerHTML = `<span style="color:var(--accent);">● Recording live message...</span>`;
+        pushBtn.style.display = "none";
+      } catch(e) {
+        showToast("Mic permission denied");
+      }
+    } else if (mediaRecorder.state === "recording") {
+      mediaRecorder.stop();
+      btn.innerHTML = `<i class="fa-solid fa-microphone"></i> Record Again`;
+      status.innerText = "Encoding message...";
+    }
+  }
+
+  async function pushRecordedMicAudio() {
+    if (!micBase64Data) return;
+    const durSec = Math.round((Date.now() - micRecordStartTime) / 1000) || 60;
+    showToast("Pushing live message to all radios...");
+    try {
+      const res = await fetch(BACKEND_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "adminPushLiveMic", adminKey: adminPasscode, base64File: micBase64Data, durationSec: durSec })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast("Announcement broadcasted successfully!");
+        document.getElementById('pushMicBtn').style.display = 'none';
+        document.getElementById('micStatus').innerText = "Mic Idle";
+      }
+    } catch(e) {
+      showToast("Error broadcasting announcement");
+    }
+  }
+
+  function renderApprovals() {
+    const tbody = document.getElementById('approvalsTableBody');
+    if (!tbody) return;
+
+    if (tracks.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--sub);">No audio tracks uploaded yet.</td></tr>`;
       return;
     }
-    tbody.innerHTML = users.map(u => `
+
+    tbody.innerHTML = tracks.map(t => {
+      const isApproved = (t.approvalStatus === "approved");
+      const dur = formatSecs(t.durationSec || 140);
+      return `
+        <tr>
+          <td><strong>${escapeHtml(t.title)}</strong></td>
+          <td><code style="color:var(--cyan); font-weight:700;">${dur}</code></td>
+          <td>${escapeHtml(t.contributor || 'Family Member')}</td>
+          <td>
+            <select style="background:#090d16; border:1px solid var(--border); color:#fff; padding:4px 8px; border-radius:6px; font-size:0.78rem;" onchange="changeTrackCategory('${t.fileId}', this.value)">
+              <option value="Admin Selections" ${t.category !== 'Random Plays' ? 'selected' : ''}>Admin Selections</option>
+              <option value="Random Plays" ${t.category === 'Random Plays' ? 'selected' : ''}>Random Plays</option>
+            </select>
+          </td>
+          <td><span style="font-size:0.75rem; font-weight:700; color:${isApproved ? 'var(--green)' : '#ffc107'}">${t.approvalStatus || 'pending'}</span></td>
+          <td>
+            ${isApproved
+              ? `<button class="btn btn-danger btn-sm" onclick="setAudioApproval('${t.fileId}', 'pending')">Revoke</button>`
+              : `<button class="btn btn-green btn-sm" onclick="setAudioApproval('${t.fileId}', 'approved')"><i class="fa-solid fa-check"></i> Approve</button>`
+            }
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  async function setAudioApproval(fileId, status) {
+    showToast("Updating audio...");
+    try {
+      const res = await fetch(BACKEND_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "adminUpdateAudioApproval", adminKey: adminPasscode, fileId, status })
+      });
+      const data = await res.json();
+      if (data.success) {
+        const trk = tracks.find(t => t.fileId === fileId);
+        if (trk) trk.approvalStatus = status;
+        renderApprovals();
+        renderLibrary();
+        updateQuickTrackDropdown();
+        showToast(data.message);
+      }
+    } catch(e) {
+      showToast("Error updating status");
+    }
+  }
+
+  async function changeTrackCategory(fileId, category) {
+    try {
+      const res = await fetch(BACKEND_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "adminUpdateTrackCategory", adminKey: adminPasscode, fileId, category })
+      });
+      const data = await res.json();
+      if (data.success) {
+        const trk = tracks.find(t => t.fileId === fileId);
+        if (trk) trk.category = category;
+        showToast(data.message);
+      }
+    } catch(e) {}
+  }
+
+  function renderListeners(listeners) {
+    const tbody = document.getElementById('listenersTableBody');
+    if (!tbody) return;
+    if (!listeners || listeners.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--sub);">No listeners online.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = listeners.map(l => `
       <tr>
-        <td><strong>${u.username}</strong></td>
-        <td>${u.mobile}</td>
-        <td>
-          <span style="color:${u.status === 'approved' ? 'var(--green)' : '#ffc107'}; font-weight:600; text-transform:uppercase; font-size:0.75rem;">
-            ${u.status}
-          </span>
-        </td>
-        <td>
-          ${u.status === 'approved' 
-            ? `<button class="btn btn-danger btn-sm" onclick="setUserStatus('${u.mobile}', 'pending')">Revoke</button>`
-            : `<button class="btn btn-green btn-sm" onclick="setUserStatus('${u.mobile}', 'approved')">Approve</button>`
-          }
-        </td>
+        <td><code>${escapeHtml(l.listenerId)}</code></td>
+        <td><strong>${escapeHtml(l.username)}</strong></td>
+        <td><span style="color:${l.status === 'Listening Live' ? 'var(--green)' : 'var(--sub)'}; font-weight:600;">● ${escapeHtml(l.status)}</span></td>
+        <td style="color:var(--sub); font-size:0.8rem;">${escapeHtml(l.lastSeen)}</td>
       </tr>
     `).join('');
   }
 
+  function renderUsers() {
+    const tbody = document.getElementById('usersTableBody');
+    if (!tbody) return;
+    if (!users || users.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--sub);">No registered family members.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = users.map(u => {
+      const isApproved = (u.status === "approved");
+      return `
+        <tr>
+          <td><strong>${escapeHtml(u.username)}</strong></td>
+          <td>${escapeHtml(u.mobile)}</td>
+          <td><span style="color:${isApproved ? 'var(--green)' : '#ffc107'}; font-weight:600; font-size:0.75rem;">${escapeHtml(u.status)}</span></td>
+          <td>
+            ${isApproved
+              ? `<button class="btn btn-danger btn-sm" onclick="setUserStatus('${u.mobile}', 'pending')">Revoke</button>`
+              : `<button class="btn btn-green btn-sm" onclick="setUserStatus('${u.mobile}', 'approved')">Approve Member</button>`
+            }
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
   async function setUserStatus(mobile, status) {
-    showToast("Updating user...");
     try {
       const res = await fetch(BACKEND_URL, {
         method: 'POST',
@@ -542,26 +996,26 @@
       });
       const data = await res.json();
       if (data.success) {
-        const target = users.find(u => String(u.mobile) === String(mobile));
-        if (target) target.status = status;
+        const u = users.find(x => String(x.mobile) === String(mobile));
+        if (u) u.status = status;
         renderUsers();
         showToast(data.message);
       }
-    } catch(e) {
-      showToast("Error updating user status");
-    }
+    } catch(e) {}
   }
 
   async function saveSettings() {
     const station_name = document.getElementById('cfgStationName').value.trim();
+    const station_tagline = document.getElementById('cfgStationTagline').value.trim();
     showToast("Saving settings...");
     try {
       const res = await fetch(BACKEND_URL, {
         method: 'POST',
-        body: JSON.stringify({ action: "adminSaveSettings", adminKey: adminPasscode, settings: { station_name } })
+        body: JSON.stringify({ action: "adminSaveSettings", adminKey: adminPasscode, settings: { station_name, station_tagline } })
       });
       const data = await res.json();
-      showToast(data.message || "Settings Saved");
+      document.getElementById('topStationName').innerText = station_name;
+      showToast(data.message || "Settings saved!");
     } catch(e) {
       showToast("Error saving settings");
     }

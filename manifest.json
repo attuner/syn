@@ -1,6 +1,7 @@
 {
-  "name": "The Tuner",
-  "short_name": "Tuner",
+  "name": "Kutumb Radio • The Big Family Radio",
+  "short_name": "Kutumb Radio",
+  "description": "Real-time synchronized 24/7 broadcast radio for the entire family.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
