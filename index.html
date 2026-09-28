@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Synchro Radio</title>
+  <title>The Tuner</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#090d16">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,7 +20,6 @@
       --green: #00e676;
       --text: #f0f6fc;
       --subtext: #8b949e;
-      --header-h: 65px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     body {
@@ -32,7 +31,6 @@
       flex-direction: column;
       align-items: center;
       background-image: radial-gradient(circle at 50% 10%, #1a2236 0%, #090d16 80%);
-      overflow-x: hidden;
     }
     .app-shell {
       width: 100%;
@@ -40,12 +38,11 @@
       display: flex;
       flex-direction: column;
     }
-
     header {
       width: 100%;
-      height: var(--header-h);
-      padding: 0 16px;
+      padding: 14px 20px;
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
       backdrop-filter: blur(14px);
@@ -53,38 +50,31 @@
       top: 0;
       z-index: 50;
       border-bottom: 1px solid var(--card-border);
-      background: rgba(9, 13, 22, 0.9);
-      overflow: hidden;
-      gap: 8px;
+      background: rgba(9, 13, 22, 0.85);
+      gap: 10px;
     }
     .logo-group {
       display: flex;
       align-items: center;
-      gap: 8px;
-      overflow: hidden;
-      flex-shrink: 1;
+      gap: 12px;
+      flex-wrap: wrap;
     }
     .logo {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       font-weight: 700;
-      font-size: clamp(0.95rem, 2vw, 1.2rem);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-size: clamp(1rem, 2vw, 1.25rem);
     }
-    .logo i { color: var(--accent); font-size: 1.2rem; flex-shrink: 0; }
+    .logo i { color: var(--accent); font-size: 1.3rem; }
     .badge {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      padding: 3px 8px;
+      gap: 6px;
+      padding: 4px 10px;
       border-radius: 20px;
-      font-size: 0.68rem;
+      font-size: 0.72rem;
       font-weight: 700;
-      white-space: nowrap;
-      flex-shrink: 0;
     }
     .badge-live {
       background: rgba(0, 230, 118, 0.15);
@@ -96,36 +86,41 @@
       border: 1px solid rgba(0, 210, 255, 0.4);
       color: var(--cyan);
     }
-    .pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 1.4s infinite; flex-shrink: 0; }
+    .pulse-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 1.4s infinite; }
     @keyframes pulse { 0% { opacity: 0.3; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.3); } 100% { opacity: 0.3; transform: scale(0.9); } }
 
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
+      gap: 10px;
+      flex-wrap: wrap;
     }
     .btn-header {
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid var(--card-border);
       color: var(--text);
-      padding: 7px 12px;
+      padding: 8px 14px;
       border-radius: 12px;
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      white-space: nowrap;
       transition: all 0.2s ease;
     }
     .btn-header:hover { background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.2); }
+    .btn-install {
+      background: linear-gradient(135deg, var(--cyan), #0077ff);
+      border: none;
+      color: #fff;
+      display: none;
+    }
 
     main {
       flex: 1;
       width: 100%;
-      padding: 20px;
+      padding: 24px 20px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -137,26 +132,22 @@
       flex-direction: column;
       align-items: center;
     }
+
     .tuner-card {
       width: 100%;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 28px;
-      padding: clamp(20px, 4vw, 36px) 20px;
+      padding: clamp(24px, 4vw, 40px) 20px;
       text-align: center;
       box-shadow: 0 20px 40px rgba(0,0,0,0.6);
       backdrop-filter: blur(12px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
     }
     .vinyl-wrapper {
       position: relative;
       width: clamp(170px, 28vw, 240px);
       height: clamp(170px, 28vw, 240px);
-      margin: 10px auto 20px;
-      flex-shrink: 0;
+      margin: 10px auto 24px;
     }
     .vinyl {
       width: 100%;
@@ -186,25 +177,19 @@
     }
     @keyframes spin { 100% { transform: rotate(360deg); } }
 
-    .track-info-pane {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .track-title { font-size: clamp(1.2rem, 2.5vw, 1.55rem); font-weight: 700; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90%; }
+    .track-title { font-size: clamp(1.2rem, 2.5vw, 1.55rem); font-weight: 700; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .track-contributor { font-size: 0.88rem; color: var(--cyan); margin-bottom: 8px; font-weight: 500; }
-    .slot-indicator { font-size: 0.78rem; color: #ffc107; margin-bottom: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-    .push-indicator { font-size: 0.78rem; color: var(--cyan); margin-bottom: 12px; font-weight: 600; background: rgba(0, 210, 255, 0.1); padding: 4px 12px; border-radius: 12px; }
-    .track-desc { font-size: 0.88rem; color: var(--subtext); line-height: 1.4; margin-bottom: 20px; min-height: 38px; max-width: 90%; }
+    .slot-indicator { font-size: 0.78rem; color: #ffc107; margin-bottom: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .track-desc { font-size: 0.88rem; color: var(--subtext); line-height: 1.4; margin-bottom: 26px; min-height: 40px; }
 
     .switch-container {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 90px;
+      min-height: 94px;
     }
+
     .main-switch-btn {
       width: clamp(74px, 12vw, 90px);
       height: clamp(74px, 12vw, 90px);
@@ -235,31 +220,7 @@
     }
     .station-loading-pill i { color: var(--accent); }
 
-    @media (orientation: landscape) {
-      body, .app-shell { height: 100vh; overflow: hidden; }
-      main {
-        height: calc(100vh - var(--header-h));
-        height: calc(100dvh - var(--header-h));
-        padding: 12px 20px;
-        align-items: center;
-      }
-      .content-wrapper { max-width: 950px; height: 100%; justify-content: center; }
-      .tuner-card {
-        height: 100%;
-        max-height: calc(100vh - var(--header-h) - 24px);
-        max-height: calc(100dvh - var(--header-h) - 24px);
-        flex-direction: row;
-        justify-content: space-evenly;
-        padding: 14px 30px;
-        gap: 30px;
-      }
-      .vinyl-wrapper { width: min(44vh, 250px); height: min(44vh, 250px); margin: 0; }
-      .track-info-pane { align-items: flex-start; text-align: left; max-width: 50%; }
-      .track-title { max-width: 100%; }
-      .track-desc { max-width: 100%; margin-bottom: 12px; }
-      .switch-container { align-items: flex-start; min-height: auto; }
-    }
-
+    /* Modals */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -275,7 +236,7 @@
     @keyframes modalFade { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
     .modal-card {
       width: 100%;
-      max-width: 540px;
+      max-width: 520px;
       max-height: 90vh;
       overflow-y: auto;
       background: #161b22;
@@ -311,7 +272,7 @@
     .sched-time { font-size: 0.8rem; color: var(--subtext); font-weight: 600; }
     .sched-title { font-size: 0.95rem; font-weight: 700; color: #fff; margin-top: 2px; }
 
-    .form-group { margin-bottom: 14px; width: 100%; }
+    .form-group { margin-bottom: 14px; }
     .form-group label { display: block; font-size: 0.8rem; color: var(--subtext); margin-bottom: 6px; font-weight: 600; }
     .form-group input, .form-group textarea {
       width: 100%;
@@ -414,7 +375,7 @@
     <div class="logo-group">
       <div class="logo">
         <i class="fa-solid fa-tower-broadcast"></i>
-        <span id="stationNameDisplay">Synchro Radio</span>
+        <span id="stationNameDisplay">Community Voice FM</span>
       </div>
       <div class="badge badge-live">
         <span class="pulse-dot"></span>
@@ -422,7 +383,7 @@
       </div>
       <div class="badge badge-listeners">
         <i class="fa-solid fa-headphones"></i>
-        <span id="liveListenerCountDisplay">1</span>
+        <span id="liveListenerCountDisplay">Listeners: 1</span>
       </div>
     </div>
 
@@ -430,6 +391,11 @@
       <button class="btn-header" onclick="openScheduleModal()">
         <i class="fa-solid fa-calendar-days" style="color:var(--cyan);"></i>
         <span>Schedule</span>
+      </button>
+
+      <button id="pwaInstallBtn" class="btn-header btn-install" onclick="installPWA()">
+        <i class="fa-solid fa-download"></i>
+        <span>Install</span>
       </button>
 
       <button class="btn-header" onclick="openAccountModal()">
@@ -448,44 +414,39 @@
           </div>
         </div>
 
-        <div class="track-info-pane">
-          <div class="track-title" id="trackTitleDisplay">Connecting Live...</div>
-          <div class="track-contributor" id="trackContributorDisplay">Live Audio Synchronization</div>
-          <div class="slot-indicator" id="currentSlotDisplay">Synchronizing Stream...</div>
-          <div class="push-indicator" id="currentPushPointDisplay">Push Point: --:--</div>
-          <div class="track-desc" id="trackDescDisplay">Live radio streaming in exact sync with all listeners.</div>
+        <div class="track-title" id="trackTitleDisplay">Radio Ready</div>
+        <div class="track-contributor" id="trackContributorDisplay">Click to Start Playing</div>
+        <div class="slot-indicator" id="currentSlotDisplay">Loading Tracks...</div>
+        <div class="track-desc" id="trackDescDisplay">Live radio streaming.</div>
 
-          <div class="switch-container">
-            <div id="stationLoadingPill" class="station-loading-pill">
-              <i class="fa-solid fa-spinner fa-spin"></i>
-              <span>Synchronizing Live Audio...</span>
-            </div>
-
-            <button id="radioPowerBtn" class="main-switch-btn" onclick="toggleRadio()">
-              <i class="fa-solid fa-power-off"></i>
-            </button>
+        <div class="switch-container">
+          <div id="stationLoadingPill" class="station-loading-pill">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            <span>Loading Radio Stream...</span>
           </div>
+
+          <button id="radioPowerBtn" class="main-switch-btn" onclick="toggleRadio()">
+            <i class="fa-solid fa-power-off"></i>
+          </button>
         </div>
       </div>
     </div>
   </main>
 </div>
 
-<!-- Modal 1: Day Divisions Schedule Board -->
+<!-- Modal 1: Named Radio Schedule Board -->
 <div id="scheduleModal" class="modal-overlay" onclick="closeScheduleModal(event)">
   <div class="modal-card" onclick="event.stopPropagation()">
     <div class="modal-header">
-      <h3><i class="fa-solid fa-calendar-days" style="color:var(--cyan); margin-right:8px;"></i>Daily Synchro Timeline</h3>
+      <h3><i class="fa-solid fa-calendar-days" style="color:var(--cyan); margin-right:8px;"></i>Daily Radio Schedule</h3>
       <button class="modal-close" onclick="closeScheduleModal()"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <p style="font-size:0.8rem; color:var(--subtext); margin-bottom:14px;">
-      Synchronized 24-Hour Broadcast. Every audio plays sequentially based on its exact time length, advancing to the next push point without gaps.
-    </p>
+    <p style="font-size:0.8rem; color:var(--subtext); margin-bottom:14px;">Broadcast schedule from 05:00 AM to 11:00 PM. Empty slots play songs randomly from the total library.</p>
     <div id="scheduleTimelineList">Loading schedule...</div>
   </div>
 </div>
 
-<!-- Modal 2: Contributor Portal -->
+<!-- Modal 2: Account & Upload -->
 <div id="accountModal" class="modal-overlay" onclick="closeAccountModal(event)">
   <div class="modal-card" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -538,7 +499,7 @@
       <div id="uploadGateBox">
         <div id="uploadAllowedSection" style="display:none; margin-bottom: 20px;">
           <h4 style="margin-bottom:8px;"><i class="fa-solid fa-cloud-arrow-up" style="color:var(--cyan); margin-right:6px;"></i>Upload Audio Track</h4>
-          <p style="font-size:0.78rem; color:var(--subtext); margin-bottom:14px;">Audios upload to Admin Selections for review and dynamic scheduling.</p>
+          <p style="font-size:0.78rem; color:var(--subtext); margin-bottom:14px;">Audio will be stored in Google Drive in chronological order.</p>
 
           <div class="form-group">
             <label>Audio Title</label>
@@ -556,7 +517,7 @@
             <div class="file-dropzone" id="fileDropZone" onclick="triggerFilePicker()">
               <i class="fa-solid fa-file-audio"></i>
               <div class="file-dropzone-text">Tap to Select MP3 Audio</div>
-              <div class="file-dropzone-sub">Exact duration is automatically detected for flawless sync</div>
+              <div class="file-dropzone-sub">Supports MP3, M4A, WAV from Downloads or Storage</div>
             </div>
 
             <div class="selected-file-card" id="selectedFileCard">
@@ -588,7 +549,7 @@
 
 <script>
   // ================= CONFIGURATION =================
-  const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxIM9fWOdU4skEnXuxVe6DR6FS7z-a3AdEepC4o6AS5WQiLV_lWp0EmBXCg0rSv-Mj5Cg/exec";
+  const BACKEND_URL = "https://script.google.com/macros/s/AKfycbz8gdJKo0jiCzYXlTGneBmK-hUrWJsm5AKAl3T7qk4c-tFTUpP1EbiTuV1uEz8eeqi3/exec";
 
   let listenerId = localStorage.getItem('cr_listener_id');
   if (!listenerId) {
@@ -603,17 +564,36 @@
   let isPlaying = false;
   let currentUser = JSON.parse(localStorage.getItem('cr_user') || 'null');
   let selectedAudioFile = null;
-  let detectedDurationSec = 140;
   let currentSeqVersion = null;
   let lastPushVersion = null;
   let currentActiveHour = -1;
-  let currentlyPlayingTrack = null;
-  let serverTimeOffset = 0;
+  let isPlayingScheduledSlot = false;
+  let scheduledSlotFinished = false; // Tracks if all scheduled audios in that slot finished
+  let scheduledSlotHourOrigin = -1;  // Tracks which hour slot is currently active
 
   const audioCache = {};
   let activePlayer = new Audio();
   let standbyPlayer = new Audio();
   let isStandbyReady = false;
+
+  let deferredPrompt = null;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('pwaInstallBtn').style.display = 'inline-flex';
+  });
+
+  function installPWA() {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choice) => {
+        if (choice.outcome === 'accepted') {
+          document.getElementById('pwaInstallBtn').style.display = 'none';
+        }
+        deferredPrompt = null;
+      });
+    }
+  }
 
   window.addEventListener('load', () => {
     if ('caches' in window) {
@@ -627,7 +607,7 @@
 
     sendHeartbeat();
     setInterval(sendHeartbeat, 20000);
-    setInterval(checkLiveSynchronization, 5000);
+    setInterval(checkHourlyTransitionAndVersion, 8000);
   });
 
   function showToast(msg) {
@@ -635,15 +615,6 @@
     t.innerText = msg;
     t.style.display = 'block';
     setTimeout(() => { t.style.display = 'none'; }, 3200);
-  }
-
-  function formatTimeHHMMSS(dateObj) {
-    let hours = dateObj.getHours();
-    const minutes = String(dateObj.getMinutes()).padStart(2, '0');
-    const seconds = String(dateObj.getSeconds()).padStart(2, '0');
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12 || 12;
-    return `${hours}:${minutes}:${seconds} ${ampm}`;
   }
 
   function openAccountModal() { document.getElementById('accountModal').classList.add('open'); }
@@ -663,28 +634,21 @@
     }
   }
 
-  function getDivisionName(hour) {
-    if (hour >= 5 && hour < 11) return "Division 1: Morning (05:00 AM - 11:00 AM)";
-    if (hour >= 11 && hour < 17) return "Division 2: Afternoon (11:00 AM - 05:00 PM)";
-    if (hour >= 17 && hour < 23) return "Division 3: Evening (05:00 PM - 11:00 PM)";
-    return "Division 4: Night (11:00 PM - 05:00 AM)";
-  }
-
   function renderScheduleTimeline() {
     const box = document.getElementById('scheduleTimelineList');
-    const nowHour = new Date(Date.now() + serverTimeOffset).getHours();
+    const nowHour = new Date().getHours();
     let html = '';
 
-    for (let h = 0; h <= 23; h++) {
+    for (let h = 5; h <= 23; h++) {
       const slot = hourlySchedules[String(h)];
-      const name = (slot && slot.name && slot.name.trim() !== '') ? slot.name : 'Synchronized Hourly Block';
-      const formattedTime = (h % 12 || 12) + ':00 ' + (h >= 12 ? 'PM' : 'AM') + ' – ' + ((h + 1) % 12 || 12) + ':00 ' + ((h + 1) >= 12 && (h + 1) < 24 ? 'PM' : 'AM');
+      const name = (slot && slot.name && slot.name.trim() !== '') ? slot.name : 'Random Library Selection';
+      const formattedTime = (h % 12 || 12) + (h >= 12 ? ':00 PM' : ':00 AM') + ' – ' + ((h + 1) % 12 || 12) + ((h + 1) >= 12 && (h + 1) < 24 ? ':00 PM' : ':00 AM');
       const isCurrent = (h === nowHour);
 
       html += `
         <div class="sched-card ${isCurrent ? 'active-now' : ''}">
           <div>
-            <div class="sched-time">${formattedTime} • <span style="color:var(--cyan);">${getDivisionName(h)}</span> ${isCurrent ? '• <span style="color:var(--green);">LIVE NOW</span>' : ''}</div>
+            <div class="sched-time">${formattedTime} ${isCurrent ? '• <span style="color:var(--green);">LIVE NOW</span>' : ''}</div>
             <div class="sched-title">${name}</div>
           </div>
           <i class="fa-solid fa-radio" style="color:${isCurrent ? 'var(--accent)' : 'var(--subtext)'}; font-size:1.1rem;"></i>
@@ -708,81 +672,66 @@
       const data = await res.json();
       if (data.success && typeof data.activeCount === 'number') {
         const count = isPlaying ? Math.max(1, data.activeCount) : data.activeCount;
-        document.getElementById('liveListenerCountDisplay').innerText = `${count}`;
+        document.getElementById('liveListenerCountDisplay').innerText = `Listeners: ${count}`;
       }
     } catch(err) {}
   }
 
-  // 1 & 3) Exact End-of-Audio Push Point Timeline Calculation
-  // Eliminates 5-minute fixed assumption and calculates the precise current track and seek position
-  function getSynchronizedCurrentTrackIndex(playlist) {
-    if (!playlist || playlist.length === 0) return { index: 0, seekSec: 0, currentStartSec: 0 };
-
-    const now = new Date(Date.now() + serverTimeOffset);
-    const elapsedSecInHour = (now.getMinutes() * 60) + now.getSeconds();
-
-    let cumulativeSec = 0;
-    for (let i = 0; i < playlist.length; i++) {
-      const duration = playlist[i].durationSec || 140; // Exact length
-      if (elapsedSecInHour >= cumulativeSec && elapsedSecInHour < (cumulativeSec + duration)) {
-        return { index: i, seekSec: elapsedSecInHour - cumulativeSec, currentStartSec: cumulativeSec };
-      }
-      cumulativeSec += duration;
-    }
-
-    // Sequence wrap-around if audios do not completely sum to 3600s
-    const totalPlaylistDuration = cumulativeSec || 1;
-    const loopSec = elapsedSecInHour % totalPlaylistDuration;
-    let wrapCumulative = 0;
-    for (let i = 0; i < playlist.length; i++) {
-      const duration = playlist[i].durationSec || 140;
-      if (loopSec >= wrapCumulative && loopSec < (wrapCumulative + duration)) {
-        return { index: i, seekSec: loopSec - wrapCumulative, currentStartSec: wrapCumulative };
-      }
-      wrapCumulative += duration;
-    }
-
-    return { index: 0, seekSec: 0, currentStartSec: 0 };
+  // 2) Checks whether a slot has tracks assigned by admin
+  function isHourSlotDefined(h) {
+    const slot = hourlySchedules[String(h)];
+    return (h >= 5 && h <= 23 && slot && slot.trackIds && slot.trackIds.length > 0);
   }
 
-  function resolveCurrentHourPlaylist() {
-    const now = new Date(Date.now() + serverTimeOffset);
+  // Resolve current playlist with support for slot carryover into empty hours
+  function resolveCurrentPlaylist() {
+    const now = new Date();
     const hour = now.getHours();
     currentActiveHour = hour;
 
     const slotBadge = document.getElementById('currentSlotDisplay');
     const slot = hourlySchedules[String(hour)];
 
-    if (slot && slot.trackIds && slot.trackIds.length > 0) {
+    if (isHourSlotDefined(hour)) {
       const scheduled = [];
       slot.trackIds.forEach(id => {
-        const found = allTracks.find(t => t.fileId === id && t.approvalStatus === "approved");
+        const found = allTracks.find(t => t.fileId === id);
         if (found) scheduled.push(found);
       });
 
       if (scheduled.length > 0) {
+        isPlayingScheduledSlot = true;
+        scheduledSlotFinished = false;
+        scheduledSlotHourOrigin = hour;
         const slotName = slot.name && slot.name.trim() !== '' ? slot.name : `${hour % 12 || 12} ${hour >= 12 ? 'PM' : 'AM'} Slot`;
-        slotBadge.innerText = `${getDivisionName(hour)} • ${slotName}`;
+        slotBadge.innerText = `Scheduled Slot: ${slotName}`;
         return scheduled;
       }
     }
 
-    const approved = allTracks.filter(t => t.approvalStatus === "approved");
-    slotBadge.innerText = `${getDivisionName(hour)} • Synchronized Block`;
-    return approved.length > 0 ? approved : allTracks;
+    isPlayingScheduledSlot = false;
+    scheduledSlotFinished = true;
+    scheduledSlotHourOrigin = -1;
+    slotBadge.innerText = `Random Library Shuffle`;
+    return shuffleArray([...allTracks]);
   }
 
+  function shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  // 1) Auto-play instantly when opening index page
   async function fetchStationData() {
     try {
       const res = await fetch(`${BACKEND_URL}?action=getStationData`);
       const data = await res.json();
       if (data.success) {
-        if (data.serverTime) {
-          serverTimeOffset = data.serverTime - Date.now();
-        }
         allTracks = data.tracks || [];
         hourlySchedules = data.hourly || {};
-
         if (data.settings) {
           if (data.settings.station_name) {
             document.getElementById('stationNameDisplay').innerText = data.settings.station_name;
@@ -792,81 +741,86 @@
         }
         if (typeof data.liveListenersCount === 'number') {
           const count = isPlaying ? Math.max(1, data.liveListenersCount) : data.liveListenersCount;
-          document.getElementById('liveListenerCountDisplay').innerText = `${count}`;
+          document.getElementById('liveListenerCountDisplay').innerText = `Listeners: ${count}`;
         }
 
-        activePlaylist = resolveCurrentHourPlaylist();
+        activePlaylist = resolveCurrentPlaylist();
 
         if (activePlaylist.length > 0) {
           document.getElementById('stationLoadingPill').style.display = 'none';
           document.getElementById('radioPowerBtn').style.display = 'block';
 
-          const syncState = getSynchronizedCurrentTrackIndex(activePlaylist);
-          currentIndex = syncState.index;
-          playCurrentTrackImmediate(syncState.seekSec);
+          // Immediate start of that hour's slot on page open
+          currentIndex = 0;
+          playCurrentTrackImmediate();
         } else {
-          document.getElementById('stationLoadingPill').innerHTML = `<span>No approved tracks ready to broadcast</span>`;
+          document.getElementById('stationLoadingPill').innerHTML = `<span>No tracks found in library</span>`;
         }
       }
     } catch (e) {
+      console.warn("Backend connection pending.");
       document.getElementById('stationLoadingPill').innerHTML = `<span style="color:#ff5252;">Connection Error. Retrying...</span>`;
       setTimeout(fetchStationData, 4000);
     }
   }
 
-  // Continuous synchronization against broadcast timeline
-  async function checkLiveSynchronization() {
-    const now = new Date(Date.now() + serverTimeOffset);
+  // 2) Checks transition between hours: continue previous slot if next hour is empty
+  async function checkHourlyTransitionAndVersion() {
+    const now = new Date();
     const currentHour = now.getHours();
 
     if (currentActiveHour !== -1 && currentHour !== currentActiveHour) {
-      currentActiveHour = currentHour;
-      activePlaylist = resolveCurrentHourPlaylist();
-      const syncState = getSynchronizedCurrentTrackIndex(activePlaylist);
-      currentIndex = syncState.index;
-      showToast(`Tuning into ${getDivisionName(currentHour)}`);
-      if (isPlaying && activePlaylist.length > 0) {
-        playCurrentTrackImmediate(syncState.seekSec);
+      const nextHourIsDefined = isHourSlotDefined(currentHour);
+
+      // If scheduled slot is still running and next hour is empty, continue playing until slot completes
+      if (isPlayingScheduledSlot && !scheduledSlotFinished && !nextHourIsDefined) {
+        currentActiveHour = currentHour;
+        document.getElementById('currentSlotDisplay').innerText += " (Continuing Slot)";
+      } else {
+        currentActiveHour = currentHour;
+        activePlaylist = resolveCurrentPlaylist();
+        currentIndex = 0;
+        showToast(`Starting ${currentHour % 12 || 12} ${currentHour >= 12 ? 'PM' : 'AM'} hourly schedule!`);
+        if (isPlaying && activePlaylist.length > 0) {
+          playCurrentTrackImmediate();
+        }
+        return;
       }
-      return;
     }
 
     try {
       const res = await fetch(`${BACKEND_URL}?action=getStationData`);
       const data = await res.json();
       if (data.success && data.settings) {
-        if (data.serverTime) serverTimeOffset = data.serverTime - Date.now();
-
         if (typeof data.liveListenersCount === 'number') {
           const count = isPlaying ? Math.max(1, data.liveListenersCount) : data.liveListenersCount;
-          document.getElementById('liveListenerCountDisplay').innerText = `${count}`;
+          document.getElementById('liveListenerCountDisplay').innerText = `Listeners: ${count}`;
         }
 
-        // Live Admin Priority Push
+        // Pushed audio priority
         if (data.settings.push_version && data.settings.push_version !== lastPushVersion) {
           lastPushVersion = data.settings.push_version;
           const pushedFileId = data.settings.pushed_track;
           const target = allTracks.find(t => t.fileId === pushedFileId);
           if (target) {
-            showToast("Priority Broadcast: " + target.title);
-            activePlaylist = [target, ...resolveCurrentHourPlaylist()];
+            showToast("Priority Audio Broadcast: " + target.title);
+            activePlaylist = [target, ...resolveCurrentPlaylist()];
             currentIndex = 0;
-            playCurrentTrackImmediate(0);
+            playCurrentTrackImmediate();
             return;
           }
         }
 
-        // Live Push Point & Schedule Changes
+        // Admin schedule changes
         if (currentSeqVersion && data.settings.seq_version !== currentSeqVersion) {
           currentSeqVersion = data.settings.seq_version;
           allTracks = data.tracks || [];
           hourlySchedules = data.hourly || {};
-          activePlaylist = resolveCurrentHourPlaylist();
-          showToast("Timeline updated. Synchronizing push point...");
-          const syncState = getSynchronizedCurrentTrackIndex(activePlaylist);
-          currentIndex = syncState.index;
+          activePlaylist = resolveCurrentPlaylist();
+          showToast("Admin updated radio schedule.");
+          currentIndex = 0;
           if (isPlaying && activePlaylist.length > 0) {
-            playCurrentTrackImmediate(syncState.seekSec);
+            playCurrentTrackImmediate();
           }
         }
       }
@@ -884,18 +838,19 @@
         audioCache[track.fileId] = data.dataUri;
         return data.dataUri;
       }
-    } catch(err) {}
+    } catch(err) {
+      console.warn("Proxy fallback");
+    }
     return track.streamUrl;
   }
 
-  // ================= ZERO-GAP PLAYBACK ENGINE =================
+  // ================= ZERO-GAP DUAL BUFFER ENGINE =================
   function setupPlayerEvents(player) {
     player.addEventListener('timeupdate', () => {
       if (player.duration && (player.duration - player.currentTime <= 4) && !isStandbyReady) {
         prepareStandbyTrack();
       }
     });
-    // Immediately pushes to next track precisely at the finish of the first audio
     player.addEventListener('ended', () => { advanceTrackInstantly(); });
     player.addEventListener('error', () => {
       if (isPlaying) advanceTrackInstantly();
@@ -907,48 +862,77 @@
 
   async function prepareStandbyTrack() {
     if (activePlaylist.length === 0) return;
-    const nextIdx = (currentIndex + 1) % activePlaylist.length;
+    let nextIdx = (currentIndex + 1);
+
+    // When all scheduled audios in that slot finish
+    if (isPlayingScheduledSlot && nextIdx >= activePlaylist.length) {
+      scheduledSlotFinished = true;
+      const nowHour = new Date().getHours();
+
+      // If next hour is defined and started, transition to that slot; otherwise fill randomly
+      if (nowHour !== scheduledSlotHourOrigin && isHourSlotDefined(nowHour)) {
+        activePlaylist = resolveCurrentPlaylist();
+        nextIdx = 0;
+      } else {
+        const randomTracks = shuffleArray([...allTracks]);
+        activePlaylist = activePlaylist.concat(randomTracks);
+        document.getElementById('currentSlotDisplay').innerText = `Slot Extended: Random Library Filler`;
+      }
+    }
+
+    nextIdx = nextIdx % activePlaylist.length;
     const nextTrack = activePlaylist[nextIdx];
     const src = await resolveTrackAudio(nextTrack);
     if (src) {
       standbyPlayer.src = src;
       standbyPlayer.load();
-      standbyPlayer._trackRef = nextTrack;
       isStandbyReady = true;
     }
   }
 
+  // Advance track and ensure continuation of slot until completely finished
   async function advanceTrackInstantly() {
-    if (activePlaylist.length === 0) return;
-    currentIndex = (currentIndex + 1) % activePlaylist.length;
+    let nextIdx = currentIndex + 1;
+
+    if (isPlayingScheduledSlot && nextIdx >= activePlaylist.length) {
+      scheduledSlotFinished = true;
+      const nowHour = new Date().getHours();
+
+      if (nowHour !== scheduledSlotHourOrigin && isHourSlotDefined(nowHour)) {
+        activePlaylist = resolveCurrentPlaylist();
+        nextIdx = 0;
+      } else {
+        const randomTracks = shuffleArray([...allTracks]);
+        activePlaylist = activePlaylist.concat(randomTracks);
+        document.getElementById('currentSlotDisplay').innerText = `Slot Extended: Random Library Filler`;
+      }
+    }
+
+    currentIndex = nextIdx % activePlaylist.length;
 
     const temp = activePlayer;
     activePlayer = standbyPlayer;
     standbyPlayer = temp;
     isStandbyReady = false;
 
-    currentlyPlayingTrack = activePlayer._trackRef || activePlaylist[currentIndex];
-
-    if (!activePlayer.src || activePlayer.src === "") {
-      const src = await resolveTrackAudio(currentlyPlayingTrack);
+    if (!activePlayer.src || activePlayer.src === "" || activePlayer.src.includes("data:audio/wav;base64")) {
+      const src = await resolveTrackAudio(activePlaylist[currentIndex]);
       activePlayer.src = src;
-      activePlayer._trackRef = currentlyPlayingTrack;
     }
 
     activePlayer.play().catch(e => console.warn(e));
     updateMediaSession();
-    updateTunerUI(currentlyPlayingTrack);
+    updateTunerUI(currentIndex);
   }
 
-  async function playCurrentTrackImmediate(seekSec = 0) {
+  // Plays track immediately in the exact same manner as pushed audio
+  async function playCurrentTrackImmediate() {
     if (!activePlaylist || activePlaylist.length === 0) return;
     const track = activePlaylist[currentIndex];
     const audioSource = await resolveTrackAudio(track);
 
     activePlayer.src = audioSource;
-    activePlayer._trackRef = track;
-    currentlyPlayingTrack = track;
-    updateTunerUI(currentlyPlayingTrack);
+    updateTunerUI(currentIndex);
 
     const playPromise = activePlayer.play();
     isPlaying = true;
@@ -956,17 +940,16 @@
 
     if (playPromise !== undefined) {
       playPromise.then(() => {
-        if (seekSec > 0 && activePlayer.duration && seekSec < activePlayer.duration) {
-          activePlayer.currentTime = seekSec;
-        }
         isStandbyReady = false;
         prepareStandbyTrack();
         updateMediaSession();
-        updateTunerUI(currentlyPlayingTrack);
+        updateTunerUI(currentIndex);
       }).catch(err => {
+        console.warn("Autoplay requires interaction:", err);
+        // Fallback for strict browser autoplay restriction
         isPlaying = false;
-        updateTunerUI(currentlyPlayingTrack);
-        showToast("Tap switch to unmute live broadcast.");
+        updateTunerUI(currentIndex);
+        showToast("Tap switch to unmute live radio.");
       });
     }
   }
@@ -982,25 +965,19 @@
       standbyPlayer.pause();
       isPlaying = false;
       sendHeartbeat();
-      updateTunerUI(currentlyPlayingTrack);
+      updateTunerUI(currentIndex);
     } else {
-      const syncState = getSynchronizedCurrentTrackIndex(activePlaylist);
-      currentIndex = syncState.index;
-
       const playPromise = activePlayer.play();
       isPlaying = true;
-      updateTunerUI(currentlyPlayingTrack);
+      updateTunerUI(currentIndex);
       sendHeartbeat();
 
       if (playPromise !== undefined) {
         playPromise.then(() => {
-          if (syncState.seekSec > 0 && activePlayer.duration && syncState.seekSec < activePlayer.duration) {
-            activePlayer.currentTime = syncState.seekSec;
-          }
           updateMediaSession();
           prepareStandbyTrack();
         }).catch(err => {
-          resolveTrackAudio(currentlyPlayingTrack || activePlaylist[currentIndex]).then(src => {
+          resolveTrackAudio(activePlaylist[currentIndex]).then(src => {
             activePlayer.src = src;
             activePlayer.play().catch(() => {});
           });
@@ -1009,27 +986,19 @@
     }
   }
 
-  function updateTunerUI(trackObj) {
-    const track = trackObj || currentlyPlayingTrack || (activePlaylist ? activePlaylist[currentIndex] : null);
+  function updateTunerUI(index) {
+    const targetIndex = (typeof index === 'number') ? index : currentIndex;
     const btn = document.getElementById('radioPowerBtn');
     const vinyl = document.getElementById('vinyl');
     const title = document.getElementById('trackTitleDisplay');
     const contrib = document.getElementById('trackContributorDisplay');
     const desc = document.getElementById('trackDescDisplay');
-    const pushPointDisplay = document.getElementById('currentPushPointDisplay');
 
-    if (track) {
+    if (activePlaylist && activePlaylist[targetIndex]) {
+      const track = activePlaylist[targetIndex];
       title.innerText = track.title;
-      contrib.innerText = "Curated by " + (track.contributor || "Synchro Voice");
-      desc.innerText = track.description || "Live Synchronized Broadcast";
-
-      // Calculate push point based on scheduled timeline in the current hour
-      const now = new Date(Date.now() + serverTimeOffset);
-      const sync = getSynchronizedCurrentTrackIndex(activePlaylist);
-      const trackDur = track.durationSec || 140;
-      const nextPushInSec = Math.max(0, trackDur - sync.seekSec);
-      const nextPushDate = new Date(Date.now() + (nextPushInSec * 1000));
-      pushPointDisplay.innerText = `Next Push Point: ${formatTimeHHMMSS(nextPushDate)} (Dur: ${Math.floor(trackDur / 60)}m ${trackDur % 60}s)`;
+      contrib.innerText = "Curated by " + (track.contributor || "Community Voice");
+      desc.innerText = track.description || "Live 24/7 Broadcast";
     }
 
     if (isPlaying) {
@@ -1042,13 +1011,12 @@
   }
 
   function updateMediaSession() {
-    const track = currentlyPlayingTrack || activePlaylist[currentIndex];
-    if ('mediaSession' in navigator && track) {
+    if ('mediaSession' in navigator && activePlaylist[currentIndex]) {
       navigator.mediaSession.metadata = new MediaMetadata({
-        title: track.title,
-        artist: track.contributor || "Synchro Radio",
-        album: "Synchro Radio 24/7",
-        artwork: [{ src: 'https://cdn-icons-png.flaticon.com/512/3075/3075906.png', sizes: '512x512', type: 'image/png' }]
+        title: activePlaylist[currentIndex].title,
+        artist: activePlaylist[currentIndex].contributor || "Community Radio",
+        album: "Community Radio 24/7",
+        artwork: [{ src: 'https://cdn-icons-png.flaticon.com/512/3075/3075908.png', sizes: '512x512', type: 'image/png' }]
       });
       navigator.mediaSession.setActionHandler('play', () => toggleRadio());
       navigator.mediaSession.setActionHandler('pause', () => toggleRadio());
@@ -1056,7 +1024,7 @@
     }
   }
 
-  // ================= FILE SELECTION & EXACT DURATION DETECTION =================
+  // ================= FILE SELECTION =================
   function triggerFilePicker() { document.getElementById('audioFileInput').click(); }
 
   function handleFileSelected(input) {
@@ -1064,19 +1032,10 @@
       const file = input.files[0];
       selectedAudioFile = file;
 
-      // Extract accurate duration directly from file
-      const tempAudio = new Audio();
-      const objectUrl = URL.createObjectURL(file);
-      tempAudio.src = objectUrl;
-      tempAudio.onloadedmetadata = () => {
-        detectedDurationSec = Math.round(tempAudio.duration) || 140;
-        const mins = Math.floor(detectedDurationSec / 60);
-        const secs = detectedDurationSec % 60;
-        document.getElementById('fileMetaSize').innerText = `${(file.size / (1024 * 1024)).toFixed(2)} MB • Exact Duration: ${mins}m ${secs}s`;
-        URL.revokeObjectURL(objectUrl);
-      };
-
       document.getElementById('fileMetaName').innerText = file.name;
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      document.getElementById('fileMetaSize').innerText = `${sizeMB} MB • Selected`;
+      
       document.getElementById('fileDropZone').style.display = 'none';
       document.getElementById('selectedFileCard').style.display = 'flex';
       
@@ -1090,7 +1049,6 @@
   function clearSelectedFile(e) {
     if (e) e.stopPropagation();
     selectedAudioFile = null;
-    detectedDurationSec = 140;
     document.getElementById('audioFileInput').value = "";
     document.getElementById('selectedFileCard').style.display = 'none';
     document.getElementById('fileDropZone').style.display = 'flex';
@@ -1168,7 +1126,7 @@
     if (!currentUser) {
       guestBox.style.display = 'block';
       memberBox.style.display = 'none';
-      headerLabel.innerText = "Login";
+      headerLabel.innerText = "Account & Upload";
     } else {
       guestBox.style.display = 'none';
       memberBox.style.display = 'block';
@@ -1198,7 +1156,7 @@
     if (selectedAudioFile.size > 25 * 1024 * 1024) return showToast("File exceeds max 25MB limit.");
 
     btn.disabled = true;
-    btn.innerText = "Uploading with exact audio timing...";
+    btn.innerText = "Encoding & Uploading to Drive...";
 
     const reader = new FileReader();
     reader.onload = async function() {
@@ -1212,8 +1170,7 @@
           description,
           fileName: selectedAudioFile.name,
           mimeType: selectedAudioFile.type || "audio/mpeg",
-          base64File: base64Data,
-          durationSec: detectedDurationSec // Passed accurately to backend
+          base64File: base64Data
         };
 
         const res = await fetch(BACKEND_URL, {
@@ -1223,7 +1180,7 @@
         const result = await res.json();
 
         if (result.success) {
-          showToast("Upload Successful! Added with precise duration.");
+          showToast("Upload Successful! Added to library.");
           document.getElementById('audioTitle').value = "";
           document.getElementById('audioDesc').value = "";
           clearSelectedFile();
