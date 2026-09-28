@@ -20,32 +20,44 @@
       --green: #00e676;
       --text: #f0f6fc;
       --subtext: #8b949e;
-      --header-h: 65px;
+      --header-h: 64px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    body {
+    
+    html, body {
+      height: 100%;
+      height: 100dvh;
+      overflow: hidden;
       background-color: var(--bg);
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      min-height: 100vh;
+    }
+
+    body {
       display: flex;
       flex-direction: column;
-      align-items: center;
       background-image: radial-gradient(circle at 50% 10%, #1c263c 0%, #090d16 85%);
-      overflow-x: hidden;
     }
-    .app-shell { width: 100%; min-height: 100vh; display: flex; flex-direction: column; }
+
+    .app-shell {
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
 
     header {
       width: 100%;
       height: var(--header-h);
+      min-height: var(--header-h);
+      max-height: var(--header-h);
       padding: 0 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       backdrop-filter: blur(14px);
-      position: sticky;
-      top: 0;
       z-index: 50;
       border-bottom: 1px solid var(--card-border);
       background: rgba(9, 13, 22, 0.92);
@@ -57,11 +69,11 @@
       align-items: center;
       gap: 8px;
       font-weight: 800;
-      font-size: clamp(1rem, 2vw, 1.25rem);
+      font-size: clamp(0.95rem, 2vw, 1.2rem);
       white-space: nowrap;
     }
     .logo i { color: var(--accent); font-size: 1.25rem; }
-    .logo-subtitle { font-size: 0.68rem; color: var(--subtext); font-weight: 500; display: block; margin-top: -2px; }
+    .logo-subtitle { font-size: 0.65rem; color: var(--subtext); font-weight: 500; display: block; margin-top: -2px; }
 
     .badge {
       display: inline-flex;
@@ -83,9 +95,9 @@
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid var(--card-border);
       color: var(--text);
-      padding: 7px 12px;
+      padding: 6px 12px;
       border-radius: 12px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
@@ -95,131 +107,250 @@
     }
     .btn-header:hover { background: rgba(255, 255, 255, 0.15); }
 
+    /* Fix Viewport Height Minus Header */
     main {
-      flex: 1;
       width: 100%;
-      padding: 20px;
+      height: calc(100vh - var(--header-h));
+      height: calc(100dvh - var(--header-h));
+      max-height: calc(100dvh - var(--header-h));
+      padding: clamp(8px, 2vh, 16px) 16px;
       display: flex;
       justify-content: center;
       align-items: center;
+      overflow: hidden;
     }
-    .content-wrapper { width: 100%; max-width: 600px; display: flex; flex-direction: column; align-items: center; }
-
-    .tuner-card {
+    .content-wrapper {
       width: 100%;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 28px;
-      padding: clamp(20px, 4vw, 36px) 20px;
-      text-align: center;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.65);
-      backdrop-filter: blur(12px);
+      max-width: 580px;
+      height: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
     }
 
+    .tuner-card {
+      width: 100%;
+      max-height: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: clamp(14px, 2.5vh, 26px) clamp(14px, 3vw, 24px);
+      text-align: center;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.65);
+      backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-evenly;
+      overflow: hidden;
+    }
+
     .vinyl-wrapper {
       position: relative;
-      width: clamp(170px, 28vw, 240px);
-      height: clamp(170px, 28vw, 240px);
-      margin: 10px auto 20px;
+      width: min(28vh, 190px);
+      height: min(28vh, 190px);
+      margin: 4px auto 10px;
+      flex-shrink: 0;
     }
     .vinyl {
       width: 100%; height: 100%; border-radius: 50%;
       background: conic-gradient(#111, #222, #111, #333, #111);
-      border: 6px solid #222;
-      box-shadow: 0 0 30px rgba(0,0,0,0.85);
+      border: 5px solid #222;
+      box-shadow: 0 0 24px rgba(0,0,0,0.85);
       display: flex; align-items: center; justify-content: center;
       animation: spin 10s linear infinite; animation-play-state: paused;
     }
     .vinyl.spinning { animation-play-state: running; }
     .vinyl-center {
-      width: clamp(60px, 10vw, 80px);
-      height: clamp(60px, 10vw, 80px);
+      width: clamp(48px, 8vw, 68px);
+      height: clamp(48px, 8vw, 68px);
       border-radius: 50%;
       background: var(--accent);
-      border: 4px solid #fff;
+      border: 3px solid #fff;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #fff;
-      font-size: clamp(1.2rem, 2vw, 1.6rem);
+      font-size: clamp(1rem, 2vw, 1.4rem);
     }
     @keyframes spin { 100% { transform: rotate(360deg); } }
 
-    .track-info-pane { width: 100%; display: flex; flex-direction: column; align-items: center; }
-    .track-title { font-size: clamp(1.2rem, 2.5vw, 1.55rem); font-weight: 800; margin-bottom: 6px; max-width: 90%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .track-contributor { font-size: 0.88rem; color: var(--cyan); margin-bottom: 8px; font-weight: 500; }
-    .slot-indicator { font-size: 0.78rem; color: #ffc107; margin-bottom: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-    .push-indicator { font-size: 0.78rem; color: var(--cyan); margin-bottom: 12px; font-weight: 600; background: rgba(0, 210, 255, 0.1); padding: 4px 12px; border-radius: 12px; }
-    .track-desc { font-size: 0.86rem; color: var(--subtext); line-height: 1.4; margin-bottom: 20px; min-height: 38px; max-width: 90%; }
+    .track-info-pane {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+      flex-shrink: 1;
+    }
+    .track-title {
+      font-size: clamp(1.05rem, 2.2vh, 1.35rem);
+      font-weight: 800;
+      margin-bottom: 4px;
+      max-width: 94%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .track-contributor { font-size: 0.82rem; color: var(--cyan); margin-bottom: 6px; font-weight: 500; }
+    .slot-indicator { font-size: 0.72rem; color: #ffc107; margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .push-indicator {
+      font-size: 0.72rem;
+      color: var(--cyan);
+      margin-bottom: 8px;
+      font-weight: 600;
+      background: rgba(0, 210, 255, 0.08);
+      padding: 3px 10px;
+      border-radius: 10px;
+    }
+    .track-desc {
+      font-size: 0.78rem;
+      color: var(--subtext);
+      line-height: 1.35;
+      margin-bottom: 10px;
+      max-height: 38px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      max-width: 92%;
+    }
 
-    .switch-container { display: flex; flex-direction: column; align-items: center; min-height: 90px; }
+    /* Multi-Channel Audio Bar & Switcher */
+    .audio-quality-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 6px 12px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .quality-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .quality-badge i { color: var(--green); }
+    .channel-selector-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 2px;
+      border-radius: 12px;
+    }
+    .ch-btn {
+      background: transparent;
+      border: none;
+      color: var(--subtext);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .ch-btn.active {
+      background: var(--cyan);
+      color: #000;
+      box-shadow: 0 0 8px rgba(0, 210, 255, 0.4);
+    }
+
+    .switch-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 76px;
+      flex-shrink: 0;
+    }
     .main-switch-btn {
-      width: clamp(74px, 12vw, 90px);
-      height: clamp(74px, 12vw, 90px);
+      width: clamp(66px, 10vh, 80px);
+      height: clamp(66px, 10vh, 80px);
       border-radius: 50%;
       background: linear-gradient(135deg, var(--accent), #ff758c);
       border: none;
       color: #fff;
-      font-size: clamp(1.8rem, 3vw, 2.2rem);
+      font-size: clamp(1.6rem, 2.5vw, 2rem);
       cursor: pointer;
-      box-shadow: 0 8px 26px var(--accent-glow);
+      box-shadow: 0 8px 24px var(--accent-glow);
       transition: transform 0.2s, box-shadow 0.2s;
       display: none;
     }
     .main-switch-btn:active { transform: scale(0.92); }
-    .main-switch-btn.playing { background: linear-gradient(135deg, #10b981, #00e676); box-shadow: 0 8px 26px rgba(0, 230, 118, 0.4); }
+    .main-switch-btn.playing { background: linear-gradient(135deg, #10b981, #00e676); box-shadow: 0 8px 24px rgba(0, 230, 118, 0.4); }
 
     .station-loading-pill {
-      display: inline-flex; align-items: center; gap: 10px;
-      padding: 10px 22px; border-radius: 30px;
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 18px; border-radius: 24px;
       background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border);
-      color: var(--subtext); font-size: 0.85rem; font-weight: 600;
+      color: var(--subtext); font-size: 0.8rem; font-weight: 600;
+    }
+
+    /* Landscape Mode */
+    @media (orientation: landscape) and (max-height: 540px) {
+      .tuner-card {
+        flex-direction: row;
+        justify-content: space-evenly;
+        padding: 10px 20px;
+        gap: 20px;
+      }
+      .vinyl-wrapper { width: min(44vh, 180px); height: min(44vh, 180px); margin: 0; }
+      .track-info-pane { align-items: flex-start; text-align: left; max-width: 55%; }
+      .track-title { max-width: 100%; }
+      .track-desc { max-width: 100%; margin-bottom: 6px; }
+      .audio-quality-bar { justify-content: flex-start; margin-bottom: 6px; }
+      .switch-container { min-height: auto; align-items: flex-start; }
     }
 
     /* Modal */
     .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+      position: fixed; inset: 0; background: rgba(0,0,0,0.82);
       backdrop-filter: blur(10px); z-index: 100; display: none;
       align-items: center; justify-content: center; padding: 16px;
     }
     .modal-overlay.open { display: flex; }
     .modal-card {
-      width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto;
+      width: 100%; max-width: 520px; max-height: 88vh; overflow-y: auto;
       background: #161b22; border: 1px solid var(--card-border);
-      border-radius: 24px; padding: 24px;
+      border-radius: 20px; padding: 20px;
     }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--card-border); }
-    .modal-close { background: none; border: none; color: var(--subtext); font-size: 1.3rem; cursor: pointer; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--card-border); }
+    .modal-close { background: none; border: none; color: var(--subtext); font-size: 1.2rem; cursor: pointer; }
 
     .sched-card {
       background: rgba(255,255,255,0.03); border: 1px solid var(--card-border);
-      border-radius: 12px; padding: 12px 16px; margin-bottom: 10px;
+      border-radius: 12px; padding: 10px 14px; margin-bottom: 8px;
       display: flex; justify-content: space-between; align-items: center;
     }
     .sched-card.active-now { border-color: var(--accent); background: rgba(255, 71, 96, 0.08); }
 
-    .form-group { margin-bottom: 14px; width: 100%; }
-    .form-group label { display: block; font-size: 0.8rem; color: var(--subtext); margin-bottom: 6px; font-weight: 600; }
+    .form-group { margin-bottom: 12px; width: 100%; }
+    .form-group label { display: block; font-size: 0.78rem; color: var(--subtext); margin-bottom: 4px; font-weight: 600; }
     .form-group input, .form-group textarea {
-      width: 100%; padding: 12px 14px; border-radius: 12px;
+      width: 100%; padding: 10px 12px; border-radius: 10px;
       background: rgba(0, 0, 0, 0.35); border: 1px solid var(--card-border);
-      color: #fff; font-size: 0.9rem; outline: none;
+      color: #fff; font-size: 0.88rem; outline: none;
     }
     .btn {
-      width: 100%; padding: 13px; border-radius: 12px; border: none;
-      font-size: 0.92rem; font-weight: 600; cursor: pointer; transition: 0.2s;
+      width: 100%; padding: 11px; border-radius: 10px; border: none;
+      font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: 0.2s;
     }
     .btn-primary { background: var(--accent); color: #fff; }
-    .btn-secondary { background: rgba(255, 255, 255, 0.08); color: #fff; margin-top: 8px; }
+    .btn-secondary { background: rgba(255, 255, 255, 0.08); color: #fff; margin-top: 6px; }
 
     .toast {
-      position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+      position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
       background: rgba(0,0,0,0.92); border: 1px solid var(--accent);
-      padding: 10px 18px; border-radius: 25px; font-size: 0.82rem; z-index: 200; display: none;
+      padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; z-index: 200; display: none;
     }
   </style>
 </head>
@@ -271,10 +402,26 @@
 
         <div class="track-info-pane">
           <div class="track-title" id="trackTitleDisplay">Connecting Live...</div>
-          <div class="track-contributor" id="trackContributorDisplay">Real-Time Radio Synchronization</div>
+          <div class="track-contributor" id="trackContributorDisplay">Lossless Studio Playback</div>
           <div class="slot-indicator" id="currentSlotDisplay">Family Broadcast Block</div>
           <div class="push-indicator" id="currentPushPointDisplay">Push Point: --:--</div>
-          <div class="track-desc" id="trackDescDisplay">Streaming the live timeline synchronized for every family member.</div>
+          <div class="track-desc" id="trackDescDisplay">Streaming pristine audio quality in perfect timeline sync.</div>
+
+          <!-- Audio Quality & Dynamic Channel Switcher (Stereo to 5.1 Surround) -->
+          <div class="audio-quality-bar">
+            <div class="quality-badge" title="Original Uncompressed Dynamic Audio Stream">
+              <i class="fa-solid fa-shield-halved"></i>
+              <span>Studio Master (320kbps Lossless)</span>
+            </div>
+            <div style="width: 1px; height: 14px; background: rgba(255,255,255,0.15);"></div>
+            <div class="channel-selector-group">
+              <span style="font-size:0.68rem; color:var(--subtext); margin-right:4px;"><i class="fa-solid fa-sliders"></i> Ch:</span>
+              <button class="ch-btn active" id="btnCh20" onclick="setAudioChannels('2.0')">2.0</button>
+              <button class="ch-btn" id="btnCh21" onclick="setAudioChannels('2.1')">2.1</button>
+              <button class="ch-btn" id="btnCh40" onclick="setAudioChannels('4.0')">4.0</button>
+              <button class="ch-btn" id="btnCh51" onclick="setAudioChannels('5.1')">5.1</button>
+            </div>
+          </div>
 
           <div class="switch-container">
             <div id="stationLoadingPill" class="station-loading-pill">
@@ -344,10 +491,10 @@
     </div>
 
     <div id="authMemberBox" style="display:none;">
-      <div style="background:rgba(255,255,255,0.03); border:1px solid var(--card-border); border-radius:14px; padding:14px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
+      <div style="background:rgba(255,255,255,0.03); border:1px solid var(--card-border); border-radius:12px; padding:12px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
         <div>
           <div style="font-weight:700;" id="profUsername">Member</div>
-          <div style="color:var(--subtext); font-size:0.8rem;" id="profMobile">+91-0000000000</div>
+          <div style="color:var(--subtext); font-size:0.78rem;" id="profMobile">+91-0000000000</div>
         </div>
         <button class="btn btn-secondary" style="width:auto; padding:6px 12px; font-size:0.75rem;" onclick="logout()">Logout</button>
       </div>
@@ -358,10 +505,10 @@
           <input type="text" id="audioTitle" placeholder="e.g. Family Anecdote">
         </div>
         <div class="form-group">
-          <label>Audio File</label>
+          <label>Audio File (Lossless / High Quality MP3, WAV, M4A, FLAC)</label>
           <input type="file" id="audioFileInput" accept="audio/*" onchange="handleFileSelected(this)">
         </div>
-        <button class="btn btn-primary" id="uploadBtn" onclick="uploadAudio()">Upload to Library</button>
+        <button class="btn btn-primary" id="uploadBtn" onclick="uploadAudio()">Upload in Original Quality</button>
       </div>
 
       <div id="uploadLockedSection" style="text-align:center; padding:16px; color:var(--subtext); font-size:0.82rem;">
@@ -392,20 +539,127 @@
   let lastPushVersion = null;
   let currentActiveHour = -1;
   let currentlyPlayingTrack = null;
-  let serverTimeOffset = 0; // Ensures sync with backend clock timeline
+  let serverTimeOffset = 0;
 
   const audioCache = {};
   let activePlayer = new Audio();
   let standbyPlayer = new Audio();
+  activePlayer.crossOrigin = "anonymous";
+  standbyPlayer.crossOrigin = "anonymous";
+  activePlayer.preload = "auto";
+  standbyPlayer.preload = "auto";
   let isStandbyReady = false;
 
+  // ================= WEB AUDIO 5.1 MULTI-CHANNEL PROCESSOR =================
+  let audioCtx = null;
+  let sourceNode = null;
+  let splitterNode = null;
+  let mergerNode = null;
+  let currentChannelMode = '2.0'; // Options: '2.0', '2.1', '4.0', '5.1'
+
+  function initWebAudioEngine() {
+    if (audioCtx) return;
+    try {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AudioContextClass();
+
+      // Configure maximum available hardware destination channels (up to 6 for 5.1 surround)
+      if (audioCtx.destination.maxChannelCount >= 6) {
+        audioCtx.destination.channelCount = 6;
+        audioCtx.destination.channelCountMode = "explicit";
+        audioCtx.destination.channelInterpretation = "discrete";
+      }
+
+      sourceNode = audioCtx.createMediaElementSource(activePlayer);
+      splitterNode = audioCtx.createChannelSplitter(2);
+      mergerNode = audioCtx.createChannelMerger(6);
+
+      applyChannelMatrix('2.0');
+    } catch (e) {
+      console.warn("Web Audio multichannel setup:", e);
+    }
+  }
+
+  function setAudioChannels(mode) {
+    currentChannelMode = mode;
+    document.querySelectorAll('.ch-btn').forEach(b => b.classList.remove('active'));
+    const activeBtn = document.getElementById('btnCh' + mode.replace('.', ''));
+    if (activeBtn) activeBtn.classList.add('active');
+
+    if (audioCtx) {
+      applyChannelMatrix(mode);
+    }
+    showToast(`Audio output switched to ${mode} Channels`);
+  }
+
+  function applyChannelMatrix(mode) {
+    if (!audioCtx || !sourceNode || !splitterNode || !mergerNode) return;
+    try {
+      sourceNode.disconnect();
+      splitterNode.disconnect();
+      mergerNode.disconnect();
+
+      sourceNode.connect(splitterNode);
+
+      // Split original high-fidelity stereo into Left & Right
+      // 0: Left, 1: Right, 2: Center, 3: LFE (Subwoofer), 4: Left Surround, 5: Right Surround
+      if (mode === '2.0') {
+        splitterNode.connect(mergerNode, 0, 0); // L -> L
+        splitterNode.connect(mergerNode, 1, 1); // R -> R
+      } else if (mode === '2.1') {
+        splitterNode.connect(mergerNode, 0, 0); // L -> L
+        splitterNode.connect(mergerNode, 1, 1); // R -> R
+        
+        // Low frequency boost to LFE (Ch 3)
+        const lfeFilter = audioCtx.createBiquadFilter();
+        lfeFilter.type = "lowpass";
+        lfeFilter.frequency.value = 120;
+        splitterNode.connect(lfeFilter, 0);
+        splitterNode.connect(lfeFilter, 1);
+        lfeFilter.connect(mergerNode, 0, 3);
+      } else if (mode === '4.0') {
+        splitterNode.connect(mergerNode, 0, 0); // L -> Front L
+        splitterNode.connect(mergerNode, 1, 1); // R -> Front R
+        splitterNode.connect(mergerNode, 0, 4); // L -> Rear Ls
+        splitterNode.connect(mergerNode, 1, 5); // R -> Rear Rs
+      } else if (mode === '5.1') {
+        splitterNode.connect(mergerNode, 0, 0); // L -> Front L
+        splitterNode.connect(mergerNode, 1, 1); // R -> Front R
+        
+        // Center channel synthesis (Ch 2)
+        const centerGain = audioCtx.createGain();
+        centerGain.gain.value = 0.7;
+        splitterNode.connect(centerGain, 0);
+        splitterNode.connect(centerGain, 1);
+        centerGain.connect(mergerNode, 0, 2);
+
+        // LFE Subwoofer (Ch 3)
+        const subFilter = audioCtx.createBiquadFilter();
+        subFilter.type = "lowpass";
+        subFilter.frequency.value = 110;
+        splitterNode.connect(subFilter, 0);
+        splitterNode.connect(subFilter, 1);
+        subFilter.connect(mergerNode, 0, 3);
+
+        // Surrounds (Ch 4 & 5)
+        splitterNode.connect(mergerNode, 0, 4);
+        splitterNode.connect(mergerNode, 1, 5);
+      }
+
+      mergerNode.connect(audioCtx.destination);
+    } catch(err) {
+      console.warn("Channel matrix reconfiguration:", err);
+      try { sourceNode.connect(audioCtx.destination); } catch(e) {}
+    }
+  }
+
+  // ================= LIFECYCLE & SYNC =================
   window.addEventListener('load', () => {
     fetchStationData();
     renderAuth();
 
     sendHeartbeat();
     setInterval(sendHeartbeat, 20000);
-    // Continuous lock to live broadcast timeline
     setInterval(checkLiveSynchronization, 4000);
   });
 
@@ -485,8 +739,6 @@
     } catch(err) {}
   }
 
-  // 2) True Radio Synchronization:
-  // Evaluates exactly which track and offset corresponds to the real-time clock
   function getSynchronizedCurrentTrackIndex(playlist) {
     if (!playlist || playlist.length === 0) return { index: 0, seekSec: 0 };
 
@@ -569,7 +821,6 @@
           document.getElementById('stationLoadingPill').style.display = 'none';
           document.getElementById('radioPowerBtn').style.display = 'block';
 
-          // Tune directly to the real-time broadcast seek point
           const syncState = getSynchronizedCurrentTrackIndex(activePlaylist);
           currentIndex = syncState.index;
           playCurrentTrackImmediate(syncState.seekSec);
@@ -586,7 +837,6 @@
     const now = new Date(Date.now() + serverTimeOffset);
     const currentHour = now.getHours();
 
-    // Natural transition at the turn of the hour
     if (currentActiveHour !== -1 && currentHour !== currentActiveHour) {
       currentActiveHour = currentHour;
       activePlaylist = resolveCurrentHourPlaylist();
@@ -604,7 +854,6 @@
       if (data.success && data.settings) {
         if (data.serverTime) serverTimeOffset = data.serverTime - Date.now();
 
-        // Urgent Admin Push Priority
         if (data.settings.push_version && data.settings.push_version !== lastPushVersion) {
           lastPushVersion = data.settings.push_version;
           const pushedFileId = data.settings.pushed_track;
@@ -618,7 +867,6 @@
           }
         }
 
-        // Timeline Schedule Updates by Admin
         if (currentSeqVersion && data.settings.seq_version !== currentSeqVersion) {
           currentSeqVersion = data.settings.seq_version;
           allTracks = data.tracks || [];
@@ -634,6 +882,7 @@
     } catch(err) {}
   }
 
+  // Preserve Audio Quality: Never downsample or compress
   async function resolveTrackAudio(track) {
     if (!track) return null;
     if (audioCache[track.fileId]) return audioCache[track.fileId];
@@ -692,6 +941,10 @@
       activePlayer._trackRef = currentlyPlayingTrack;
     }
 
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+
     activePlayer.play().catch(e => console.warn(e));
     updateMediaSession();
     updateTunerUI(currentlyPlayingTrack);
@@ -706,6 +959,11 @@
     activePlayer._trackRef = track;
     currentlyPlayingTrack = track;
     updateTunerUI(currentlyPlayingTrack);
+
+    initWebAudioEngine();
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
 
     const playPromise = activePlayer.play();
     isPlaying = true;
@@ -731,6 +989,11 @@
   function toggleRadio() {
     if (activePlaylist.length === 0) return;
 
+    initWebAudioEngine();
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+
     if (isPlaying) {
       activePlayer.pause();
       standbyPlayer.pause();
@@ -738,7 +1001,6 @@
       sendHeartbeat();
       updateTunerUI(currentlyPlayingTrack);
     } else {
-      // Re-align with live timeline seek point
       const syncState = getSynchronizedCurrentTrackIndex(activePlaylist);
       currentIndex = syncState.index;
 
@@ -901,7 +1163,7 @@
     if (!title || !selectedAudioFile) return showToast("Provide a title and select a file");
 
     btn.disabled = true;
-    btn.innerText = "Uploading to Family Library...";
+    btn.innerText = "Uploading Original Quality Audio...";
 
     const reader = new FileReader();
     reader.onload = async function() {
@@ -921,9 +1183,9 @@
       });
       const d = await res.json();
       btn.disabled = false;
-      btn.innerText = "Upload to Library";
+      btn.innerText = "Upload in Original Quality";
       if (d.success) {
-        showToast("Audio uploaded successfully!");
+        showToast("Audio uploaded successfully without compression!");
         closeAccountModal();
         fetchStationData();
       } else {

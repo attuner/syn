@@ -40,7 +40,7 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       flex-wrap: wrap;
       gap: 12px;
     }
@@ -68,6 +68,36 @@
     }
     .pulse-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 1.4s infinite; }
     @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+    /* Global Omni Search Bar */
+    .global-search-bar {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 16px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
+    .global-search-bar i { color: var(--cyan); font-size: 1rem; }
+    .global-search-bar input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .search-clear-btn {
+      background: none;
+      border: none;
+      color: var(--sub);
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
 
     /* Navigation Tabs */
     .nav-tabs {
@@ -169,11 +199,7 @@
     }
 
     /* Push Point Timeline chips */
-    .timeline-container {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
+    .timeline-container { display: flex; flex-direction: column; gap: 6px; }
     .track-chip {
       display: flex;
       align-items: center;
@@ -185,10 +211,7 @@
       cursor: pointer;
       transition: all 0.15s;
     }
-    .track-chip:hover {
-      background: rgba(0, 210, 255, 0.06);
-      border-color: rgba(0, 210, 255, 0.3);
-    }
+    .track-chip:hover { background: rgba(0, 210, 255, 0.06); border-color: rgba(0, 210, 255, 0.3); }
     .chip-left { display: flex; align-items: center; gap: 10px; overflow: hidden; }
     .chip-time-point {
       font-family: monospace;
@@ -253,7 +276,7 @@
       <h3 style="font-size:1.05rem;"><i class="fa-solid fa-arrow-right-arrow-left" style="color:var(--cyan); margin-right:8px;"></i>Replace / Modify Audio</h3>
       <button onclick="closeReplaceModal()" style="background:none; border:none; color:var(--sub); font-size:1.2rem; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <p style="font-size:0.8rem; color:var(--sub); margin-bottom:14px;">Choose another approved audio from the library. The real-time timeline push points adjust automatically.</p>
+    <p style="font-size:0.8rem; color:var(--sub); margin-bottom:14px;">Choose another approved audio from the library. Timeline push points adjust automatically.</p>
     <div class="form-group">
       <label>Choose Replacement Audio</label>
       <select id="modalTrackSelector"></select>
@@ -303,13 +326,20 @@
       </div>
     </header>
 
+    <!-- Global Omni Search & Find Bar -->
+    <div class="global-search-bar">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="globalOmniSearch" placeholder="Search across hourly slots, library tracks, contributor approvals, and listeners..." oninput="handleGlobalSearch(this.value)">
+      <button class="search-clear-btn" onclick="clearGlobalSearch()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
     <!-- Navigation Tabs -->
     <nav class="nav-tabs">
-      <button class="tab-btn active" onclick="switchTab('slotsTab', this)"><i class="fa-solid fa-clock"></i> 24-Hr Hourly Timeline</button>
-      <button class="tab-btn" onclick="switchTab('libraryTab', this)"><i class="fa-solid fa-music"></i> Audio Library & Push</button>
-      <button class="tab-btn" onclick="switchTab('approvalsTab', this)"><i class="fa-solid fa-check-double"></i> Approvals</button>
-      <button class="tab-btn" onclick="switchTab('liveTab', this)"><i class="fa-solid fa-headphones"></i> Listeners & Family</button>
-      <button class="tab-btn" onclick="switchTab('settingsTab', this)"><i class="fa-solid fa-sliders"></i> Settings</button>
+      <button class="tab-btn active" id="tabBtnSlots" onclick="switchTab('slotsTab', this)"><i class="fa-solid fa-clock"></i> 24-Hr Hourly Timeline</button>
+      <button class="tab-btn" id="tabBtnLib" onclick="switchTab('libraryTab', this)"><i class="fa-solid fa-music"></i> Audio Library & Push</button>
+      <button class="tab-btn" id="tabBtnAppr" onclick="switchTab('approvalsTab', this)"><i class="fa-solid fa-check-double"></i> Approvals</button>
+      <button class="tab-btn" id="tabBtnLive" onclick="switchTab('liveTab', this)"><i class="fa-solid fa-headphones"></i> Listeners & Family</button>
+      <button class="tab-btn" id="tabBtnSettings" onclick="switchTab('settingsTab', this)"><i class="fa-solid fa-sliders"></i> Settings</button>
     </nav>
 
     <!-- TAB 1: 24-HOUR HOURLY TIMELINE ORGANIZER -->
@@ -350,7 +380,6 @@
             <h2 style="font-size:1.15rem;"><i class="fa-solid fa-compact-disc" style="color:var(--accent); margin-right:8px;"></i>Chronological Library & Urgent Push</h2>
             <p style="font-size:0.8rem; color:var(--sub);">All approved audios. Pushing a track immediately broadcasts it across all family radios.</p>
           </div>
-          <input type="text" id="libSearchInput" placeholder="Filter by title or contributor..." oninput="renderLibrary()" style="padding:8px 12px; background:#090d16; border:1px solid var(--border); border-radius:8px; color:#fff; font-size:0.82rem; width:260px;">
         </div>
 
         <div id="libraryList">Loading library...</div>
@@ -464,6 +493,7 @@
   let hourlySchedules = {};
   let cachedListeners = [];
   let serverTimeOffset = 0;
+  let activeSearchQuery = "";
 
   // Replacer Modal State
   let replaceTargetHour = null;
@@ -508,7 +538,22 @@
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
-    btn.classList.add('active');
+    if (btn) btn.classList.add('active');
+  }
+
+  // 3) Global Search and Find Handler across all sections
+  function handleGlobalSearch(query) {
+    activeSearchQuery = String(query || "").toLowerCase().trim();
+    renderHourlySlotsUI();
+    renderLibrary();
+    renderApprovals();
+    renderListeners(cachedListeners);
+    renderUsers();
+  }
+
+  function clearGlobalSearch() {
+    document.getElementById('globalOmniSearch').value = "";
+    handleGlobalSearch("");
   }
 
   // Live real-time studio clock
@@ -603,12 +648,12 @@
     trackSel.innerHTML = approved.map(t => `<option value="${t.fileId}">${escapeHtml(t.title)} (${formatSecs(t.durationSec || 140)})</option>`).join('');
   }
 
-  // 1) Clear & Modern Hourly Slots with Exact Push Points
   function renderHourlySlotsUI() {
     const container = document.getElementById('hourlySlotsGrid');
     if (!container) return;
     const nowHour = new Date(Date.now() + serverTimeOffset).getHours();
     let html = '';
+    const q = activeSearchQuery;
 
     for (let h = 0; h <= 23; h++) {
       const slot = (hourlySchedules && hourlySchedules[String(h)]) ? hourlySchedules[String(h)] : { name: "", trackIds: [] };
@@ -617,8 +662,12 @@
       const slotName = String(slot.name || '');
       const isLiveNow = (h === nowHour);
 
+      // Search matching for hourly slots
+      const slotMatchesSearch = !q || formattedHour.toLowerCase().includes(q) || slotName.toLowerCase().includes(q) || `hour ${h}`.includes(q);
+
       let cumulativeSec = 0;
       let chipsHtml = '';
+      let hasMatchingChild = false;
 
       if (list.length === 0) {
         chipsHtml = `<span style="font-size:0.75rem; color:var(--sub); padding:6px 0;">No scheduled audios in this hour.</span>`;
@@ -626,12 +675,16 @@
         chipsHtml = `<div class="timeline-container">` + list.map((fileId, idx) => {
           const trk = tracks.find(t => t.fileId === fileId);
           const title = trk ? trk.title : 'Track (' + fileId + ')';
+          const contrib = trk ? (trk.contributor || '') : '';
           const dur = trk ? (trk.durationSec || 140) : 140;
           const pushPoint = formatTimeOffset(h, cumulativeSec);
           cumulativeSec += dur;
 
+          const trackMatches = !q || title.toLowerCase().includes(q) || contrib.toLowerCase().includes(q);
+          if (trackMatches) hasMatchingChild = true;
+
           return `
-            <div class="track-chip" onclick="openReplaceModal(${h}, ${idx})" title="Click to replace or re-sequence">
+            <div class="track-chip" style="${q && trackMatches ? 'border-color: var(--cyan); background: rgba(0,210,255,0.1);' : ''}" onclick="openReplaceModal(${h}, ${idx})" title="Click to replace or re-sequence">
               <div class="chip-left">
                 <span class="chip-time-point"><i class="fa-solid fa-play" style="font-size:0.6rem; margin-right:3px;"></i>${pushPoint}</span>
                 <span class="chip-title"><strong>#${idx + 1}</strong> ${escapeHtml(title)}</span>
@@ -646,13 +699,17 @@
         }).join('') + `</div>`;
       }
 
+      if (q && !slotMatchesSearch && !hasMatchingChild) {
+        continue;
+      }
+
       html += `
         <div class="slot-row ${isLiveNow ? 'active-hour' : ''}">
           <div class="slot-header">
             <div class="slot-title-group">
               <span class="slot-badge ${isLiveNow ? 'live' : ''}">${isLiveNow ? '● ON AIR NOW' : 'HOUR ' + h}</span>
               <strong style="font-size:0.95rem;">${formattedHour}</strong>
-              <span style="font-size:0.75rem; color:var(--sub);">Total Duration: ${formatSecs(cumulativeSec)}</span>
+              <span style="font-size:0.75rem; color:var(--sub);">Total: ${formatSecs(cumulativeSec)}</span>
             </div>
             <div>
               <input type="text" class="slot-name-field" placeholder="Slot Name (e.g. Morning Family Raga)" value="${escapeHtml(slotName)}" onchange="updateSlotName(${h}, this.value)">
@@ -662,7 +719,7 @@
         </div>
       `;
     }
-    container.innerHTML = html;
+    container.innerHTML = html || `<p style="color:var(--sub); font-size:0.85rem; padding:12px;">No matching hourly slots found for "${escapeHtml(q)}".</p>`;
   }
 
   function updateSlotName(h, val) {
@@ -689,7 +746,6 @@
     }
   }
 
-  // 3) Quick Replace / Modify Modal Handlers
   function openReplaceModal(h, idx) {
     replaceTargetHour = h;
     replaceTargetIndex = idx;
@@ -744,18 +800,18 @@
     }
   }
 
-  // Library & Push Action
+  // Library & Push Action with Search
   function renderLibrary() {
-    const q = (document.getElementById('libSearchInput') ? document.getElementById('libSearchInput').value : "").toLowerCase().trim();
+    const q = activeSearchQuery;
     const box = document.getElementById('libraryList');
     if (!box) return;
 
     const filtered = tracks.filter(t => {
-      return String(t.title || "").toLowerCase().includes(q) || String(t.contributor || "").toLowerCase().includes(q);
+      return !q || String(t.title || "").toLowerCase().includes(q) || String(t.contributor || "").toLowerCase().includes(q);
     });
 
     if (filtered.length === 0) {
-      box.innerHTML = `<p style="color:var(--sub); font-size:0.85rem; padding:10px;">No tracks found.</p>`;
+      box.innerHTML = `<p style="color:var(--sub); font-size:0.85rem; padding:10px;">No tracks found matching "${escapeHtml(q)}".</p>`;
       return;
     }
 
@@ -878,13 +934,18 @@
   function renderApprovals() {
     const tbody = document.getElementById('approvalsTableBody');
     if (!tbody) return;
+    const q = activeSearchQuery;
 
-    if (tracks.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--sub);">No audio tracks uploaded yet.</td></tr>`;
+    const filtered = tracks.filter(t => {
+      return !q || String(t.title || "").toLowerCase().includes(q) || String(t.contributor || "").toLowerCase().includes(q) || String(t.category || "").toLowerCase().includes(q);
+    });
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--sub);">No tracks found.</td></tr>`;
       return;
     }
 
-    tbody.innerHTML = tracks.map(t => {
+    tbody.innerHTML = filtered.map(t => {
       const isApproved = (t.approvalStatus === "approved");
       const dur = formatSecs(t.durationSec || 140);
       return `
@@ -949,11 +1010,17 @@
   function renderListeners(listeners) {
     const tbody = document.getElementById('listenersTableBody');
     if (!tbody) return;
-    if (!listeners || listeners.length === 0) {
+    const q = activeSearchQuery;
+
+    const filtered = (listeners || []).filter(l => {
+      return !q || String(l.listenerId || "").toLowerCase().includes(q) || String(l.username || "").toLowerCase().includes(q);
+    });
+
+    if (filtered.length === 0) {
       tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--sub);">No listeners online.</td></tr>`;
       return;
     }
-    tbody.innerHTML = listeners.map(l => `
+    tbody.innerHTML = filtered.map(l => `
       <tr>
         <td><code>${escapeHtml(l.listenerId)}</code></td>
         <td><strong>${escapeHtml(l.username)}</strong></td>
@@ -966,11 +1033,17 @@
   function renderUsers() {
     const tbody = document.getElementById('usersTableBody');
     if (!tbody) return;
-    if (!users || users.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--sub);">No registered family members.</td></tr>`;
+    const q = activeSearchQuery;
+
+    const filtered = (users || []).filter(u => {
+      return !q || String(u.username || "").toLowerCase().includes(q) || String(u.mobile || "").toLowerCase().includes(q);
+    });
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--sub);">No users found.</td></tr>`;
       return;
     }
-    tbody.innerHTML = users.map(u => {
+    tbody.innerHTML = filtered.map(u => {
       const isApproved = (u.status === "approved");
       return `
         <tr>
