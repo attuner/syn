@@ -88,7 +88,7 @@
     .badge-live { background: rgba(0, 230, 118, 0.15); border: 1px solid rgba(0, 230, 118, 0.4); color: var(--green); }
     .badge-listeners { background: rgba(0, 210, 255, 0.15); border: 1px solid rgba(0, 210, 255, 0.4); color: var(--cyan); }
     .pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 1.4s infinite; }
-    @keyframes pulse { 0%, 100% { opacity: 0.3; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.3); } }
+    @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 
     .header-actions { display: flex; align-items: center; gap: 8px; }
     .btn-header {
@@ -113,7 +113,7 @@
       height: calc(100vh - var(--header-h));
       height: calc(100dvh - var(--header-h));
       max-height: calc(100dvh - var(--header-h));
-      padding: clamp(8px, 2vh, 16px) 16px;
+      padding: clamp(8px, 1.8vh, 16px) 16px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -135,7 +135,7 @@
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 24px;
-      padding: clamp(14px, 2.5vh, 26px) clamp(14px, 3vw, 24px);
+      padding: clamp(12px, 2vh, 22px) clamp(14px, 3vw, 24px);
       text-align: center;
       box-shadow: 0 16px 36px rgba(0,0,0,0.65);
       backdrop-filter: blur(12px);
@@ -148,9 +148,9 @@
 
     .vinyl-wrapper {
       position: relative;
-      width: min(28vh, 190px);
-      height: min(28vh, 190px);
-      margin: 4px auto 10px;
+      width: min(24vh, 175px);
+      height: min(24vh, 175px);
+      margin: 2px auto 8px;
       flex-shrink: 0;
     }
     .vinyl {
@@ -163,8 +163,8 @@
     }
     .vinyl.spinning { animation-play-state: running; }
     .vinyl-center {
-      width: clamp(48px, 8vw, 68px);
-      height: clamp(48px, 8vw, 68px);
+      width: clamp(44px, 7vw, 64px);
+      height: clamp(44px, 7vw, 64px);
       border-radius: 50%;
       background: var(--accent);
       border: 3px solid #fff;
@@ -172,7 +172,7 @@
       align-items: center;
       justify-content: center;
       color: #fff;
-      font-size: clamp(1rem, 2vw, 1.4rem);
+      font-size: clamp(0.95rem, 2vw, 1.3rem);
     }
     @keyframes spin { 100% { transform: rotate(360deg); } }
 
@@ -185,31 +185,31 @@
       flex-shrink: 1;
     }
     .track-title {
-      font-size: clamp(1.05rem, 2.2vh, 1.35rem);
+      font-size: clamp(1rem, 2vh, 1.3rem);
       font-weight: 800;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
       max-width: 94%;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .track-contributor { font-size: 0.82rem; color: var(--cyan); margin-bottom: 6px; font-weight: 500; }
-    .slot-indicator { font-size: 0.72rem; color: #ffc107; margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .track-contributor { font-size: 0.8rem; color: var(--cyan); margin-bottom: 4px; font-weight: 500; }
+    .slot-indicator { font-size: 0.7rem; color: #ffc107; margin-bottom: 3px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
     .push-indicator {
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       color: var(--cyan);
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       font-weight: 600;
       background: rgba(0, 210, 255, 0.08);
-      padding: 3px 10px;
+      padding: 2px 10px;
       border-radius: 10px;
     }
     .track-desc {
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       color: var(--subtext);
-      line-height: 1.35;
-      margin-bottom: 10px;
-      max-height: 38px;
+      line-height: 1.3;
+      margin-bottom: 8px;
+      max-height: 36px;
       overflow: hidden;
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -217,24 +217,24 @@
       max-width: 92%;
     }
 
-    /* Multi-Channel Audio Bar & Switcher */
+    /* Enhanced Audio Channel & Surround Sound Switcher */
     .audio-quality-bar {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      background: rgba(0, 0, 0, 0.35);
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.4);
       border: 1px solid rgba(255, 255, 255, 0.06);
-      padding: 6px 12px;
-      border-radius: 20px;
-      margin-bottom: 12px;
+      padding: 5px 10px;
+      border-radius: 16px;
+      margin-bottom: 10px;
       flex-wrap: wrap;
     }
     .quality-badge {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      font-size: 0.7rem;
+      gap: 4px;
+      font-size: 0.68rem;
       font-weight: 700;
       color: #fff;
     }
@@ -242,19 +242,21 @@
     .channel-selector-group {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
       background: rgba(255, 255, 255, 0.05);
       padding: 2px;
-      border-radius: 12px;
+      border-radius: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
     .ch-btn {
       background: transparent;
       border: none;
       color: var(--subtext);
-      font-size: 0.7rem;
+      font-size: 0.67rem;
       font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 10px;
+      padding: 3px 6px;
+      border-radius: 8px;
       cursor: pointer;
       transition: all 0.2s;
     }
@@ -269,17 +271,17 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 76px;
+      min-height: 70px;
       flex-shrink: 0;
     }
     .main-switch-btn {
-      width: clamp(66px, 10vh, 80px);
-      height: clamp(66px, 10vh, 80px);
+      width: clamp(62px, 9vh, 76px);
+      height: clamp(62px, 9vh, 76px);
       border-radius: 50%;
       background: linear-gradient(135deg, var(--accent), #ff758c);
       border: none;
       color: #fff;
-      font-size: clamp(1.6rem, 2.5vw, 2rem);
+      font-size: clamp(1.5rem, 2.5vw, 1.85rem);
       cursor: pointer;
       box-shadow: 0 8px 24px var(--accent-glow);
       transition: transform 0.2s, box-shadow 0.2s;
@@ -290,28 +292,28 @@
 
     .station-loading-pill {
       display: inline-flex; align-items: center; gap: 8px;
-      padding: 8px 18px; border-radius: 24px;
+      padding: 7px 16px; border-radius: 20px;
       background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border);
-      color: var(--subtext); font-size: 0.8rem; font-weight: 600;
+      color: var(--subtext); font-size: 0.78rem; font-weight: 600;
     }
 
-    /* Landscape Mode */
-    @media (orientation: landscape) and (max-height: 540px) {
+    /* Landscape Mode for Small Screens & TVs */
+    @media (orientation: landscape) and (max-height: 560px) {
       .tuner-card {
         flex-direction: row;
         justify-content: space-evenly;
-        padding: 10px 20px;
-        gap: 20px;
+        padding: 8px 16px;
+        gap: 16px;
       }
-      .vinyl-wrapper { width: min(44vh, 180px); height: min(44vh, 180px); margin: 0; }
-      .track-info-pane { align-items: flex-start; text-align: left; max-width: 55%; }
+      .vinyl-wrapper { width: min(40vh, 160px); height: min(40vh, 160px); margin: 0; }
+      .track-info-pane { align-items: flex-start; text-align: left; max-width: 58%; }
       .track-title { max-width: 100%; }
-      .track-desc { max-width: 100%; margin-bottom: 6px; }
+      .track-desc { max-width: 100%; margin-bottom: 4px; }
       .audio-quality-bar { justify-content: flex-start; margin-bottom: 6px; }
       .switch-container { min-height: auto; align-items: flex-start; }
     }
 
-    /* Modal */
+    /* Modals */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.82);
       backdrop-filter: blur(10px); z-index: 100; display: none;
@@ -407,19 +409,19 @@
           <div class="push-indicator" id="currentPushPointDisplay">Push Point: --:--</div>
           <div class="track-desc" id="trackDescDisplay">Streaming pristine audio quality in perfect timeline sync.</div>
 
-          <!-- Audio Quality & Dynamic Channel Switcher (Stereo to 5.1 Surround) -->
+          <!-- Channel & Surround Sound Switcher -->
           <div class="audio-quality-bar">
-            <div class="quality-badge" title="Original Uncompressed Dynamic Audio Stream">
-              <i class="fa-solid fa-shield-halved"></i>
-              <span>Studio Master (320kbps Lossless)</span>
+            <div class="quality-badge" title="Original Studio Master Audio Stream">
+              <i class="fa-solid fa-compact-disc"></i>
+              <span id="audioEngineModeLabel">Studio Master</span>
             </div>
-            <div style="width: 1px; height: 14px; background: rgba(255,255,255,0.15);"></div>
+            <div style="width: 1px; height: 12px; background: rgba(255,255,255,0.15);"></div>
             <div class="channel-selector-group">
-              <span style="font-size:0.68rem; color:var(--subtext); margin-right:4px;"><i class="fa-solid fa-sliders"></i> Ch:</span>
-              <button class="ch-btn active" id="btnCh20" onclick="setAudioChannels('2.0')">2.0</button>
+              <button class="ch-btn" id="btnChLeft" onclick="setAudioChannels('left')">Left Only</button>
+              <button class="ch-btn" id="btnChRight" onclick="setAudioChannels('right')">Right Only</button>
+              <button class="ch-btn active" id="btnCh20" onclick="setAudioChannels('2.0')">Stereo</button>
               <button class="ch-btn" id="btnCh21" onclick="setAudioChannels('2.1')">2.1</button>
-              <button class="ch-btn" id="btnCh40" onclick="setAudioChannels('4.0')">4.0</button>
-              <button class="ch-btn" id="btnCh51" onclick="setAudioChannels('5.1')">5.1</button>
+              <button class="ch-btn" id="btnChSurround" onclick="setAudioChannels('5.1')">Surround 5.1</button>
             </div>
           </div>
 
@@ -519,7 +521,7 @@
 </div>
 
 <script>
-  const BACKEND_URL = "https://script.google.com/macros/s/AKfycbzMKFB_sBJYVAuK17j3u7RCXplO3t47c1Dk93k0MrwoWehqS4mlwBfhlsleo1YzPqRykA/exec";
+  const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxIM9fWOdU4skEnXuxVe6DR6FS7z-a3AdEepC4o6AS5WQiLV_lWp0EmBXCg0rSv-Mj5Cg/exec";
 
   let listenerId = localStorage.getItem('kr_listener_id');
   if (!listenerId) {
@@ -550,20 +552,32 @@
   standbyPlayer.preload = "auto";
   let isStandbyReady = false;
 
-  // ================= WEB AUDIO 5.1 MULTI-CHANNEL PROCESSOR =================
+  // ================= WEB AUDIO SURROUND & TV COMPATIBILITY =================
   let audioCtx = null;
   let sourceNode = null;
   let splitterNode = null;
   let mergerNode = null;
-  let currentChannelMode = '2.0'; // Options: '2.0', '2.1', '4.0', '5.1'
+  let currentChannelMode = '2.0'; // 'left', 'right', '2.0', '2.1', '5.1'
+  let webAudioSupported = true;
 
-  function initWebAudioEngine() {
-    if (audioCtx) return;
+  // Pre-initialize on any user gesture (vital for TV browsers like JioSphere / JioPages)
+  function ensureAudioContext() {
+    if (audioCtx && audioCtx.state !== 'closed') {
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+      }
+      return;
+    }
+
     try {
       const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) {
+        webAudioSupported = false;
+        return;
+      }
       audioCtx = new AudioContextClass();
 
-      // Configure maximum available hardware destination channels (up to 6 for 5.1 surround)
+      // Configure multi-channel if supported by TV or sound system hardware
       if (audioCtx.destination.maxChannelCount >= 6) {
         audioCtx.destination.channelCount = 6;
         audioCtx.destination.channelCountMode = "explicit";
@@ -574,26 +588,47 @@
       splitterNode = audioCtx.createChannelSplitter(2);
       mergerNode = audioCtx.createChannelMerger(6);
 
-      applyChannelMatrix('2.0');
-    } catch (e) {
-      console.warn("Web Audio multichannel setup:", e);
+      applyChannelMatrix(currentChannelMode);
+    } catch(err) {
+      console.warn("Web Audio multichannel setup:", err);
+      // Fallback cleanly to direct native player output on constrained Smart TVs
+      webAudioSupported = false;
+      document.getElementById('audioEngineModeLabel').innerText = "Direct Master Stream";
     }
   }
 
   function setAudioChannels(mode) {
     currentChannelMode = mode;
     document.querySelectorAll('.ch-btn').forEach(b => b.classList.remove('active'));
-    const activeBtn = document.getElementById('btnCh' + mode.replace('.', ''));
-    if (activeBtn) activeBtn.classList.add('active');
 
-    if (audioCtx) {
+    const btnMap = {
+      'left': 'btnChLeft',
+      'right': 'btnChRight',
+      '2.0': 'btnCh20',
+      '2.1': 'btnCh21',
+      '5.1': 'btnChSurround'
+    };
+
+    const targetBtn = document.getElementById(btnMap[mode]);
+    if (targetBtn) targetBtn.classList.add('active');
+
+    ensureAudioContext();
+    if (webAudioSupported && audioCtx) {
       applyChannelMatrix(mode);
     }
-    showToast(`Audio output switched to ${mode} Channels`);
+
+    const modeLabels = {
+      'left': 'Left Channel Only',
+      'right': 'Right Channel Only',
+      '2.0': 'Stereo Mode',
+      '2.1': '2.1 Bass Enhanced',
+      '5.1': '5.1 Surround Sound'
+    };
+    showToast(`Switched to: ${modeLabels[mode] || mode}`);
   }
 
   function applyChannelMatrix(mode) {
-    if (!audioCtx || !sourceNode || !splitterNode || !mergerNode) return;
+    if (!webAudioSupported || !audioCtx || !sourceNode || !splitterNode || !mergerNode) return;
     try {
       sourceNode.disconnect();
       splitterNode.disconnect();
@@ -601,47 +636,51 @@
 
       sourceNode.connect(splitterNode);
 
-      // Split original high-fidelity stereo into Left & Right
-      // 0: Left, 1: Right, 2: Center, 3: LFE (Subwoofer), 4: Left Surround, 5: Right Surround
-      if (mode === '2.0') {
+      // Ch index mapping: 0: L, 1: R, 2: Center, 3: LFE, 4: Ls, 5: Rs
+      if (mode === 'left') {
+        // Left channel only routed to both speakers
+        splitterNode.connect(mergerNode, 0, 0); // L -> L
+        splitterNode.connect(mergerNode, 0, 1); // L -> R
+      } else if (mode === 'right') {
+        // Right channel only routed to both speakers
+        splitterNode.connect(mergerNode, 1, 0); // R -> L
+        splitterNode.connect(mergerNode, 1, 1); // R -> R
+      } else if (mode === '2.0') {
+        // True stereo
         splitterNode.connect(mergerNode, 0, 0); // L -> L
         splitterNode.connect(mergerNode, 1, 1); // R -> R
       } else if (mode === '2.1') {
-        splitterNode.connect(mergerNode, 0, 0); // L -> L
-        splitterNode.connect(mergerNode, 1, 1); // R -> R
-        
-        // Low frequency boost to LFE (Ch 3)
+        // Stereo + Subwoofer boost
+        splitterNode.connect(mergerNode, 0, 0);
+        splitterNode.connect(mergerNode, 1, 1);
+
         const lfeFilter = audioCtx.createBiquadFilter();
         lfeFilter.type = "lowpass";
         lfeFilter.frequency.value = 120;
         splitterNode.connect(lfeFilter, 0);
         splitterNode.connect(lfeFilter, 1);
         lfeFilter.connect(mergerNode, 0, 3);
-      } else if (mode === '4.0') {
-        splitterNode.connect(mergerNode, 0, 0); // L -> Front L
-        splitterNode.connect(mergerNode, 1, 1); // R -> Front R
-        splitterNode.connect(mergerNode, 0, 4); // L -> Rear Ls
-        splitterNode.connect(mergerNode, 1, 5); // R -> Rear Rs
       } else if (mode === '5.1') {
-        splitterNode.connect(mergerNode, 0, 0); // L -> Front L
-        splitterNode.connect(mergerNode, 1, 1); // R -> Front R
-        
-        // Center channel synthesis (Ch 2)
-        const centerGain = audioCtx.createGain();
-        centerGain.gain.value = 0.7;
-        splitterNode.connect(centerGain, 0);
-        splitterNode.connect(centerGain, 1);
-        centerGain.connect(mergerNode, 0, 2);
+        // Full surround sound Matrix
+        splitterNode.connect(mergerNode, 0, 0); // L
+        splitterNode.connect(mergerNode, 1, 1); // R
 
-        // LFE Subwoofer (Ch 3)
-        const subFilter = audioCtx.createBiquadFilter();
-        subFilter.type = "lowpass";
-        subFilter.frequency.value = 110;
-        splitterNode.connect(subFilter, 0);
-        splitterNode.connect(subFilter, 1);
-        subFilter.connect(mergerNode, 0, 3);
+        // Center
+        const center = audioCtx.createGain();
+        center.gain.value = 0.7;
+        splitterNode.connect(center, 0);
+        splitterNode.connect(center, 1);
+        center.connect(mergerNode, 0, 2);
 
-        // Surrounds (Ch 4 & 5)
+        // LFE (Sub)
+        const sub = audioCtx.createBiquadFilter();
+        sub.type = "lowpass";
+        sub.frequency.value = 110;
+        splitterNode.connect(sub, 0);
+        splitterNode.connect(sub, 1);
+        sub.connect(mergerNode, 0, 3);
+
+        // Surrounds
         splitterNode.connect(mergerNode, 0, 4);
         splitterNode.connect(mergerNode, 1, 5);
       }
@@ -661,6 +700,17 @@
     sendHeartbeat();
     setInterval(sendHeartbeat, 20000);
     setInterval(checkLiveSynchronization, 4000);
+
+    // Warm audio stack on first user interaction for Smart TVs & mobiles
+    const unlockAudio = () => {
+      ensureAudioContext();
+      window.removeEventListener('click', unlockAudio);
+      window.removeEventListener('keydown', unlockAudio);
+      window.removeEventListener('touchstart', unlockAudio);
+    };
+    window.addEventListener('click', unlockAudio);
+    window.addEventListener('keydown', unlockAudio);
+    window.addEventListener('touchstart', unlockAudio);
   });
 
   function showToast(msg) {
@@ -882,7 +932,6 @@
     } catch(err) {}
   }
 
-  // Preserve Audio Quality: Never downsample or compress
   async function resolveTrackAudio(track) {
     if (!track) return null;
     if (audioCache[track.fileId]) return audioCache[track.fileId];
@@ -941,9 +990,7 @@
       activePlayer._trackRef = currentlyPlayingTrack;
     }
 
-    if (audioCtx && audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
+    ensureAudioContext();
 
     activePlayer.play().catch(e => console.warn(e));
     updateMediaSession();
@@ -960,10 +1007,7 @@
     currentlyPlayingTrack = track;
     updateTunerUI(currentlyPlayingTrack);
 
-    initWebAudioEngine();
-    if (audioCtx && audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
+    ensureAudioContext();
 
     const playPromise = activePlayer.play();
     isPlaying = true;
@@ -989,10 +1033,7 @@
   function toggleRadio() {
     if (activePlaylist.length === 0) return;
 
-    initWebAudioEngine();
-    if (audioCtx && audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
+    ensureAudioContext();
 
     if (isPlaying) {
       activePlayer.pause();

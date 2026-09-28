@@ -154,6 +154,7 @@
     .btn-primary { background: var(--accent); color: #fff; }
     .btn-cyan { background: var(--cyan); color: #000; }
     .btn-green { background: var(--green); color: #000; }
+    .btn-purple { background: linear-gradient(135deg, #a855f7, #6366f1); color: #fff; }
     .btn-danger { background: #e63946; color: #fff; }
     .btn-secondary { background: rgba(255, 255, 255, 0.08); color: #fff; }
     .btn-sm { padding: 6px 12px; font-size: 0.76rem; border-radius: 6px; }
@@ -350,7 +351,11 @@
             <h2 style="font-size:1.15rem;"><i class="fa-solid fa-timeline" style="color:var(--cyan); margin-right:8px;"></i>Hourly Push Points Timeline</h2>
             <p style="font-size:0.8rem; color:var(--sub);">Audios play in exact sequential time lengths. <strong>Click any audio chip to modify/replace it</strong> or delete it.</p>
           </div>
-          <button class="btn btn-primary btn-sm" onclick="saveHourlySlots()"><i class="fa-solid fa-floppy-disk"></i> Save Broadcast Schedule</button>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <!-- 3) Auto-Schedule All Slots with Random Plays -->
+            <button class="btn btn-purple btn-sm" onclick="triggerAutoScheduleRandom()"><i class="fa-solid fa-shuffle"></i> Auto-Schedule 24h (Random Plays)</button>
+            <button class="btn btn-primary btn-sm" onclick="saveHourlySlots()"><i class="fa-solid fa-floppy-disk"></i> Save Broadcast Schedule</button>
+          </div>
         </div>
 
         <!-- Add Track Directly to Hour Slot -->
@@ -485,7 +490,7 @@
 </div>
 
 <script>
-  const BACKEND_URL = "https://script.google.com/macros/s/AKfycbzMKFB_sBJYVAuK17j3u7RCXplO3t47c1Dk93k0MrwoWehqS4mlwBfhlsleo1YzPqRykA/exec";
+  const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxIM9fWOdU4skEnXuxVe6DR6FS7z-a3AdEepC4o6AS5WQiLV_lWp0EmBXCg0rSv-Mj5Cg/exec";
 
   let adminPasscode = "";
   let tracks = [];
@@ -541,7 +546,6 @@
     if (btn) btn.classList.add('active');
   }
 
-  // 3) Global Search and Find Handler across all sections
   function handleGlobalSearch(query) {
     activeSearchQuery = String(query || "").toLowerCase().trim();
     renderHourlySlotsUI();
@@ -556,7 +560,6 @@
     handleGlobalSearch("");
   }
 
-  // Live real-time studio clock
   setInterval(() => {
     const now = new Date(Date.now() + serverTimeOffset);
     const clockEl = document.getElementById('liveClockDisplay');
@@ -645,7 +648,34 @@
       trackSel.innerHTML = `<option value="">No approved tracks</option>`;
       return;
     }
-    trackSel.innerHTML = approved.map(t => `<option value="${t.fileId}">${escapeHtml(t.title)} (${formatSecs(t.durationSec || 140)})</option>`).join('');
+    trackSel.innerHTML = approved.map(t => `<option value="${t.fileId}">${escapeHtml(t.title)} (${formatSecs(t.durationSec || 140)}) [${t.category}]</option>`).join('');
+  }
+
+  // 3) Auto-Schedule All 24 Slots from Random Plays
+  async function triggerAutoScheduleRandom() {
+    if (!confirm("Auto-schedule all 24 hours using approved audios from the 'Random Plays' category?")) return;
+    showToast("Auto-scheduling all slots with Random Plays...");
+    try {
+      const res = await fetch(BACKEND_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "autoScheduleAllRandom", adminKey: adminPasscode })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(data.message || "All 24 hours scheduled with Random Plays!");
+        // Reload admin schedules
+        const resAdmin = await fetch(`${BACKEND_URL}?action=getAdminData&key=${encodeURIComponent(adminPasscode)}`);
+        const dataAdmin = await resAdmin.json();
+        if (dataAdmin.success) {
+          hourlySchedules = dataAdmin.hourly || {};
+          renderHourlySlotsUI();
+        }
+      } else {
+        showToast(data.message || "Auto-schedule failed");
+      }
+    } catch(e) {
+      showToast("Error executing auto-schedule");
+    }
   }
 
   function renderHourlySlotsUI() {
@@ -662,7 +692,6 @@
       const slotName = String(slot.name || '');
       const isLiveNow = (h === nowHour);
 
-      // Search matching for hourly slots
       const slotMatchesSearch = !q || formattedHour.toLowerCase().includes(q) || slotName.toLowerCase().includes(q) || `hour ${h}`.includes(q);
 
       let cumulativeSec = 0;
@@ -677,17 +706,18 @@
           const title = trk ? trk.title : 'Track (' + fileId + ')';
           const contrib = trk ? (trk.contributor || '') : '';
           const dur = trk ? (trk.durationSec || 140) : 140;
+          const cat = trk ? (trk.category === "Random Plays" ? "Random" : "Admin Sel") : "";
           const pushPoint = formatTimeOffset(h, cumulativeSec);
           cumulativeSec += dur;
 
-          const trackMatches = !q || title.toLowerCase().includes(q) || contrib.toLowerCase().includes(q);
+          const trackMatches = !q || title.toLowerCase().includes(q) || contrib.toLowerCase().includes(q) || cat.toLowerCase().includes(q);
           if (trackMatches) hasMatchingChild = true;
 
           return `
             <div class="track-chip" style="${q && trackMatches ? 'border-color: var(--cyan); background: rgba(0,210,255,0.1);' : ''}" onclick="openReplaceModal(${h}, ${idx})" title="Click to replace or re-sequence">
               <div class="chip-left">
                 <span class="chip-time-point"><i class="fa-solid fa-play" style="font-size:0.6rem; margin-right:3px;"></i>${pushPoint}</span>
-                <span class="chip-title"><strong>#${idx + 1}</strong> ${escapeHtml(title)}</span>
+                <span class="chip-title"><strong>#${idx + 1}</strong> [${cat}] ${escapeHtml(title)}</span>
                 <span class="chip-dur">(${formatSecs(dur)})</span>
               </div>
               <div style="display:flex; gap:6px;" onclick="event.stopPropagation()">
@@ -754,7 +784,7 @@
 
     modalSel.innerHTML = approved.map(t => {
       const dur = formatSecs(t.durationSec || 140);
-      return `<option value="${t.fileId}">${escapeHtml(t.title)} (${dur})</option>`;
+      return `<option value="${t.fileId}">${escapeHtml(t.title)} (${dur}) [${t.category}]</option>`;
     }).join('');
 
     const currentTrackId = hourlySchedules[String(h)].trackIds[idx];
@@ -800,14 +830,13 @@
     }
   }
 
-  // Library & Push Action with Search
   function renderLibrary() {
     const q = activeSearchQuery;
     const box = document.getElementById('libraryList');
     if (!box) return;
 
     const filtered = tracks.filter(t => {
-      return !q || String(t.title || "").toLowerCase().includes(q) || String(t.contributor || "").toLowerCase().includes(q);
+      return !q || String(t.title || "").toLowerCase().includes(q) || String(t.contributor || "").toLowerCase().includes(q) || String(t.category || "").toLowerCase().includes(q);
     });
 
     if (filtered.length === 0) {
@@ -824,7 +853,7 @@
             <strong style="color:var(--accent); width:20px;">${idx + 1}</strong>
             <div>
               <div style="font-weight:600; font-size:0.92rem;">${escapeHtml(t.title)} <span style="font-size:0.75rem; color:var(--cyan);">(${dur})</span></div>
-              <div style="font-size:0.74rem; color:var(--sub);">by ${escapeHtml(t.contributor || 'Family Member')} • ${isApproved ? '<span style="color:var(--green)">Approved</span>' : '<span style="color:#ffc107">Pending</span>'}</div>
+              <div style="font-size:0.74rem; color:var(--sub);">by ${escapeHtml(t.contributor || 'Family Member')} • [${t.category}] • ${isApproved ? '<span style="color:var(--green)">Approved</span>' : '<span style="color:#ffc107">Pending</span>'}</div>
             </div>
           </div>
           <div style="display:flex; gap:8px;">
@@ -872,7 +901,6 @@
     }
   }
 
-  // Live Mic Recording
   async function toggleMicRecording() {
     const btn = document.getElementById('micBtn');
     const status = document.getElementById('micStatus');

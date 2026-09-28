@@ -1,6 +1,6 @@
 /**
  * Kutumb Radio Backend - Google Apps Script
- * Exact Clock-Timeline Live Radio Sync & Broadcast Engine
+ * Studio Master High-Fidelity Audio Stream & Broadcast Sync Engine
  */
 
 const FOLDER_NAME = "Kutumb Family Radio";
@@ -13,7 +13,7 @@ function doGet(e) {
     const parameter = e.parameter || {};
     const action = parameter.action || "getStationData";
 
-    // Audio stream proxy (bypasses Google Drive CORS & direct download restrictions)
+    // 1) Audio Streamer: Preserves 100% of original fidelity and sample rates without compression
     if (action === "streamAudio") {
       const fileId = parameter.fileId;
       if (!fileId) {
@@ -22,13 +22,19 @@ function doGet(e) {
       }
       try {
         const file = DriveApp.getFileById(fileId);
-        const mime = file.getMimeType() || "audio/mpeg";
+        let mime = file.getMimeType() || "audio/mpeg";
+        if (mime === "application/octet-stream") mime = "audio/mpeg";
+        
         const bytes = file.getBlob().getBytes();
         const b64 = Utilities.base64Encode(bytes);
         const dataUri = "data:" + mime + ";base64," + b64;
         
-        return ContentService.createTextOutput(JSON.stringify({ success: true, dataUri: dataUri }))
-          .setMimeType(ContentService.MimeType.JSON);
+        return ContentService.createTextOutput(JSON.stringify({ 
+          success: true, 
+          dataUri: dataUri,
+          mimeType: mime,
+          sizeBytes: bytes.length
+        })).setMimeType(ContentService.MimeType.JSON);
       } catch(err) {
         return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.toString() }))
           .setMimeType(ContentService.MimeType.JSON);
@@ -85,6 +91,7 @@ function doPost(e) {
     else if (action === "heartbeat") response = handleHeartbeat(contents);
     else if (action === "saveHourlySchedule") response = handleSaveHourlySchedule(contents);
     else if (action === "autoFillDivision") response = handleAutoFillDivision(contents);
+    else if (action === "autoScheduleAllRandom") response = handleAutoScheduleAllRandom(contents);
     else if (action === "adminPushTrack") response = handlePushTrack(contents);
     else if (action === "adminPushLiveMic") response = handlePushLiveMic(contents);
 
@@ -238,9 +245,75 @@ function handleAudioUpload(data) {
 
   return {
     success: true,
-    message: "Audio uploaded to Family Selections for review!",
+    message: "Audio uploaded in original master quality!",
     track: { seq: nextSeq, title, description, fileId, streamUrl, createdAt, category: trackCat, approvalStatus, durationSec }
   };
+}
+
+// ----------------- AUTO-SCHEDULE ALL 24 SLOTS FROM RANDOM PLAYS -----------------
+
+function handleAutoScheduleAllRandom(data) {
+  data = data || {};
+  if (data.adminKey !== ADMIN_SECRET_KEY) return { success: false, message: "Unauthorized" };
+
+  const { tracksSheet, hourlySheet, settingsSheet } = getSheets();
+  const trackRows = tracksSheet.getDataRange().getValues();
+  const randomPlayTracks = [];
+
+  for (let i = 1; i < trackRows.length; i++) {
+    const fileId = String(trackRows[i][4] || "").trim();
+    const cat = String(trackRows[i][7] || "Admin Selections").trim();
+    const app = String(trackRows[i][8] || "pending").trim();
+    const duration = Math.round(Number(trackRows[i][9])) || 180;
+
+    if (fileId && app === "approved" && cat === "Random Plays") {
+      randomPlayTracks.push({ fileId, duration });
+    }
+  }
+
+  // Fallback to all approved tracks if Random Plays list is empty
+  let pool = randomPlayTracks;
+  if (pool.length === 0) {
+    for (let i = 1; i < trackRows.length; i++) {
+      const fileId = String(trackRows[i][4] || "").trim();
+      const app = String(trackRows[i][8] || "pending").trim();
+      const duration = Math.round(Number(trackRows[i][9])) || 180;
+      if (fileId && app === "approved") {
+        pool.push({ fileId, duration });
+      }
+    }
+  }
+
+  if (pool.length === 0) {
+    return { success: false, message: "No approved audios found in library." };
+  }
+
+  hourlySheet.clearContents();
+  hourlySheet.appendRow(["Hour", "SlotName", "TrackIdsJson"]);
+
+  for (let h = 0; h <= 23; h++) {
+    const shuffled = shuffleArray([...pool]);
+    const hourTrackIds = [];
+    let secTotal = 0;
+    let idx = 0;
+
+    // Fill each hour with tracks totaling at least 3600 seconds (60 mins)
+    while (secTotal < 3600 && shuffled.length > 0 && idx < 40) {
+      const t = shuffled[idx % shuffled.length];
+      hourTrackIds.push(t.fileId);
+      secTotal += t.duration;
+      idx++;
+    }
+
+    const dispTime = (h % 12 || 12) + ':00 ' + (h >= 12 ? 'PM' : 'AM');
+    const slotName = `Random Melodies (${dispTime})`;
+    hourlySheet.appendRow([h, slotName, JSON.stringify(hourTrackIds)]);
+  }
+
+  const newVersion = String(Date.now());
+  setSettingValue(settingsSheet, "seq_version", newVersion);
+
+  return { success: true, message: "All 24 hourly slots successfully populated with Random Plays!", version: newVersion };
 }
 
 // ----------------- AUTO-FILL BY REAL TIME SECONDS -----------------
@@ -586,7 +659,7 @@ function getStationData() {
 
   return {
     success: true,
-    serverTime: Date.now(), // Source of truth for radio synchronicity
+    serverTime: Date.now(),
     stationName: settings.station_name || DEFAULT_STATION_NAME,
     stationTagline: settings.station_tagline || "The Big Family Radio",
     tracks,
