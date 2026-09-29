@@ -1,6 +1,6 @@
 {
-  "name": "Kutumb Radio • The Big Family Radio",
-  "short_name": "Kutumb Radio",
+  "name": "The Big Family Radio",
+  "short_name": "Family Radio",
   "description": "Real-time synchronized 24/7 broadcast radio for the entire family.",
   "start_url": "./index.html",
   "scope": "./",
@@ -10,15 +10,9 @@
   "orientation": "any",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3075/3075906.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "https://cdn-icons-png.flaticon.com/512/3075/3075906.png",
-      "sizes": "512x512",
-      "type": "image/png",
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='110' fill='%23090d16'/%3E%3Cpath d='M256 36 L256 128' stroke='%2300d2ff' stroke-width='16' stroke-linecap='round'/%3E%3Ccircle cx='256' cy='36' r='14' fill='%23ff4760'/%3E%3Cpath d='M220 54 A44 44 0 0 0 220 110 M292 54 A44 44 0 0 1 292 110' stroke='%2300d2ff' stroke-width='10' stroke-linecap='round' fill='none'/%3E%3Cpath d='M196 34 A74 74 0 0 0 196 130 M316 34 A74 74 0 0 1 316 130' stroke='%2300d2ff' stroke-width='10' stroke-linecap='round' fill='none'/%3E%3Cpath d='M70 236 L256 120 L442 236' stroke='%23ff4760' stroke-width='24' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3Cpath d='M120 220 L120 440 L392 440 L392 220' stroke='rgba(255,255,255,0.15)' stroke-width='12' fill='rgba(255,255,255,0.03)'/%3E%3Ccircle cx='256' cy='290' r='24' fill='%2300e676'/%3E%3Cpath d='M216 360 C216 324 296 324 296 360 L296 420 L216 420 Z' fill='%2300d2ff'/%3E%3Ccircle cx='180' cy='315' r='18' fill='%23f0f6fc'/%3E%3Cpath d='M150 375 C150 345 210 345 210 375 L210 420 L150 420 Z' fill='rgba(255,255,255,0.7)'/%3E%3Ccircle cx='332' cy='315' r='18' fill='%23f0f6fc'/%3E%3Cpath d='M302 375 C302 345 362 345 362 375 L362 420 L302 420 Z' fill='rgba(255,255,255,0.7)'/%3E%3C/svg%3E",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     }
   ]

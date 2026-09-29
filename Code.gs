@@ -1,11 +1,11 @@
 /**
- * Kutumb Radio Backend - Google Apps Script
+ * The Big Family Radio Backend - Google Apps Script
  * Studio Master High-Fidelity Audio Stream & Broadcast Sync Engine
  */
 
-const FOLDER_NAME = "Kutumb Family Radio";
+const FOLDER_NAME = "The Big Family Radio";
 const ADMIN_SECRET_KEY = "admin123";
-const DEFAULT_STATION_NAME = "Kutumb Radio";
+const DEFAULT_STATION_NAME = "The Big Family Radio";
 
 function doGet(e) {
   try {
@@ -13,7 +13,6 @@ function doGet(e) {
     const parameter = e.parameter || {};
     const action = parameter.action || "getStationData";
 
-    // 1) Audio Streamer: Preserves original fidelity and sample rates without compression
     if (action === "streamAudio") {
       const fileId = parameter.fileId;
       if (!fileId) {
@@ -141,7 +140,7 @@ function getSheets() {
     settingsSheet = ss.insertSheet("Settings");
     settingsSheet.appendRow(["Key", "Value"]);
     settingsSheet.appendRow(["station_name", DEFAULT_STATION_NAME]);
-    settingsSheet.appendRow(["station_tagline", "The Big Family Radio"]);
+    settingsSheet.appendRow(["station_tagline", "Live Synchronized Family Broadcast"]);
     settingsSheet.appendRow(["broadcast_mode", "Real-Time 24/7 Timeline Radio"]);
     settingsSheet.appendRow(["seq_version", String(Date.now())]);
     settingsSheet.appendRow(["pushed_track", ""]);
@@ -640,8 +639,6 @@ function handleSaveSettings(data) {
   return { success: true, message: "Settings saved" };
 }
 
-// ----------------- EXACT TIMELINE STATION DATA -----------------
-
 function getStationData() {
   const { tracksSheet, settingsSheet, hourlySheet } = getSheets();
   const trackRows = tracksSheet.getDataRange().getValues();
@@ -680,7 +677,7 @@ function getStationData() {
     success: true,
     serverTime: Date.now(),
     stationName: settings.station_name || DEFAULT_STATION_NAME,
-    stationTagline: settings.station_tagline || "The Big Family Radio",
+    stationTagline: settings.station_tagline || "Live Synchronized Family Broadcast",
     tracks,
     settings,
     hourly,

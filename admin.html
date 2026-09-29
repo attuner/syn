@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kutumb Radio • Admin Studio</title>
+  <title>The Big Family Radio • Admin Studio</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
@@ -31,7 +31,6 @@
     }
     .admin-container { width: 100%; max-width: 1240px; }
 
-    /* Top Bar */
     .topbar {
       display: flex;
       justify-content: space-between;
@@ -69,7 +68,6 @@
     .pulse-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 1.4s infinite; }
     @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 
-    /* Global Omni Search Bar */
     .global-search-bar {
       width: 100%;
       background: var(--surface);
@@ -99,7 +97,6 @@
       font-size: 0.9rem;
     }
 
-    /* Navigation Tabs */
     .nav-tabs {
       display: flex;
       gap: 8px;
@@ -126,7 +123,6 @@
     .tab-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.04); }
     .tab-btn.active { color: #fff; background: var(--surface); border: 1px solid var(--border); border-bottom: 2px solid var(--accent); }
 
-    /* Panels & Cards */
     .panel {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -138,7 +134,6 @@
     .tab-content.active { display: block; animation: fadeIn 0.25s ease-out; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Controls & Buttons */
     .btn {
       padding: 9px 16px;
       border-radius: 8px;
@@ -159,13 +154,12 @@
     .btn-secondary { background: rgba(255, 255, 255, 0.08); color: #fff; }
     .btn-sm { padding: 6px 12px; font-size: 0.76rem; border-radius: 6px; }
 
-    /* Hourly Organizer Grid */
     .slot-row {
       background: var(--surface-card);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 16px;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       transition: border-color 0.2s;
     }
     .slot-row.active-hour { border-color: var(--cyan); box-shadow: 0 0 16px rgba(0, 210, 255, 0.12); }
@@ -199,7 +193,41 @@
       width: 220px;
     }
 
-    /* Push Point Timeline chips */
+    /* 2) Inline slot search & add controls */
+    .slot-inline-add-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .slot-search-input {
+      flex: 1;
+      min-width: 150px;
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 8px;
+      font-size: 0.78rem;
+      color: #fff;
+      outline: none;
+    }
+    .slot-pick-select {
+      flex: 2;
+      min-width: 200px;
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 8px;
+      font-size: 0.78rem;
+      color: #fff;
+      outline: none;
+    }
+
     .timeline-container { display: flex; flex-direction: column; gap: 6px; }
     .track-chip {
       display: flex;
@@ -233,13 +261,11 @@
     }
     .chip-dur { color: var(--sub); font-size: 0.75rem; margin-left: 6px; }
 
-    /* Tables */
     .table-box { width: 100%; overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; }
     table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
     th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border); }
     th { color: var(--sub); font-size: 0.72rem; text-transform: uppercase; background: var(--surface-card); }
 
-    /* Modals */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.8);
       backdrop-filter: blur(8px); z-index: 300; display: none;
@@ -297,8 +323,8 @@
   <!-- Passcode Auth Gate -->
   <div id="authGate" class="panel" style="max-width: 400px; margin: 60px auto; text-align: center;">
     <div class="brand-icon" style="margin: 0 auto 14px;"><i class="fa-solid fa-people-roof"></i></div>
-    <h2 style="font-size:1.3rem; margin-bottom:4px;">Kutumb Radio</h2>
-    <p style="font-size:0.8rem; color:var(--sub); margin-bottom:18px;">The Big Family Radio Studio</p>
+    <h2 style="font-size:1.3rem; margin-bottom:4px;">The Big Family Radio</h2>
+    <p style="font-size:0.8rem; color:var(--sub); margin-bottom:18px;">Studio Administration & Control Portal</p>
     <div class="form-group" style="text-align:left;">
       <label>Admin Passcode</label>
       <input type="password" id="adminPasscode" placeholder="Default: admin123">
@@ -313,8 +339,8 @@
       <div class="station-brand">
         <div class="brand-icon"><i class="fa-solid fa-tower-broadcast"></i></div>
         <div>
-          <div class="brand-title" id="topStationName">Kutumb Radio</div>
-          <div class="brand-subtitle">The Big Family Radio • Real-Time Synchronized Broadcast</div>
+          <div class="brand-title" id="topStationName">The Big Family Radio</div>
+          <div class="brand-subtitle">Real-Time Synchronized Broadcast Control</div>
         </div>
       </div>
 
@@ -327,10 +353,9 @@
       </div>
     </header>
 
-    <!-- Global Omni Search & Find Bar -->
     <div class="global-search-bar">
       <i class="fa-solid fa-magnifying-glass"></i>
-      <input type="text" id="globalOmniSearch" placeholder="Search across hourly slots, library tracks, contributor approvals, and listeners..." oninput="handleGlobalSearch(this.value)">
+      <input type="text" id="globalOmniSearch" placeholder="Omni-Search across all slots, tracks, approvals, and listeners..." oninput="handleGlobalSearch(this.value)">
       <button class="search-clear-btn" onclick="clearGlobalSearch()"><i class="fa-solid fa-xmark"></i></button>
     </div>
 
@@ -346,31 +371,15 @@
     <!-- TAB 1: 24-HOUR HOURLY TIMELINE ORGANIZER -->
     <section id="slotsTab" class="tab-content active">
       <div class="panel">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
           <div>
             <h2 style="font-size:1.15rem;"><i class="fa-solid fa-timeline" style="color:var(--cyan); margin-right:8px;"></i>Hourly Push Points Timeline</h2>
-            <p style="font-size:0.8rem; color:var(--sub);">Audios play in exact sequential time lengths. <strong>Click any audio chip to modify/replace it</strong> or delete it.</p>
+            <p style="font-size:0.8rem; color:var(--sub);">Search & add audios directly in each hour slot or click existing chips to replace.</p>
           </div>
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
             <button class="btn btn-purple btn-sm" onclick="triggerAutoScheduleRandom()"><i class="fa-solid fa-shuffle"></i> Auto-Schedule 24h (Random Plays)</button>
-            <!-- 2) Clear All Filled Slots Option -->
             <button class="btn btn-danger btn-sm" onclick="triggerClearAllSlots()"><i class="fa-solid fa-trash-can"></i> Clear All Slots</button>
             <button class="btn btn-primary btn-sm" onclick="saveHourlySlots()"><i class="fa-solid fa-floppy-disk"></i> Save Broadcast Schedule</button>
-          </div>
-        </div>
-
-        <!-- Add Track Directly to Hour Slot -->
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; background:var(--surface-card); padding:14px; border-radius:10px; margin-bottom:16px;">
-          <div class="form-group" style="margin-bottom:0;">
-            <label>Select Hour</label>
-            <select id="quickHourSelector"></select>
-          </div>
-          <div class="form-group" style="margin-bottom:0;">
-            <label>Approved Audio Track</label>
-            <select id="quickTrackSelector"></select>
-          </div>
-          <div style="display:flex; align-items:flex-end;">
-            <button class="btn btn-green btn-sm" style="width:100%; height:38px; justify-content:center;" onclick="addTrackToSelectedSlot()"><i class="fa-solid fa-plus"></i> Append to Slot</button>
           </div>
         </div>
 
@@ -476,11 +485,11 @@
         <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:14px; margin-bottom:14px;">
           <div class="form-group">
             <label>Station Display Name</label>
-            <input type="text" id="cfgStationName" value="Kutumb Radio">
+            <input type="text" id="cfgStationName" value="The Big Family Radio">
           </div>
           <div class="form-group">
             <label>Station Tagline</label>
-            <input type="text" id="cfgStationTagline" value="The Big Family Radio">
+            <input type="text" id="cfgStationTagline" value="Live Synchronized Family Broadcast">
           </div>
         </div>
         <button class="btn btn-primary btn-sm" onclick="saveSettings()"><i class="fa-solid fa-check"></i> Save Settings</button>
@@ -500,12 +509,11 @@
   let cachedListeners = [];
   let serverTimeOffset = 0;
   let activeSearchQuery = "";
+  let slotFilterQueries = {};
 
-  // Replacer Modal State
   let replaceTargetHour = null;
   let replaceTargetIndex = null;
 
-  // Live Mic State
   let mediaRecorder = null;
   let micAudioChunks = [];
   let micBase64Data = null;
@@ -600,7 +608,6 @@
           document.getElementById('cfgStationTagline').value = data.settings.station_tagline;
         }
 
-        initQuickDropdowns();
         renderHourlySlotsUI();
         renderLibrary();
         renderApprovals();
@@ -632,27 +639,6 @@
     } catch(e) {}
   }
 
-  function initQuickDropdowns() {
-    const hourSel = document.getElementById('quickHourSelector');
-    hourSel.innerHTML = Array.from({ length: 24 }, (_, h) => {
-      const disp = (h % 12 || 12) + ':00 ' + (h >= 12 ? 'PM' : 'AM');
-      return `<option value="${h}">Hour ${h} (${disp})</option>`;
-    }).join('');
-
-    updateQuickTrackDropdown();
-  }
-
-  function updateQuickTrackDropdown() {
-    const trackSel = document.getElementById('quickTrackSelector');
-    const approved = tracks.filter(t => t.approvalStatus === "approved");
-    if (approved.length === 0) {
-      trackSel.innerHTML = `<option value="">No approved tracks</option>`;
-      return;
-    }
-    trackSel.innerHTML = approved.map(t => `<option value="${t.fileId}">${escapeHtml(t.title)} (${formatSecs(t.durationSec || 140)}) [${t.category}]</option>`).join('');
-  }
-
-  // 2) Clear All Filled Slots Function
   async function triggerClearAllSlots() {
     if (!confirm("Are you sure you want to clear ALL filled audios and schedules across all 24 hours?")) return;
     showToast("Clearing all 24 hourly slots...");
@@ -701,12 +687,14 @@
     }
   }
 
+  // 2) Render each hourly slot card with inline search & find picker
   function renderHourlySlotsUI() {
     const container = document.getElementById('hourlySlotsGrid');
     if (!container) return;
     const nowHour = new Date(Date.now() + serverTimeOffset).getHours();
     let html = '';
     const q = activeSearchQuery;
+    const approved = tracks.filter(t => t.approvalStatus === "approved");
 
     for (let h = 0; h <= 23; h++) {
       const slot = (hourlySchedules && hourlySchedules[String(h)]) ? hourlySchedules[String(h)] : { name: "", trackIds: [] };
@@ -756,6 +744,16 @@
         continue;
       }
 
+      // Inline search filtering for this specific hour
+      const currentSlotQuery = (slotFilterQueries[h] || "").toLowerCase().trim();
+      const filteredForSlot = approved.filter(t => {
+        return !currentSlotQuery || String(t.title || "").toLowerCase().includes(currentSlotQuery) || String(t.contributor || "").toLowerCase().includes(currentSlotQuery);
+      });
+
+      const slotOptionsHtml = filteredForSlot.length > 0 
+        ? filteredForSlot.map(t => `<option value="${t.fileId}">${escapeHtml(t.title)} (${formatSecs(t.durationSec || 140)}) [${t.category === 'Random Plays' ? 'Random' : 'Admin'}]</option>`).join('')
+        : `<option value="">No matching tracks</option>`;
+
       html += `
         <div class="slot-row ${isLiveNow ? 'active-hour' : ''}">
           <div class="slot-header">
@@ -765,30 +763,54 @@
               <span style="font-size:0.75rem; color:var(--sub);">Total: ${formatSecs(cumulativeSec)}</span>
             </div>
             <div>
-              <input type="text" class="slot-name-field" placeholder="Slot Name (e.g. Morning Family Raga)" value="${escapeHtml(slotName)}" onchange="updateSlotName(${h}, this.value)">
+              <input type="text" class="slot-name-field" placeholder="Slot Name" value="${escapeHtml(slotName)}" onchange="updateSlotName(${h}, this.value)">
             </div>
           </div>
+
+          <!-- Inline Search & Add to this specific Hour -->
+          <div class="slot-inline-add-bar">
+            <input type="text" class="slot-search-input" id="slotSearchInput_${h}" placeholder="🔍 Search audio for Hour ${h}..." value="${escapeHtml(slotFilterQueries[h] || '')}" oninput="filterSlotTracks(${h}, this.value)">
+            <select class="slot-pick-select" id="slotTrackPick_${h}">
+              ${slotOptionsHtml}
+            </select>
+            <button class="btn btn-green btn-sm" onclick="addInlineTrackToSlot(${h})"><i class="fa-solid fa-plus"></i> Add to Hour ${h}</button>
+          </div>
+
           ${chipsHtml}
         </div>
       `;
     }
-    container.innerHTML = html || `<p style="color:var(--sub); font-size:0.85rem; padding:12px;">No matching hourly slots found for "${escapeHtml(q)}".</p>`;
+    container.innerHTML = html || `<p style="color:var(--sub); font-size:0.85rem; padding:12px;">No matching hourly slots found.</p>`;
   }
 
-  function updateSlotName(h, val) {
-    if (!hourlySchedules[String(h)]) hourlySchedules[String(h)] = { name: "", trackIds: [] };
-    hourlySchedules[String(h)].name = val;
+  function filterSlotTracks(h, val) {
+    slotFilterQueries[h] = val;
+    const sel = document.getElementById(`slotTrackPick_${h}`);
+    if (!sel) return;
+    const q = val.toLowerCase().trim();
+    const approved = tracks.filter(t => t.approvalStatus === "approved");
+    const filtered = approved.filter(t => {
+      return !q || String(t.title || "").toLowerCase().includes(q) || String(t.contributor || "").toLowerCase().includes(q);
+    });
+    sel.innerHTML = filtered.length > 0 
+      ? filtered.map(t => `<option value="${t.fileId}">${escapeHtml(t.title)} (${formatSecs(t.durationSec || 140)}) [${t.category === 'Random Plays' ? 'Random' : 'Admin'}]</option>`).join('')
+      : `<option value="">No matching tracks</option>`;
   }
 
-  function addTrackToSelectedSlot() {
-    const h = document.getElementById('quickHourSelector').value;
-    const fileId = document.getElementById('quickTrackSelector').value;
-    if (!fileId) return showToast("Select an approved audio track first");
+  function addInlineTrackToSlot(h) {
+    const sel = document.getElementById(`slotTrackPick_${h}`);
+    if (!sel || !sel.value) return showToast(`Select an audio track for Hour ${h}`);
+    const fileId = sel.value;
 
     if (!hourlySchedules[String(h)]) hourlySchedules[String(h)] = { name: "", trackIds: [] };
     hourlySchedules[String(h)].trackIds.push(fileId);
     renderHourlySlotsUI();
     showToast(`Track added to Hour ${h}. Push points updated!`);
+  }
+
+  function updateSlotName(h, val) {
+    if (!hourlySchedules[String(h)]) hourlySchedules[String(h)] = { name: "", trackIds: [] };
+    hourlySchedules[String(h)].name = val;
   }
 
   function removeTrackFromSlot(h, idx) {
@@ -916,7 +938,6 @@
         tracks = tracks.filter(t => t.fileId !== fileId);
         renderLibrary();
         renderApprovals();
-        updateQuickTrackDropdown();
         showToast("Deleted");
       }
     } catch(e) {
@@ -1035,7 +1056,6 @@
         if (trk) trk.approvalStatus = status;
         renderApprovals();
         renderLibrary();
-        updateQuickTrackDropdown();
         showToast(data.message);
       }
     } catch(e) {
