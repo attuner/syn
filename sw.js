@@ -1,19 +1,22 @@
-const CACHE_NAME = 'kutumb-radio-v3';
+const CACHE_NAME = "family-radio-cache-v1";
 const STATIC_ASSETS = [
-  './index.html',
-  './admin.html',
-  './manifest.json',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
+  "./",
+  "./index.html",
+  "./manifest.json",
+  "./icon.svg",
+  "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
 ];
 
-self.addEventListener('install', (event) => {
+// Install: Cache core application shell
+self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
   );
   self.skipWaiting();
 });
 
-self.addEventListener('activate', (event) => {
+// Activate: Remove obsolete caches
+self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
@@ -23,36 +26,54 @@ self.addEventListener('activate', (event) => {
           }
         })
       );
-    }).then(() => self.clients.claim())
+    })
   );
+  self.clients.claim();
 });
 
-self.addEventListener('fetch', (event) => {
-  const url = event.request.url;
-
-  // Real-world radio streams, Google Apps Script API calls, and Google Drive audio proxy 
-  // must always stream live directly from the network without stale caching
+// Fetch: Serve cached UI shell, bypass cache for live audio & backend sync
+self.addEventListener("fetch", (event) => {
+  const url = new URL(event.request.url);
+  
+  // Exclude audio streams, Google Apps Script backend, and non-GET requests from caching
   if (
-    url.includes('script.google.com') ||
-    url.includes('drive.google.com') ||
-    url.includes('googleusercontent.com') ||
-    event.request.method !== 'GET'
+    event.request.method !== "GET" ||
+    url.hostname.includes("script.google.com") ||
+    url.pathname.endsWith(".mp3") ||
+    url.pathname.endsWith(".m4a") ||
+    url.pathname.endsWith(".wav") ||
+    url.pathname.endsWith(".flac") ||
+    url.pathname.endsWith(".m3u8") ||
+    url.searchParams.has("action")
   ) {
     return;
   }
-
-  // Network-first strategy for dynamic HTML pages to ensure schedule updates appear instantly
-  if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request).catch(() => caches.match('./index.html'))
-    );
-    return;
-  }
-
-  // Cache fallback for static styling and fonts
+  
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      return cachedResponse || fetch(event.request);
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+      return fetch(event.request)
+        .then((networkResponse) => {
+          // Cache successful responses for local scripts or FontAwesome webfonts
+          if (
+            networkResponse &&
+            networkResponse.status === 200 &&
+            (url.origin === self.location.origin || url.hostname.includes("cdnjs.cloudflare.com"))
+          ) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseToCache);
+            });
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          if (event.request.headers.get("accept")?.includes("text/html")) {
+            return caches.match("./index.html");
+          }
+        });
     })
   );
 });

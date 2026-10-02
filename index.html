@@ -111,17 +111,17 @@
       width: 100%;
       height: calc(100vh - var(--header-h));
       height: calc(100dvh - var(--header-h));
-      max-height: calc(100dvh - var(--header-h));
-      padding: clamp(6px, 1.5vh, 14px) 16px;
       display: flex;
       justify-content: center;
       align-items: center;
       overflow: hidden;
     }
+
     .content-wrapper {
-      width: 100%;
-      max-width: 580px;
-      height: 100%;
+      width: 95vw;
+      width: 95dvw;
+      height: calc(95vh - var(--header-h));
+      height: calc(95dvh - var(--header-h));
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -130,50 +130,42 @@
 
     .tuner-card {
       width: 100%;
-      max-height: 100%;
+      height: 100%;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 24px;
-      padding: clamp(10px, 1.8vh, 18px) clamp(14px, 3vw, 24px);
+      padding: clamp(12px, 2vh, 20px) clamp(14px, 3vw, 24px);
       text-align: center;
       box-shadow: 0 16px 36px rgba(0,0,0,0.65);
       backdrop-filter: blur(12px);
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: space-evenly;
+      justify-content: space-between;
       overflow: hidden;
+      position: relative;
     }
 
-    .vinyl-wrapper {
-      position: relative;
-      width: min(21vh, 160px);
-      height: min(21vh, 160px);
-      margin: 2px auto 6px;
-      flex-shrink: 0;
-    }
-    .vinyl {
-      width: 100%; height: 100%; border-radius: 50%;
-      background: conic-gradient(#111, #222, #111, #333, #111);
-      border: 5px solid #222;
-      box-shadow: 0 0 24px rgba(0,0,0,0.85);
-      display: flex; align-items: center; justify-content: center;
-      animation: spin 10s linear infinite; animation-play-state: paused;
-    }
-    .vinyl.spinning { animation-play-state: running; }
-    .vinyl-center {
-      width: clamp(40px, 6vw, 58px);
-      height: clamp(40px, 6vw, 58px);
-      border-radius: 50%;
-      background: var(--accent);
-      border: 3px solid #fff;
+    /* Horizontal Visualizer Stage */
+    .visualizer-container {
+      width: 100%;
+      flex: 1;
+      min-height: 100px;
+      max-height: 240px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #fff;
-      font-size: clamp(0.9rem, 2vw, 1.2rem);
+      position: relative;
+      margin-bottom: 8px;
     }
-    @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    #visualizer-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      border-radius: 14px;
+      background: rgba(0, 0, 0, 0.35);
+    }
 
     .track-info-pane {
       width: 100%;
@@ -207,7 +199,7 @@
       font-size: 0.74rem;
       color: var(--subtext);
       line-height: 1.3;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       max-height: 34px;
       overflow: hidden;
       display: -webkit-box;
@@ -216,7 +208,7 @@
       max-width: 92%;
     }
 
-    /* Audio Quality & Multi-Channel Options */
+    /* Channel Selector Bar */
     .audio-quality-bar {
       display: flex;
       align-items: center;
@@ -226,10 +218,10 @@
       border: 1px solid rgba(255, 255, 255, 0.06);
       padding: 4px 8px;
       border-radius: 14px;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       flex-wrap: wrap;
     }
-    .quality-selector-group, .channel-selector-group {
+    .channel-selector-group {
       display: flex;
       align-items: center;
       gap: 3px;
@@ -254,11 +246,6 @@
       background: var(--cyan);
       color: #000;
       box-shadow: 0 0 8px rgba(0, 210, 255, 0.4);
-    }
-    .ch-btn.active-qual {
-      background: var(--green);
-      color: #000;
-      box-shadow: 0 0 8px rgba(0, 230, 118, 0.4);
     }
 
     .switch-container {
@@ -296,11 +283,16 @@
       .tuner-card {
         flex-direction: row;
         justify-content: space-evenly;
-        padding: 6px 14px;
+        padding: 8px 14px;
         gap: 14px;
       }
-      .vinyl-wrapper { width: min(38vh, 150px); height: min(38vh, 150px); margin: 0; }
-      .track-info-pane { align-items: flex-start; text-align: left; max-width: 60%; }
+      .visualizer-container {
+        max-height: 80%;
+        height: 80%;
+        flex: 1;
+        margin-bottom: 0;
+      }
+      .track-info-pane { align-items: flex-start; text-align: left; max-width: 55%; }
       .track-title { max-width: 100%; }
       .track-desc { max-width: 100%; margin-bottom: 4px; }
       .audio-quality-bar { justify-content: flex-start; margin-bottom: 4px; }
@@ -389,10 +381,9 @@
   <main>
     <div class="content-wrapper">
       <div class="tuner-card">
-        <div class="vinyl-wrapper">
-          <div id="vinyl" class="vinyl">
-            <div class="vinyl-center"><i class="fa-solid fa-radio"></i></div>
-          </div>
+        <!-- Straight Horizontal Audio Visualizer from index-a.html -->
+        <div class="visualizer-container">
+          <canvas id="visualizer-canvas"></canvas>
         </div>
 
         <div class="track-info-pane">
@@ -402,19 +393,8 @@
           <div class="push-indicator" id="currentPushPointDisplay">Push Point: --:--</div>
           <div class="track-desc" id="trackDescDisplay">Streaming audio in perfect timeline sync.</div>
 
-          <!-- Quality Levels & Channels Engine -->
+          <!-- Channel Selector Bar (Audio Level Quality options removed) -->
           <div class="audio-quality-bar">
-            <!-- 1) Extra option to lower audio quality in levels without dropouts/loss -->
-            <div class="quality-selector-group">
-              <span style="font-size:0.65rem; color:var(--subtext); margin-right:2px;"><i class="fa-solid fa-gauge-high"></i> Level:</span>
-              <button class="ch-btn active-qual" id="btnQualMaster" onclick="setQualityLevel('master')">Master</button>
-              <button class="ch-btn" id="btnQualHiFi" onclick="setQualityLevel('hifi')">Hi-Fi</button>
-              <button class="ch-btn" id="btnQualEco" onclick="setQualityLevel('eco')">Eco</button>
-            </div>
-
-            <div style="width: 1px; height: 12px; background: rgba(255,255,255,0.15);"></div>
-
-            <!-- Channels: 2.0, 2.1, 3.0, 4.0, 5.1 (Removed Left/Right only) -->
             <div class="channel-selector-group">
               <span style="font-size:0.65rem; color:var(--subtext); margin-right:2px;"><i class="fa-solid fa-sliders"></i> Ch:</span>
               <button class="ch-btn active" id="btnCh20" onclick="setAudioChannels('2.0')">2.0</button>
@@ -552,16 +532,31 @@
   standbyPlayer.preload = "auto";
   let isStandbyReady = false;
 
-  // ================= MULTI-CHANNEL & QUALITY ENGINE =================
+  // ================= MULTI-CHANNEL & VISUALIZER ENGINE =================
   let audioCtx = null;
   let sourceNode = null;
-  let qualityFilter = null;
   let limiterNode = null;
   let splitterNode = null;
   let mergerNode = null;
+  let analyserNode = null;
+  let freqDataArray = null;
   let currentChannelMode = '2.0';
-  let currentQualityLevel = 'master'; // 'master', 'hifi', 'eco'
   let webAudioSupported = true;
+
+  const canvas = document.getElementById("visualizer-canvas");
+  const ctx = canvas.getContext("2d");
+
+  function resizeCanvas() {
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpr, dpr);
+  }
+  window.addEventListener("resize", resizeCanvas);
+  window.addEventListener("orientationchange", () => setTimeout(resizeCanvas, 200));
 
   function ensureAudioContext() {
     if (audioCtx && audioCtx.state !== 'closed') {
@@ -587,7 +582,7 @@
 
       sourceNode = audioCtx.createMediaElementSource(activePlayer);
 
-      // Clean brickwall dynamics limiter to guarantee zero digital distortion at all quality tiers
+      // Limiter to prevent clipping
       limiterNode = audioCtx.createDynamicsCompressor();
       limiterNode.threshold.setValueAtTime(-1.0, audioCtx.currentTime);
       limiterNode.knee.setValueAtTime(0, audioCtx.currentTime);
@@ -595,9 +590,11 @@
       limiterNode.attack.setValueAtTime(0.001, audioCtx.currentTime);
       limiterNode.release.setValueAtTime(0.1, audioCtx.currentTime);
 
-      qualityFilter = audioCtx.createBiquadFilter();
-      qualityFilter.type = "lowpass";
-      qualityFilter.frequency.setValueAtTime(22050, audioCtx.currentTime);
+      // Fast, smooth analyser matching index-a.html
+      analyserNode = audioCtx.createAnalyser();
+      analyserNode.fftSize = 128;
+      analyserNode.smoothingTimeConstant = 0.82;
+      freqDataArray = new Uint8Array(analyserNode.frequencyBinCount);
 
       splitterNode = audioCtx.createChannelSplitter(2);
       mergerNode = audioCtx.createChannelMerger(6);
@@ -607,28 +604,6 @@
       console.warn("AudioContext setup:", err);
       webAudioSupported = false;
     }
-  }
-
-  // 1) Audio quality levels adjustment without dropouts
-  function setQualityLevel(level) {
-    currentQualityLevel = level;
-    document.querySelectorAll('.quality-selector-group .ch-btn').forEach(b => b.classList.remove('active-qual'));
-    const btnMap = { 'master': 'btnQualMaster', 'hifi': 'btnQualHiFi', 'eco': 'btnQualEco' };
-    const btn = document.getElementById(btnMap[level]);
-    if (btn) btn.classList.add('active-qual');
-
-    ensureAudioContext();
-    if (webAudioSupported && audioCtx && qualityFilter) {
-      if (level === 'master') {
-        qualityFilter.frequency.setTargetAtTime(22050, audioCtx.currentTime, 0.05); // full 22kHz Nyquist master
-      } else if (level === 'hifi') {
-        qualityFilter.frequency.setTargetAtTime(16000, audioCtx.currentTime, 0.05); // Clean 16kHz smooth band
-      } else if (level === 'eco') {
-        qualityFilter.frequency.setTargetAtTime(11000, audioCtx.currentTime, 0.05); // 11kHz battery & light network saving band
-      }
-    }
-    const labels = { 'master': 'Studio Master (Lossless)', 'hifi': 'Hi-Fi Balanced (192kbps Eq)', 'eco': 'Eco Stream (Smooth 96kbps Eq)' };
-    showToast(`Audio Level: ${labels[level]}`);
   }
 
   function setAudioChannels(mode) {
@@ -662,18 +637,18 @@
   }
 
   function applyDSPRouting() {
-    if (!webAudioSupported || !audioCtx || !sourceNode || !qualityFilter || !limiterNode || !splitterNode || !mergerNode) return;
+    if (!webAudioSupported || !audioCtx || !sourceNode || !limiterNode || !analyserNode || !splitterNode || !mergerNode) return;
     try {
       sourceNode.disconnect();
       limiterNode.disconnect();
-      qualityFilter.disconnect();
+      analyserNode.disconnect();
       splitterNode.disconnect();
       mergerNode.disconnect();
 
-      // Audio Graph: Source -> Limiter -> Quality Filter -> Splitter -> Matrix Merger -> Destination
+      // Routing: Source -> Limiter -> Analyser -> Splitter -> Merger
       sourceNode.connect(limiterNode);
-      limiterNode.connect(qualityFilter);
-      qualityFilter.connect(splitterNode);
+      limiterNode.connect(analyserNode);
+      analyserNode.connect(splitterNode);
 
       const mode = currentChannelMode;
 
@@ -732,10 +707,67 @@
     }
   }
 
+  // Straight Horizontal Frequency Spectrum Visualizer (from index-a.html)
+  function startHorizontalVisualizerLoop() {
+    resizeCanvas();
+
+    function renderFrame() {
+      requestAnimationFrame(renderFrame);
+      if (!canvas) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height;
+      ctx.clearRect(0, 0, width, height);
+
+      let binsCount = 64;
+      let data = freqDataArray;
+
+      if (audioCtx && analyserNode && isPlaying) {
+        analyserNode.getByteFrequencyData(freqDataArray);
+        binsCount = analyserNode.frequencyBinCount;
+        data = freqDataArray;
+      } else if (isPlaying) {
+        // Fallback simulation when stream data is isolated
+        data = new Uint8Array(binsCount);
+        for (let i = 0; i < binsCount; i++) {
+          data[i] = Math.round(50 + Math.sin(i * 0.2 + Date.now() * 0.005) * 45);
+        }
+      }
+
+      const barSpacing = 2;
+      const totalSpacing = barSpacing * (binsCount - 1);
+      const barWidth = Math.max(1, (width - totalSpacing) / binsCount);
+      const maxBarHeight = height * 0.85;
+
+      for (let i = 0; i < binsCount; i++) {
+        const amplitude = isPlaying && data ? data[i] / 255 : 0;
+        const barHeight = Math.max(2, amplitude * maxBarHeight);
+        const x = i * (barWidth + barSpacing);
+        const y = height - barHeight;
+
+        const opacity = isPlaying ? Math.max(0.2, amplitude * 0.95) : 0.08;
+        ctx.fillStyle = `rgba(0, 210, 255, ${opacity})`;
+        ctx.fillRect(x, y, barWidth, barHeight);
+      }
+
+      // Horizontal baseline
+      ctx.beginPath();
+      ctx.moveTo(0, height - 1);
+      ctx.lineTo(width, height - 1);
+      ctx.strokeStyle = isPlaying ? "rgba(0, 210, 255, 0.4)" : "rgba(255, 255, 255, 0.08)";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
+    renderFrame();
+  }
+
   // ================= LIFECYCLE & BROADCAST SYNC =================
   window.addEventListener('load', () => {
     fetchStationData();
     renderAuth();
+    startHorizontalVisualizerLoop();
 
     sendHeartbeat();
     setInterval(sendHeartbeat, 20000);
@@ -1109,7 +1141,6 @@
   function updateTunerUI(trackObj) {
     const track = trackObj || currentlyPlayingTrack || (activePlaylist ? activePlaylist[currentIndex] : null);
     const btn = document.getElementById('radioPowerBtn');
-    const vinyl = document.getElementById('vinyl');
     const title = document.getElementById('trackTitleDisplay');
     const contrib = document.getElementById('trackContributorDisplay');
     const desc = document.getElementById('trackDescDisplay');
@@ -1129,10 +1160,8 @@
 
     if (isPlaying) {
       btn.classList.add('playing');
-      vinyl.classList.add('spinning');
     } else {
       btn.classList.remove('playing');
-      vinyl.classList.remove('spinning');
     }
   }
 
@@ -1274,6 +1303,14 @@
     };
     reader.readAsDataURL(selectedAudioFile);
   }
+  
+  if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then((reg) => console.log("Service Worker registered:", reg.scope))
+      .catch((err) => console.warn("Service Worker registration failed:", err));
+  });
+}
 </script>
 
 </body>
